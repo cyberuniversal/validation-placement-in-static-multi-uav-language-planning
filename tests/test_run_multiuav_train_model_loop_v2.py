@@ -100,8 +100,20 @@ class ModelLoopTests(unittest.TestCase):
                                 (20, 20), set(), 0)
         payload = json.loads(request.messages[1].content)
         self.assertEqual(payload["nearby_targets_by_drone"]["drone-1"][0]["id"], "target-1")
+        self.assertEqual(payload["allowed_actions_by_drone"]["drone-1"], [
+            "MOVE_TO_OBSERVED_TARGET", "SEARCH", "STOP",
+        ])
         for forbidden in ("related_apis", "commands", "execution_check_apis", "official_plan"):
             self.assertNotIn(forbidden, request.messages[1].content)
+
+    def test_grounded_drone_prompt_requires_takeoff(self) -> None:
+        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        request = build_request("Search", [grounded], {"drone-1": []},
+                                (20, 20), set(), 0)
+        payload = json.loads(request.messages[1].content)
+        self.assertEqual(payload["allowed_actions_by_drone"]["drone-1"], [
+            "TAKE_OFF", "STOP",
+        ])
 
     def test_observed_target_resolves_to_server_coordinate(self) -> None:
         action, status = self.resolve(choice("MOVE_TO_OBSERVED_TARGET", target_id="target-1"))

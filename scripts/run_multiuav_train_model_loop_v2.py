@@ -91,6 +91,15 @@ def build_request(
             ]
             for drone_id, targets in nearby_targets.items()
         },
+        "allowed_actions_by_drone": {
+            str(drone["id"]): (
+                ["TAKE_OFF", "STOP"]
+                if float(drone["position"]["z"]) <= 0
+                else (["MOVE_TO_OBSERVED_TARGET", "SEARCH", "STOP"]
+                      if nearby_targets.get(str(drone["id"])) else ["SEARCH", "STOP"])
+            )
+            for drone in drones
+        },
         "previous_destinations": [list(point) for point in sorted(previous_destinations)],
         "action_schema": ACTION_SCHEMA,
     }
@@ -103,7 +112,9 @@ def build_request(
                 "Use null for unused fields. MOVE_TO_OBSERVED_TARGET requires a target ID "
                 "in that drone's nearby_targets_by_drone list. SEARCH uses a cardinal "
                 "direction and only a short bounded step. Never invent coordinates, "
-                "target IDs, or drone IDs. STOP when evidence is insufficient."
+                "target IDs, or drone IDs. Follow allowed_actions_by_drone: a "
+                "grounded drone must TAKE_OFF before SEARCH or MOVE_TO_OBSERVED_TARGET. "
+                "STOP when evidence is insufficient."
             ),
         ),
         PromptMessage(role="user", content=_canonical(visible)),

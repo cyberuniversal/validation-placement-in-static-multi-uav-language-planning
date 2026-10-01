@@ -204,3 +204,22 @@ under the local ignored
 After capturing that evidence, the non-running job was removed. Attempt 2
 retains the same model, source case, and command budget while excluding the
 image-pull-failing node. Do not count attempt 1 as an experiment result.
+
+Attempt 2 (`validation-placement-train-model-loop-3b-v2-a2`) completed on an
+NVIDIA A10. The no-model preflight passed, the pinned 3B checkpoint loaded on
+`cuda:0`, and one generation returned the high-level action `SEARCH` for a
+drone still at altitude zero. The deterministic resolver rejected it with
+`drone_not_airborne`; therefore **zero commands** were issued. The AGENT
+privileged-data request returned 403, and the official task check was false.
+This is a train-only negative model result, not a paper improvement. The raw
+request, generation, and AGENT/server responses remain on the Nautilus PVC at
+`/workspace/results/train-model-loop-v2/91130026/attempt-2/` and in the local
+ignored matching directory. The copied raw file matches the run-summary
+SHA-256. The preflight and run summaries, job/pod YAML, and logs are preserved
+separately. No unexecuted model action is counted as a simulated move.
+
+The next attempt clarifies the prompt's action availability from the current
+AGENT-visible drone altitude: a grounded drone may only `TAKE_OFF` or `STOP`.
+The deterministic gate remains unchanged. This is iterative development on
+the same reviewed training task and must not be presented as an untouched
+evaluation or a causal comparison with M1--M4.

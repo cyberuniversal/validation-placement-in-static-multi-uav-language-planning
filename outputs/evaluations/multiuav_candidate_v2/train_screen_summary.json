@@ -1,0 +1,28 @@
+{
+  "candidate_sha256": "8876d3729816d6239f6e1b1c396adf18d272e9dd90a2eadb24f3d10b2136d635",
+  "cases": 4495,
+  "clusters": 899,
+  "confusion": [
+    {
+      "count": 899,
+      "proposed_decision": "BLOCK",
+      "screen_decision": "BLOCK"
+    },
+    {
+      "count": 899,
+      "proposed_decision": "CLARIFY",
+      "screen_decision": "CLARIFY"
+    },
+    {
+      "count": 2697,
+      "proposed_decision": "EXECUTE",
+      "screen_decision": "EXECUTE"
+    }
+  ],
+  "dataset_sha256": "1ba9575ff4a2b0342b2fa20afa242e052f263ff7bd3ed18734a923687a9c27d1",
+  "interpretation": "Checks a deterministic screen against generated proposed labels only; no model output, official execution, or independent human adjudication.",
+  "removed_fact_still_literal_in_missing_instruction": 20,
+  "rows_sha256": "faf80cf0cdd9bd7d61c8d7791fa61da7e336e19dbc1588a5bfc1d2d90e64d8dd",
+  "split": "train",
+  "status": "generated_label_screen_audit_not_model_evaluation"
+}

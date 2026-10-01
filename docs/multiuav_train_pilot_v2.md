@@ -41,6 +41,15 @@ The analysis checks input hashes and completeness, then writes only sanitized
 case-level failure categories, planned command names, official command names,
 and an aggregate summary. The raw prompt and generation remain separate.
 
+Attempt 1 (`validation-placement-train-pilot-3b-v2`) failed before model load:
+the Linux clone checked out the reviewed pilot dataset and review CSV with LF,
+while their registered SHA-256 values bind CRLF bytes. There are zero raw
+generation rows from this attempt. Its job YAML, pod YAML, and log are preserved
+under `outputs/evaluations/multiuav_train_pilot_v2/failed_attempt_1/`.
+The follow-up `.gitattributes` entries require CRLF for exactly those two
+review-bound files on both operating systems. A retry must use a new job name
+and immutable code commit; attempt 1 is not overwritten.
+
 An actual run additionally requires `--cache-audit` pointing to the verified
 pinned 3B snapshot audit on the same host. It must run with GPU access and the
 `[inference]` dependencies. Preserve raw outputs and failed runs; analyze them

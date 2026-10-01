@@ -2,6 +2,8 @@
 datasets/multiuav_plat/accuracy_case_manifest_v1.json text eol=crlf
 datasets/multiuav_plat/accuracy_protocol_freeze_v1.json text eol=crlf
 datasets/multiuav_plat/intervention_dataset_v1.json text eol=crlf
+datasets/multiuav_plat/intervention_pilot_v2.json text eol=crlf
+reports/multiuav_intervention_pilot_review_completed_v2.csv text eol=crlf
 datasets/multiuav_plat/resource_hardware_protocol_v1.json text eol=crlf
 datasets/multiuav_plat/resource_run_configs_v1.json text eol=crlf
 datasets/multiuav_plat/resource_schedule_v1.json text eol=crlf

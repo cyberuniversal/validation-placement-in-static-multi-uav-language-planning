@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: validation-placement-train-model-loop-3b-v2-a2
+  name: validation-placement-train-model-loop-3b-v2-a3
   namespace: aiea-interns
   labels:
     app.kubernetes.io/name: validation-placement
-    validation-placement/stage: train-model-loop-3b-v2-a2
+    validation-placement/stage: train-model-loop-3b-v2-a3
 spec:
   activeDeadlineSeconds: 5400
   backoffLimit: 0
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: validation-placement
-        validation-placement/stage: train-model-loop-3b-v2-a2
+        validation-placement/stage: train-model-loop-3b-v2-a3
     spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 120
@@ -36,10 +36,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: nvidia.com/gpu.product
+                  - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - NVIDIA-GeForce-RTX-3090
+                      - gpu-17.nrp.mghpcc.org
       containers:
         - name: train-model-loop
           image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
@@ -55,7 +55,7 @@ spec:
                 git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
               fi
               git -C "${repo}" fetch origin codex/executable-fidelity-v2
-              git -C "${repo}" checkout --detach 0b6c762a3b30162962ef4b0e670113f75ea9cec4
+              git -C "${repo}" checkout --detach 1f47a7fa6757f68bd37e1e3f9be869594a9891ed
               upstream="${repo}/external/MultiUAV-Plat"
               if [[ ! -d "${upstream}/.git" ]]; then
                 git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
@@ -63,7 +63,7 @@ spec:
               git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
               python -m pip install --no-cache-dir -e "${repo}[inference]"
               python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
-              output=/workspace/results/train-model-loop-v2/91130026/attempt-2
+              output=/workspace/results/train-model-loop-v2/91130026/attempt-3
               mkdir -p "${output}"
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 91130026:canonical_execute \

@@ -78,6 +78,17 @@ wrong-command cases show that passing the present local safety checks is not
 equivalent to task fidelity. No simulator execution was performed. These are
 reviewed training cases only, not held-out evidence of improvement.
 
+A separate inspection of these 15 supplied agent-visible contexts found that
+only 2 instructions contain an explicit `(x, y, z)` coordinate triple; none
+contains a `targets` collection or observation results. The prompt advertises
+permitted observation endpoints, but this pilot's single model call does not
+execute an observation tool. This does not prove that every task is impossible
+to plan, but it is a concrete mismatch to investigate before tuning prompts
+against official full-plan fidelity. A follow-up should first establish which
+required endpoint parameters are actually recoverable from visible evidence
+and which require a real observation round trip. It must not fill unavailable
+coordinates from the official reference plan.
+
 An actual run additionally requires `--cache-audit` pointing to the verified
 pinned 3B snapshot audit on the same host. It must run with GPU access and the
 `[inference]` dependencies. Preserve raw outputs and failed runs; analyze them

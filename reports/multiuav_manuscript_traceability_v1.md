@@ -31,6 +31,9 @@
 - `resource_secondary_exploratory_disclosed`: `pass`
 - `resource_values_traced`: `pass`
 - `review_resolution_present`: `pass`
+- `reviewer_analysis_valid`: `pass`
+- `reviewer_figure_manifest_valid`: `pass`
+- `reviewer_findings_traced`: `pass`
 - `standalone_references_complete`: `pass`
 - `static_fidelity_limit_disclosed`: `pass`
 - `within_qwen_limit_disclosed`: `pass`
@@ -61,6 +64,7 @@
 | `bibliography` | `reports/week9_bibliography.md` | `8df96032877631c51d213a3528570c1acafabef016112296bb97c3837ead32bd` |
 | `final_architecture` | `docs/final_pipeline_architecture.md` | `89766f1641ef261a33aa7456e2a2b6b9690996adebceccc0508e54bf48497657` |
 | `manuscript` | `reports/multiuav_validation_placement_manuscript_v1.md` | `dbddbc8623fa05c8c6bba828b4031b4459c7ceb9a4a18a96b33fdf11be7cc281` |
+| `publication_tex` | `paper/main.tex` | `ff231afa1bd081239300e3f536e5ff1057e1fbdda1c6d7ce17852259a1f949d3` |
 | `resource_admission` | `datasets/multiuav_plat/resource_campaign_admission_v1.json` | `577cd104de3f1c502477246e612979b92deb11bb7fb73abc5ea7dab7105a1ebd` |
 | `resource_analysis_deviation` | `datasets/multiuav_plat/resource_analysis_protocol_deviation_v1.json` | `caa3a04089cfbe3a346f56e65e76b66c9540ff50b33d919c79fba998dddd12f2` |
 | `resource_analysis_freeze` | `datasets/multiuav_plat/resource_analysis_freeze_v1.json` | `af6c157aabd251d10766d12fa36474688ae92369ceafa5f3346ac0dcf3752843` |
@@ -73,6 +77,9 @@
 | `resource_primary_figure` | `reports/figures/multiuav_resource_m3_minus_m1_v1.png` | `e2580451451b2dc3f331c08fd988419968597f871fb4380041e51ca26e7aaaf0` |
 | `resource_reporting_manifest` | `outputs/evaluations/multiuav_resource_reporting_v1/manifest.json` | `066a9e8ef322a390017ddc71e6a5d7a0d3cc5b1c596c0b5a46a06cbd3a91864e` |
 | `review_resolution` | `docs/multiuav_review_resolution_final.md` | `5598fd9b4968ee84699c4fc1a621cb06fd2289f98d1ff2ea8263e5ce76a9a386` |
+| `reviewer_analysis_summary` | `outputs/evaluations/multiuav_reviewer_analysis_v1/summary.json` | `3724c904afb7548a9a23b4025b270cf2598cca2930f5c0e767987fac1c7f167b` |
+| `reviewer_figure_manifest` | `paper/figures/accuracy_refusal_aware_outcomes_v2_manifest.json` | `ab93a00962b62bc02fc36bf4eade579be050ec171b27a4dfee1661737c8cb1b9` |
+| `reviewer_revision_ledger` | `docs/corl_reviewer_revision_ledger.md` | `b5b2dc9f3c992e3ba573a09c82c39fe4b5e758fec97637c3303adacbf819a8b9` |
 
 ## Remaining Gates
 

@@ -1,0 +1,369 @@
+{
+  "always_block_reference": [
+    {
+      "analysis_status": "reviewer_requested_post_hoc_deterministic_reference",
+      "cases": 1420,
+      "containment_rate": 1.0,
+      "executable_cases": 852,
+      "false_nonexecution_execute": 852,
+      "false_nonexecution_rate_execute": 1.0,
+      "model_calls": 0,
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "nonexecution_cases": 568,
+      "reference_id": "always_block_post_hoc",
+      "registered_block_cases": 284,
+      "registered_clarify_cases": 284,
+      "static_plan_fidelity_execute": 0,
+      "static_plan_fidelity_rate_execute": 0.0,
+      "strict_success_cases": 284,
+      "strict_success_rate": 0.2,
+      "unsupported_continuation_cases": 0,
+      "unsupported_continuation_rate": 0.0
+    },
+    {
+      "analysis_status": "reviewer_requested_post_hoc_deterministic_reference",
+      "cases": 1420,
+      "containment_rate": 1.0,
+      "executable_cases": 852,
+      "false_nonexecution_execute": 852,
+      "false_nonexecution_rate_execute": 1.0,
+      "model_calls": 0,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "nonexecution_cases": 568,
+      "reference_id": "always_block_post_hoc",
+      "registered_block_cases": 284,
+      "registered_clarify_cases": 284,
+      "static_plan_fidelity_execute": 0,
+      "static_plan_fidelity_rate_execute": 0.0,
+      "strict_success_cases": 284,
+      "strict_success_rate": 0.2,
+      "unsupported_continuation_cases": 0,
+      "unsupported_continuation_rate": 0.0
+    }
+  ],
+  "analysis_status": "reviewer_requested_post_hoc_diagnostics_complete",
+  "artifacts": {
+    "always_block_table": {
+      "bytes": 692,
+      "path": "outputs/tables/multiuav_accuracy_always_block_reference_v1.csv",
+      "sha256": "559fec44162f2d97912ff149492c464f64123dc9f12fbe559b684b1f47a4dbb1"
+    },
+    "failure_location_rows": {
+      "bytes": 2171439,
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/executable_failure_locations.jsonl",
+      "sha256": "a65c14f866c87a9ee48359544aefd0fa342a28d349a4bb15a61c3abbf1ca487e"
+    },
+    "failure_taxonomy_table": {
+      "bytes": 867,
+      "path": "outputs/tables/multiuav_accuracy_executable_failure_taxonomy_v1.csv",
+      "sha256": "fdcd2f4404a90ab2205a1f4737de77da3836729d5fa2023d959f6cb99833a0c4"
+    },
+    "reference_validator_rows": {
+      "bytes": 85515,
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/reference_plan_validator_rows.jsonl",
+      "sha256": "df9282b87306b8a98c73a65ecf9409a8c11b175b701e86353c139ecfc6750f4b"
+    },
+    "reference_validator_table": {
+      "bytes": 326,
+      "path": "outputs/tables/multiuav_reference_plan_validator_audit_v1.csv",
+      "sha256": "f0ee8ced5b854ba2186dd1014f67f17036a0c72042498e3b4dd10a087c11b4a9"
+    },
+    "session_bootstrap_evidence": {
+      "bytes": 167088,
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/session_bootstrap_evidence.zip",
+      "sha256": "617919bdce7ce738f9f195fed90953ef708feb8bf7f391cb2aee750b584023d8"
+    },
+    "session_sensitivity_table": {
+      "bytes": 2887,
+      "path": "outputs/tables/multiuav_accuracy_session_sensitivity_v1.csv",
+      "sha256": "ff29533afca7407534a748dc2d0ca402c5c756a7536a9b545e146a50dcf63c36"
+    }
+  },
+  "claim_limit": "These diagnostics are post-hoc. The always-BLOCK policy is a deterministic reference, not a registered model baseline; the reference-plan audit tests validator compatibility, not simulator execution or mission success.",
+  "executable_failure_taxonomy": [
+    {
+      "category_counts": {
+        "output_parse_error": 249,
+        "released_command_fidelity_failure": 2,
+        "released_endpoint_fidelity_failure": 599,
+        "released_parameter_fidelity_failure": 2
+      },
+      "executable_cases": 852,
+      "method_id": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct"
+    },
+    {
+      "category_counts": {
+        "output_parse_error": 249,
+        "post_plan_endpoint_schema": 599,
+        "post_plan_parameter_grounding": 2,
+        "post_plan_safety_bounds": 1,
+        "released_command_fidelity_failure": 1
+      },
+      "executable_cases": 852,
+      "method_id": "M2_post_plan_deterministic",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct"
+    },
+    {
+      "category_counts": {
+        "output_parse_error": 308,
+        "pre_plan_containment": 544
+      },
+      "executable_cases": 852,
+      "method_id": "M3_stage_wise",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct"
+    },
+    {
+      "category_counts": {
+        "output_parse_error": 261,
+        "post_plan_endpoint_schema": 585,
+        "post_plan_parameter_grounding": 1,
+        "post_plan_safety_bounds": 1,
+        "released_command_fidelity_failure": 4
+      },
+      "executable_cases": 852,
+      "method_id": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct"
+    },
+    {
+      "category_counts": {
+        "output_parse_error": 267,
+        "released_command_fidelity_failure": 3,
+        "released_endpoint_fidelity_failure": 578,
+        "released_parameter_fidelity_failure": 4
+      },
+      "executable_cases": 852,
+      "method_id": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    {
+      "category_counts": {
+        "output_parse_error": 267,
+        "post_plan_endpoint_schema": 578,
+        "post_plan_parameter_grounding": 4,
+        "post_plan_safety_bounds": 1,
+        "released_command_fidelity_failure": 2
+      },
+      "executable_cases": 852,
+      "method_id": "M2_post_plan_deterministic",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    {
+      "category_counts": {
+        "model_nonexecution": 637,
+        "output_parse_error": 187,
+        "pre_plan_containment": 28
+      },
+      "executable_cases": 852,
+      "method_id": "M3_stage_wise",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct"
+    },
+    {
+      "category_counts": {
+        "model_nonexecution": 14,
+        "output_parse_error": 257,
+        "post_plan_endpoint_schema": 575,
+        "post_plan_parameter_grounding": 3,
+        "post_plan_safety_bounds": 1,
+        "released_command_fidelity_failure": 2
+      },
+      "executable_cases": 852,
+      "method_id": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct"
+    }
+  ],
+  "input_bindings": {
+    "benchmark_archive": {
+      "bytes": 11709646,
+      "path": "external/MultiUAV-Plat/benchmark/benchmark.zip",
+      "pinned_archive_audit": {
+        "member_count": 150,
+        "sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+        "size_bytes": 11709646,
+        "unexpected_members": []
+      },
+      "sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3"
+    },
+    "dataset": {
+      "bytes": 23679676,
+      "path": "datasets/multiuav_plat/intervention_dataset_v1.json",
+      "sha256": "1ba9575ff4a2b0342b2fa20afa242e052f263ff7bd3ed18734a923687a9c27d1"
+    },
+    "protocol": {
+      "bytes": 6461,
+      "path": "datasets/multiuav_plat/accuracy_protocol_freeze_v1.json",
+      "sha256": "063efec5948c1ccd4a2009379a3ae86164042c85cf4cf40a043f01a520c5fc16"
+    },
+    "scoring_summary": {
+      "bytes": 34273,
+      "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/summary.json",
+      "sha256": "9b800a4ab2a06ba7f4a3de2848640f19c8cfe06e58924d9d1a508d5710076b2c"
+    }
+  },
+  "new_model_inference_performed": false,
+  "reference_plan_validator_audit": [
+    {
+      "acceptance_rate": 0.8273092369477911,
+      "containment_stage_counts": "{\"accepted\": 206, \"post_plan_endpoint_schema\": 1, \"post_plan_parameter_grounding\": 3, \"post_plan_safety_bounds\": 39}",
+      "eligible_fully_instantiated": 249,
+      "excluded_unresolved_or_missing": 35,
+      "held_out_source_tasks": 284,
+      "validator_accepted": 206,
+      "validator_rejected": 43
+    }
+  ],
+  "registered_analysis_changed": false,
+  "schema_version": 1,
+  "scored_archive_bindings": [
+    {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_3b_scored_rows.zip",
+      "rows": 5680,
+      "sha256": "44c756afbe476c420f33543495340ed4c82b98fa6979f1c6a25822e0fd2cc0d1"
+    },
+    {
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_7b_scored_rows.zip",
+      "rows": 5680,
+      "sha256": "f25e8df9df6b0c46e1ca0186794fa566d97a80ebf50a6b004b292d7723e4866e"
+    }
+  ],
+  "session_clustered_sensitivity": [
+    {
+      "analysis_id": "Qwen/Qwen2.5-3B-Instruct:primary_contrast:unsupported_continuation_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": -0.8264134990253411,
+        "upper": -0.7544539473684211
+      },
+      "contrast": "primary_contrast",
+      "direction": "lower_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "outcome": "unsupported_continuation_rate",
+      "point_estimate": -0.7898635477582846,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-3B-Instruct:primary_contrast:strict_case_success_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": 0.0,
+        "upper": 0.0
+      },
+      "contrast": "primary_contrast",
+      "direction": "higher_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "outcome": "strict_case_success_rate",
+      "point_estimate": 0.0,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-3B-Instruct:confirmatory_contrast:unsupported_continuation_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": -0.005263157894736842,
+        "upper": 0.0
+      },
+      "contrast": "confirmatory_contrast",
+      "direction": "lower_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "outcome": "unsupported_continuation_rate",
+      "point_estimate": -0.0017543859649122805,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-3B-Instruct:confirmatory_contrast:strict_case_success_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": 0.0,
+        "upper": 0.0
+      },
+      "contrast": "confirmatory_contrast",
+      "direction": "higher_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "outcome": "strict_case_success_rate",
+      "point_estimate": 0.0,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-7B-Instruct:primary_contrast:unsupported_continuation_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": -0.7220107212475634,
+        "upper": -0.6372704678362573
+      },
+      "contrast": "primary_contrast",
+      "direction": "lower_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "outcome": "unsupported_continuation_rate",
+      "point_estimate": -0.6828849902534113,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-7B-Instruct:primary_contrast:strict_case_success_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": 0.15129044834307992,
+        "upper": 0.1687877192982456
+      },
+      "contrast": "primary_contrast",
+      "direction": "higher_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M1_monolithic",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "outcome": "strict_case_success_rate",
+      "point_estimate": 0.16048343079922028,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-7B-Instruct:confirmatory_contrast:unsupported_continuation_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": -0.04763157894736843,
+        "upper": -0.008596491228070177
+      },
+      "contrast": "confirmatory_contrast",
+      "direction": "lower_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "outcome": "unsupported_continuation_rate",
+      "point_estimate": -0.02587719298245614,
+      "sessions": 15
+    },
+    {
+      "analysis_id": "Qwen/Qwen2.5-7B-Instruct:confirmatory_contrast:strict_case_success_rate:session_sensitivity",
+      "analysis_status": "reviewer_requested_post_hoc_sensitivity",
+      "confidence_interval": {
+        "level": 0.95,
+        "lower": 0.14097797270955165,
+        "upper": 0.16150116959064328
+      },
+      "contrast": "confirmatory_contrast",
+      "direction": "higher_is_better",
+      "method_a": "M3_stage_wise",
+      "method_b": "M4_post_plan_compute_matched",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "outcome": "strict_case_success_rate",
+      "point_estimate": 0.15216764132553606,
+      "sessions": 15
+    }
+  ]
+}

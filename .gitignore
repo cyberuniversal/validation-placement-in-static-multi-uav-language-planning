@@ -43,3 +43,6 @@ paper/neurips_2026_anonymous/*.aux
 paper/neurips_2026_anonymous/*.log
 paper/neurips_2026_anonymous/*.out
 paper/neurips_2026_anonymous/main.pdf
+paper/*.aux
+paper/*.log
+paper/*.out

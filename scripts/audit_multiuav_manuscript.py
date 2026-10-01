@@ -22,6 +22,7 @@ def main() -> None:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--manuscript", type=Path, default=None)
     parser.add_argument("--resource-manifest", type=Path, default=None)
+    parser.add_argument("--reviewer-summary", type=Path, default=None)
     parser.add_argument(
         "--output-json",
         type=Path,
@@ -43,6 +44,7 @@ def main() -> None:
         args.root,
         manuscript_path=args.manuscript,
         resource_manifest_path=args.resource_manifest,
+        reviewer_summary_path=args.reviewer_summary,
     )
     audit["source_code_sha256"]["audit_multiuav_manuscript.py"] = _sha256_file(
         Path(__file__)

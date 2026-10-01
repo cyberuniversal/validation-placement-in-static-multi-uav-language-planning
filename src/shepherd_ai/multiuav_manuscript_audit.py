@@ -18,6 +18,7 @@ def audit_multiuav_manuscript(
     *,
     manuscript_path: Path | None = None,
     resource_manifest_path: Path | None = None,
+    reviewer_summary_path: Path | None = None,
 ) -> dict[str, Any]:
     """Audit aggregate evidence and manuscript claims without raw-row access."""
 
@@ -33,6 +34,14 @@ def audit_multiuav_manuscript(
         / "evaluations"
         / "multiuav_resource_reporting_v1"
         / "manifest.json"
+    ).resolve()
+    reviewer_summary_path = (
+        reviewer_summary_path
+        or root
+        / "outputs"
+        / "evaluations"
+        / "multiuav_reviewer_analysis_v1"
+        / "summary.json"
     ).resolve()
     paths = {
         "accuracy_admission": root
@@ -53,6 +62,11 @@ def audit_multiuav_manuscript(
         / "outputs/evaluations/multiuav_accuracy_failure_analysis_v1.json",
         "accuracy_failure_cases": root
         / "outputs/evaluations/multiuav_accuracy_failure_cases_v1.zip",
+        "reviewer_analysis_summary": reviewer_summary_path,
+        "reviewer_figure_manifest": root
+        / "paper/figures/accuracy_refusal_aware_outcomes_v2_manifest.json",
+        "reviewer_revision_ledger": root / "docs/corl_reviewer_revision_ledger.md",
+        "publication_tex": root / "paper/main.tex",
         "resource_admission": root
         / "datasets/multiuav_plat/resource_campaign_admission_v1.json",
         "resource_analysis_freeze": root
@@ -98,10 +112,13 @@ def audit_multiuav_manuscript(
     accuracy_scoring = _read_object(paths["accuracy_scoring_summary"])
     accuracy_bootstrap = _read_object(paths["accuracy_bootstrap_summary"])
     accuracy_figures = _read_object(paths["accuracy_figure_manifest"])
+    reviewer_analysis = _read_object(paths["reviewer_analysis_summary"])
+    reviewer_figure = _read_object(paths["reviewer_figure_manifest"])
     resource_admission = _read_object(paths["resource_admission"])
     resource_summary = _read_object(paths["resource_analysis_summary"])
     resource_manifest = _read_object(paths["resource_reporting_manifest"])
     manuscript = paths["manuscript"].read_text(encoding="utf-8-sig")
+    publication_tex = paths["publication_tex"].read_text(encoding="utf-8-sig")
     bibliography = paths["bibliography"].read_text(encoding="utf-8-sig")
     abstract_words = _abstract_word_count(manuscript)
     citation_ids = _body_citation_ids(manuscript)
@@ -138,6 +155,24 @@ def audit_multiuav_manuscript(
                 accuracy_figures,
                 root=root,
                 status="accuracy_publication_figures_complete",
+            ),
+            "reviewer_analysis_valid": _reviewer_analysis_valid(
+                reviewer_analysis
+            ),
+            "reviewer_figure_manifest_valid": _manifest_valid(
+                reviewer_figure,
+                root=root,
+                status="reviewer_revised_figure_complete",
+            ),
+            "reviewer_findings_traced": all(
+                value in publication_tex
+                for value in (
+                    "always-\\textsc{Block}",
+                    "43/249",
+                    "17.3\\%",
+                    "session-clustered sensitivity",
+                    "accuracy_refusal_aware_outcomes_v2.pdf",
+                )
             ),
             "resource_admission_valid": (
                 resource_admission.get("valid") is True
@@ -242,6 +277,43 @@ def audit_multiuav_manuscript(
         "embedded_figure_count": len(embedded_figures),
     }
     return result
+
+
+def _reviewer_analysis_valid(summary: Mapping[str, Any]) -> bool:
+    if (
+        summary.get("analysis_status")
+        != "reviewer_requested_post_hoc_diagnostics_complete"
+        or summary.get("registered_analysis_changed") is not False
+        or summary.get("new_model_inference_performed") is not False
+    ):
+        return False
+    references = summary.get("always_block_reference")
+    audits = summary.get("reference_plan_validator_audit")
+    sessions = summary.get("session_clustered_sensitivity")
+    if not isinstance(references, list) or len(references) != 2:
+        return False
+    if not all(
+        item.get("cases") == 1_420
+        and item.get("strict_success_cases") == 284
+        and item.get("strict_success_rate") == 0.2
+        and item.get("unsupported_continuation_cases") == 0
+        and item.get("false_nonexecution_execute") == 852
+        for item in references
+    ):
+        return False
+    if not isinstance(audits, list) or len(audits) != 1:
+        return False
+    audit = audits[0]
+    if not (
+        audit.get("held_out_source_tasks") == 284
+        and audit.get("eligible_fully_instantiated") == 249
+        and audit.get("validator_accepted") == 206
+        and audit.get("validator_rejected") == 43
+    ):
+        return False
+    return isinstance(sessions, list) and len(sessions) == 8 and all(
+        item.get("sessions") == 15 for item in sessions
+    )
 
 
 def render_manuscript_audit(audit: Mapping[str, Any]) -> str:

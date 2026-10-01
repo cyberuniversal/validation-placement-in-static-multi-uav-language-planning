@@ -1,0 +1,29 @@
+{
+  "claim_limit": "Always BLOCK is a post-hoc deterministic reference and not a registered model baseline. Both plotted outcomes are positively oriented.",
+  "outputs": [
+    {
+      "bytes": 114723,
+      "path": "paper/figures/accuracy_refusal_aware_outcomes_v2.png",
+      "sha256": "2c5a248be97a0a17067bce69d0ad9e6f323933c7c57723a99d736a118b452745"
+    },
+    {
+      "bytes": 21836,
+      "path": "paper/figures/accuracy_refusal_aware_outcomes_v2.pdf",
+      "sha256": "4b883943cc6270062ca34055b16c91eaab1b8b12dfeb40f271488f32d31c7647"
+    }
+  ],
+  "schema_version": 1,
+  "source_files": [
+    {
+      "bytes": 34273,
+      "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/summary.json",
+      "sha256": "9b800a4ab2a06ba7f4a3de2848640f19c8cfe06e58924d9d1a508d5710076b2c"
+    },
+    {
+      "bytes": 13936,
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/summary.json",
+      "sha256": "f68e05f1ebef86330b00f18141b150c9260be6ea62a74cb7d90651c8fa759dcb"
+    }
+  ],
+  "status": "reviewer_revised_figure_complete"
+}

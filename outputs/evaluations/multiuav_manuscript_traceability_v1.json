@@ -84,6 +84,12 @@
       "path": "reports/multiuav_validation_placement_manuscript_v1.md",
       "sha256": "dbddbc8623fa05c8c6bba828b4031b4459c7ceb9a4a18a96b33fdf11be7cc281"
     },
+    "publication_tex": {
+      "bytes": 37269,
+      "hash_basis": "raw_bytes",
+      "path": "paper/main.tex",
+      "sha256": "ff231afa1bd081239300e3f536e5ff1057e1fbdda1c6d7ce17852259a1f949d3"
+    },
     "resource_admission": {
       "bytes": 23582,
       "hash_basis": "utf8_lf_normalized",
@@ -155,6 +161,24 @@
       "hash_basis": "utf8_lf_normalized",
       "path": "docs/multiuav_review_resolution_final.md",
       "sha256": "5598fd9b4968ee84699c4fc1a621cb06fd2289f98d1ff2ea8263e5ce76a9a386"
+    },
+    "reviewer_analysis_summary": {
+      "bytes": 13567,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/summary.json",
+      "sha256": "3724c904afb7548a9a23b4025b270cf2598cca2930f5c0e767987fac1c7f167b"
+    },
+    "reviewer_figure_manifest": {
+      "bytes": 1044,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "paper/figures/accuracy_refusal_aware_outcomes_v2_manifest.json",
+      "sha256": "ab93a00962b62bc02fc36bf4eade579be050ec171b27a4dfee1661737c8cb1b9"
+    },
+    "reviewer_revision_ledger": {
+      "bytes": 4059,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "docs/corl_reviewer_revision_ledger.md",
+      "sha256": "b5b2dc9f3c992e3ba573a09c82c39fe4b5e758fec97637c3303adacbf819a8b9"
     }
   },
   "audit_version": "multiuav_manuscript_traceability_v1",
@@ -182,6 +206,9 @@
     "resource_secondary_exploratory_disclosed": true,
     "resource_values_traced": true,
     "review_resolution_present": true,
+    "reviewer_analysis_valid": true,
+    "reviewer_figure_manifest_valid": true,
+    "reviewer_findings_traced": true,
     "standalone_references_complete": true,
     "static_fidelity_limit_disclosed": true,
     "within_qwen_limit_disclosed": true,
@@ -223,8 +250,8 @@
   ],
   "schema_version": 1,
   "source_code_sha256": {
-    "audit_multiuav_manuscript.py": "8a0f853a7ede52120bb5d320ca97ca884bd6e2aafdb00dfd59936baa2465bd61",
-    "multiuav_manuscript_audit.py": "808b3eec5119fc8637a3db9d657e54985df980d60e67fb860a482b125ba7be53"
+    "audit_multiuav_manuscript.py": "39e20a8cd83be51b5849c29c0b8c42c0d406120424f41839b96948a64b5a4fa3",
+    "multiuav_manuscript_audit.py": "775883ef8ce90d411dd88394747bf90cf2f1943bd4f26701a95c38df936d9b67"
   },
   "status": "manuscript_internal_traceability_passed_final_package_pending",
   "valid": true

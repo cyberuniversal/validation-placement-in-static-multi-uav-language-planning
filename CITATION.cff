@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software or its artifacts, please cite the paper below."
-title: "Validation Placement in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study"
+title: "Validation Pipeline Configurations in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study"
 type: software
 version: 1.0.0
 date-released: 2026-08-21
@@ -13,7 +13,7 @@ repository-code: "https://github.com/cyberuniversal/validation-placement-in-stat
 license: NOASSERTION
 preferred-citation:
   type: conference-paper
-  title: "Validation Placement in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study"
+  title: "Validation Pipeline Configurations in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study"
   authors:
     - family-names: Alnuwaiser
       given-names: Mohammed

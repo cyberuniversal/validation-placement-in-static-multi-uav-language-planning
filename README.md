@@ -1,6 +1,6 @@
-# Validation Placement in Static Multi-UAV Language Planning
+# Validation Pipeline Configurations in Static Multi-UAV Language Planning
 
-Reproducibility repository for the paper **"Validation Placement in Static
+Reproducibility repository for the paper **"Validation Pipeline Configurations in Static
 Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study."**
 
 The study tests whether moving validation before, during, or after language-model
@@ -9,15 +9,19 @@ cost. It uses 284 held-out MultiUAV-Plat source-task clusters, five paired
 evidence conditions, four planner configurations (M1-M4), and immutable
 Qwen2.5-3B-Instruct and Qwen2.5-7B-Instruct revisions.
 
-![Primary accuracy outcomes](paper/figures/accuracy_primary_outcomes_corrected_600dpi.png)
+![Refusal-aware primary outcomes](paper/figures/accuracy_refusal_aware_outcomes_v2.png)
 
 ## Main Result
 
 Stage-wise validation (M3) contained every registered non-executable case for
-both model sizes. With Qwen2.5-7B, it also reached 16.1% strict static plan
-fidelity on executable cases. The 3B model reached zero static plan fidelity for
-all methods. These are static benchmark results, not simulator execution,
-physical flight, or a general safety guarantee.
+both model sizes, but it falsely refused or otherwise failed every executable
+case. With Qwen2.5-7B, M3 reached 16.1% strict success across all cases, entirely
+from correct non-executable outcomes; a post-hoc always-BLOCK reference reached
+20.0%. Every tested model-method combination had zero static plan fidelity on
+852 executable cases. A post-hoc audit also found that the frozen validator
+rejected 43 of 249 fully instantiated upstream reference plans. These are
+static benchmark diagnostics, not simulator execution, physical flight, or a
+general safety guarantee.
 
 M4 is **model-call-count-matched** to M3. It is not matched for latency, tokens,
 memory, or energy.
@@ -60,6 +64,8 @@ weights described in `docs/multiuav_model_revisions.md`.
 ```powershell
 python -m pytest -q
 python -m ruff check src scripts tests paper/build_resource_figure.py
+python scripts/analyze_multiuav_reviewer_feedback.py
+python scripts/build_multiuav_reviewer_figure.py
 ```
 
 Exact reconstruction, inference, admission, analysis, and manuscript commands
@@ -88,7 +94,7 @@ Use [`CITATION.cff`](CITATION.cff), or cite the paper as:
 ```bibtex
 @inproceedings{alnuwaiser2026validation,
   author = {Mohammed Alnuwaiser and Aishwarya Tomar},
-  title = {Validation Placement in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study},
+  title = {Validation Pipeline Configurations in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study},
   year = {2026},
   note = {Submitted manuscript}
 }

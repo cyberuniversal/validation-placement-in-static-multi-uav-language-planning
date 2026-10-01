@@ -46,9 +46,15 @@ the Linux clone checked out the reviewed pilot dataset and review CSV with LF,
 while their registered SHA-256 values bind CRLF bytes. There are zero raw
 generation rows from this attempt. Its job YAML, pod YAML, and log are preserved
 under `outputs/evaluations/multiuav_train_pilot_v2/failed_attempt_1/`.
-The follow-up `.gitattributes` entries require CRLF for exactly those two
-review-bound files on both operating systems. A retry must use a new job name
-and immutable code commit; attempt 1 is not overwritten.
+Attempt 2 (`validation-placement-train-pilot-3b-v2-a2`) also failed before
+model load because its persistent Git clone had retained the LF checkout from
+attempt 1; changing `.gitattributes` did not rewrite those existing files.
+Its job YAML, pod YAML, and log are preserved separately under
+`failed_attempt_2/`. The runner now canonicalizes line endings only for the
+two review-bound text files before comparing them with their registered CRLF
+hashes. It rejects lone CR bytes and records both registered and checkout
+hashes in the run configuration. This does not alter the review data or its
+registered hashes. Any retry must use a new job name and immutable code commit.
 
 An actual run additionally requires `--cache-audit` pointing to the verified
 pinned 3B snapshot audit on the same host. It must run with GPU access and the

@@ -45,15 +45,25 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _registered_crlf_sha256(path: Path) -> str:
+    """Hash review-bound text using the CRLF bytes registered by validation."""
+
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    if b"\r" in lf:
+        raise ValueError(f"unsupported line endings in review-bound file: {path}")
+    return hashlib.sha256(lf.replace(b"\n", b"\r\n")).hexdigest()
+
+
 def select_cases() -> list[dict[str, Any]]:
     """Select one reviewed canonical case per training scenario/difficulty."""
 
     validation = json.loads(REVIEW_VALIDATION.read_text(encoding="utf-8"))
     if validation.get("valid") is not True:
         raise ValueError("training pilot review validation is not valid")
-    if _sha256(DATASET) != validation["dataset_sha256"]:
+    if _registered_crlf_sha256(DATASET) != validation["dataset_sha256"]:
         raise ValueError("training pilot dataset hash differs from review validation")
-    if _sha256(REVIEW) != validation["review_packet_sha256"]:
+    if _registered_crlf_sha256(REVIEW) != validation["review_packet_sha256"]:
         raise ValueError("training pilot review packet hash differs from validation")
     with REVIEW.open("r", encoding="utf-8-sig", newline="") as stream:
         approved = {
@@ -136,8 +146,10 @@ def main() -> None:
         "model_revision": MODEL_REVISION,
         "method": "M1_first_call_unmodified",
         "case_ids": [case["case_id"] for case in cases],
-        "dataset_sha256": _sha256(DATASET),
-        "review_sha256": _sha256(REVIEW),
+        "dataset_sha256": _registered_crlf_sha256(DATASET),
+        "dataset_checkout_sha256": _sha256(DATASET),
+        "review_sha256": _registered_crlf_sha256(REVIEW),
+        "review_checkout_sha256": _sha256(REVIEW),
         "prompt_source_sha256": _sha256(
             ROOT / "src/shepherd_ai/multiuav_prompts.py"
         ),

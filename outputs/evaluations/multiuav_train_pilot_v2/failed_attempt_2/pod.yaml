@@ -1,0 +1,235 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 0082acdd7a36221cae71e308ee263b058ce9fec3845e7ffd3aaefca947199c51
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    kubernetes.io/limit-ranger: 'LimitRanger plugin set: ephemeral-storage request
+      for container train-pilot; ephemeral-storage limit for container train-pilot'
+    nrp.ai/username: http://cilogon.org/serverE/users/539948
+  creationTimestamp: "2026-10-01T16:13:47Z"
+  generateName: validation-placement-train-pilot-3b-v2-a2-
+  generation: 1
+  labels:
+    app.kubernetes.io/name: validation-placement
+    batch.kubernetes.io/controller-uid: 027b6bb3-8b3d-410f-95d8-a5b69f965950
+    batch.kubernetes.io/job-name: validation-placement-train-pilot-3b-v2-a2
+    controller-uid: 027b6bb3-8b3d-410f-95d8-a5b69f965950
+    job-name: validation-placement-train-pilot-3b-v2-a2
+    validation-placement/stage: train-pilot-3b-v2-a2
+  name: validation-placement-train-pilot-3b-v2-a2-lvmrj
+  namespace: aiea-interns
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: validation-placement-train-pilot-3b-v2-a2
+    uid: 027b6bb3-8b3d-410f-95d8-a5b69f965950
+  resourceVersion: "14997753898"
+  uid: 51e5030f-c079-4220-8628-ce944736ce1c
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+        weight: 100
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+            - NVIDIA-GeForce-RTX-4090
+            - NVIDIA-RTX-A5000
+            - NVIDIA-A10
+            - NVIDIA-L4
+            - Tesla-T4
+  containers:
+  - args:
+    - |
+      set -euo pipefail
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      repo=/workspace/repo-validation-placement-993d7c2
+      if [[ ! -d "${repo}/.git" ]]; then
+        git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+      fi
+      git -C "${repo}" fetch origin codex/executable-fidelity-v2
+      git -C "${repo}" checkout --detach 993d7c2a01e9ea38d9dd3332b43bb99d3f5707ee
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      mkdir -p /workspace/results/train-pilot-v2/3b
+      python "${repo}/scripts/run_multiuav_train_pilot_v2.py" \
+        --results /workspace/results/train-pilot-v2/3b/raw_results.jsonl \
+        --summary /workspace/results/train-pilot-v2/3b/run_summary.json \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json
+    command:
+    - /bin/bash
+    - -lc
+    env:
+    - name: HF_HOME
+      value: /workspace/hf-cache
+    - name: HF_HUB_OFFLINE
+      value: "1"
+    - name: TRANSFORMERS_OFFLINE
+      value: "1"
+    image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imagePullPolicy: IfNotPresent
+    name: train-pilot
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-s8rnw
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: hcc-nrp-shor-c5917.unl.edu
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 120
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: PreferNoSchedule
+    key: nvidia.com/gpu
+    operator: Exists
+  volumes:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: shepherd-ai-539948
+  - name: kube-api-access-s8rnw
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-01T16:24:51Z"
+    observedGeneration: 1
+    status: "False"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-01T16:16:07Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-01T16:24:47Z"
+    observedGeneration: 1
+    reason: PodFailed
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-01T16:24:47Z"
+    observedGeneration: 1
+    reason: PodFailed
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-01T16:16:07Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - allocatedResources:
+      cpu: "2"
+      ephemeral-storage: "0"
+      memory: 16Gi
+      nvidia.com/gpu: "1"
+    containerID: containerd://fbbc8d21624bc27d39fdcd7b6247e16b32b43ede041161e58e29281f2af0a6df
+    image: docker.io/pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imageID: docker.io/pytorch/pytorch@sha256:8d409f72f99e5968b5c4c9396a21f4b723982cfdf2c1a5b9cc045c5d0a7345a1
+    lastState: {}
+    name: train-pilot
+    ready: false
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: containerd://fbbc8d21624bc27d39fdcd7b6247e16b32b43ede041161e58e29281f2af0a6df
+        exitCode: 1
+        finishedAt: "2026-10-01T16:24:46Z"
+        reason: Error
+        startedAt: "2026-10-01T16:23:55Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        uid: 0
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-s8rnw
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 129.93.153.139
+  hostIPs:
+  - ip: 129.93.153.139
+  observedGeneration: 1
+  phase: Failed
+  podIP: 10.244.76.218
+  podIPs:
+  - ip: 10.244.76.218
+  - ip: fdf0:17b3:c3ec:1f79:10:0:9:1334
+  qosClass: Guaranteed
+  startTime: "2026-10-01T16:16:07Z"

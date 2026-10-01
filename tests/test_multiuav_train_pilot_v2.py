@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
 
-from scripts.run_multiuav_train_pilot_v2 import _read_completed, select_cases
+from scripts.run_multiuav_train_pilot_v2 import (
+    _read_completed,
+    _registered_crlf_sha256,
+    select_cases,
+)
 from scripts.analyze_multiuav_train_pilot_v2 import (
     DEFAULT_BENCHMARK,
     _official_commands,
@@ -15,6 +20,17 @@ from scripts.analyze_multiuav_train_pilot_v2 import (
 
 
 class TrainPilotTests(unittest.TestCase):
+    def test_registered_hash_is_independent_of_checkout_line_endings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.csv"
+            expected = hashlib.sha256(b"a,b\r\n1,2\r\n").hexdigest()
+            for content in (b"a,b\n1,2\n", b"a,b\r\n1,2\r\n"):
+                path.write_bytes(content)
+                self.assertEqual(_registered_crlf_sha256(path), expected)
+            path.write_bytes(b"a,b\r1,2\n")
+            with self.assertRaisesRegex(ValueError, "unsupported line endings"):
+                _registered_crlf_sha256(path)
+
     def test_selected_cases_are_reviewed_training_canonicals(self) -> None:
         cases = select_cases()
         self.assertEqual(len(cases), 15)

@@ -11,6 +11,7 @@ from scripts.run_multiuav_train_model_loop_v2 import (
     resolve_model_action,
 )
 from shepherd_ai.multiuav_runner import GenerationResult
+from scripts.probe_multiuav_train_closed_loop_v2 import run_case
 
 
 DRONE = {
@@ -37,6 +38,54 @@ class FakeBackend:
     def generate(self, request: object) -> GenerationResult:
         self.calls += 1
         return GenerationResult(raw_output=self.raw)
+
+
+class SequenceBackend:
+    def __init__(self, outputs: list[str]) -> None:
+        self.outputs = outputs
+        self.calls = 0
+
+    def generate(self, request: object) -> GenerationResult:
+        raw = self.outputs[self.calls]
+        self.calls += 1
+        return GenerationResult(raw_output=raw)
+
+
+class FakeResponse:
+    def __init__(self, status_code: int, body: object) -> None:
+        self.status_code = status_code
+        self.body = body
+
+    def json(self) -> object:
+        return self.body
+
+
+class FakeClient:
+    def __init__(self) -> None:
+        self.drone = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+
+    def get(self, path: str, *, headers: dict[str, str]) -> FakeResponse:
+        if path == "/sessions/current/data":
+            return FakeResponse(403, {})
+        if path == "/drones":
+            return FakeResponse(200, [self.drone])
+        if path.endswith("/nearby/targets"):
+            return FakeResponse(200, [])
+        if path == "/sessions/current/task-progress":
+            return FakeResponse(200, {"progress_percentage": 0})
+        if path == "/sessions/current/tasks/task-1/check":
+            return FakeResponse(200, {"result": False})
+        raise AssertionError(f"unexpected GET {path}")
+
+    def post(self, path: str, *, params: dict[str, float], headers: dict[str, str]) -> FakeResponse:
+        if path.endswith("/take_off"):
+            self.drone["position"]["z"] = params["altitude"]
+        elif path.endswith("/move_to"):
+            self.drone["position"]["x"] = params["x"]
+            self.drone["position"]["y"] = params["y"]
+        else:
+            raise AssertionError(f"unexpected POST {path}")
+        return FakeResponse(200, {"status": "success"})
 
 
 class ModelLoopTests(unittest.TestCase):
@@ -98,6 +147,31 @@ class ModelLoopTests(unittest.TestCase):
         self.assertIsNone(action)
         self.assertEqual(selector.trace[0]["resolution"], "invalid_json")
         self.assertEqual(selector.trace[0]["generation"]["raw_output"], "not json")
+
+    def test_fake_model_drives_reobservation_then_stops(self) -> None:
+        backend = SequenceBackend([
+            choice("TAKE_OFF"),
+            choice("SEARCH", direction="EAST"),
+            choice("STOP", drone_id=None),
+        ])
+        selector = ModelActionSelector(backend)
+        case = {
+            "source_task_id": "task-1",
+            "context": {
+                "instruction": "Find Fixed Target 1",
+                "session": {"canvas_width": 20, "canvas_height": 20},
+            },
+        }
+        result = run_case(
+            FakeClient(), {"X-API-Key": "agent"}, case,
+            max_commands=3, choose_action=selector,
+        )
+        self.assertEqual([item["action"]["command"] for item in result["commands"]], [
+            "take_off", "move_to",
+        ])
+        self.assertEqual(backend.calls, 3)
+        self.assertEqual(selector.trace[-1]["resolution"], "model_stop")
+        self.assertEqual(result["stop_reason"], "no_bounded_action")
 
 
 if __name__ == "__main__":

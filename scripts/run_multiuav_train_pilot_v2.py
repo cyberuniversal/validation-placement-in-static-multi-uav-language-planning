@@ -55,6 +55,14 @@ def _registered_crlf_sha256(path: Path) -> str:
     return hashlib.sha256(lf.replace(b"\n", b"\r\n")).hexdigest()
 
 
+def _lf_checkout_sha256(path: Path) -> str:
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    if b"\r" in lf:
+        raise ValueError(f"unsupported line endings in review-bound file: {path}")
+    return hashlib.sha256(lf).hexdigest()
+
+
 def select_cases() -> list[dict[str, Any]]:
     """Select one reviewed canonical case per training scenario/difficulty."""
 

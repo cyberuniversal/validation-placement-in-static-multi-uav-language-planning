@@ -22,6 +22,8 @@ from scripts.run_multiuav_train_pilot_v2 import (  # noqa: E402
     DATASET,
     MODEL_ID,
     MODEL_REVISION,
+    REVIEW,
+    _lf_checkout_sha256,
     _registered_crlf_sha256,
     select_cases,
 )
@@ -75,7 +77,13 @@ def main() -> None:
         or config["model_revision"] != MODEL_REVISION
         or set(config["case_ids"]) != set(selected)
         or config["dataset_sha256"] != _registered_crlf_sha256(DATASET)
-        or config["dataset_checkout_sha256"] != _sha256(DATASET)
+        or config["dataset_checkout_sha256"] not in {
+            _sha256(DATASET), _lf_checkout_sha256(DATASET)
+        }
+        or config["review_sha256"] != _registered_crlf_sha256(REVIEW)
+        or config["review_checkout_sha256"] not in {
+            _sha256(REVIEW), _lf_checkout_sha256(REVIEW)
+        }
         or run_summary["raw_results_sha256"] != _sha256(args.results)
     ):
         raise ValueError("raw run does not match selected training pilot")

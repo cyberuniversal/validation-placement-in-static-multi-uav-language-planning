@@ -1,0 +1,18 @@
+{
+  "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+  "case_count": 15,
+  "code_commit": "51ecdaeae3d8fe6b10f1085e92ee926d33e7414a",
+  "counts": {
+    "model_parse_error": 7,
+    "post_plan_endpoint_schema": 3,
+    "post_plan_parameter_grounding": 2,
+    "released_wrong_command_sequence": 3
+  },
+  "derived_rows_sha256": "d28a31fe5ee76d431b9da90048caaa0a56bf4b67730df0c9f7b9f83f4eab973c",
+  "model_id": "Qwen/Qwen2.5-3B-Instruct",
+  "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+  "raw_results_sha256": "f2eddf1ad51629b33449ed4011e183372d0a8c14d3f8550413d4b4c84359b9f6",
+  "run_hash": "4f2638fbecd0b20c950146c66ab7101fb191f47647778f5b3f1490a4b5092b86",
+  "simulator_execution": false,
+  "status": "reviewed_train_pilot_diagnostic_not_paper_evaluation"
+}

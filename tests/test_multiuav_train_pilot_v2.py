@@ -10,6 +10,7 @@ import unittest
 
 from scripts.run_multiuav_train_pilot_v2 import (
     _read_completed,
+    _lf_checkout_sha256,
     _registered_crlf_sha256,
     select_cases,
 )
@@ -27,6 +28,9 @@ class TrainPilotTests(unittest.TestCase):
             for content in (b"a,b\n1,2\n", b"a,b\r\n1,2\r\n"):
                 path.write_bytes(content)
                 self.assertEqual(_registered_crlf_sha256(path), expected)
+                self.assertEqual(
+                    _lf_checkout_sha256(path), hashlib.sha256(b"a,b\n1,2\n").hexdigest()
+                )
             path.write_bytes(b"a,b\r1,2\n")
             with self.assertRaisesRegex(ValueError, "unsupported line endings"):
                 _registered_crlf_sha256(path)

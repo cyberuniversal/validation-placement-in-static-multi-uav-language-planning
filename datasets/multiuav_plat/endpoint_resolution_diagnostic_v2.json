@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "analysis_id": "multiuav_endpoint_resolution_diagnostic_v2",
+  "status": "post_hoc_after_heldout_output_inspection",
+  "frozen_study_changed": false,
+  "new_model_inference": false,
+  "method": "M1_monolithic",
+  "models": [
+    {
+      "short_name": "3b",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+      "checkpoint": "datasets/multiuav_plat/nautilus/qwen25_3b_accuracy_complete_v1/checkpoint.zip",
+      "checkpoint_sha256": "5726cea162cd7b104440d069c5cdc107086db5ebcae9d66126dd7ec013665bd5",
+      "scored_rows": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_3b_scored_rows.zip",
+      "scored_rows_sha256": "44c756afbe476c420f33543495340ed4c82b98fa6979f1c6a25822e0fd2cc0d1"
+    },
+    {
+      "short_name": "7b",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "checkpoint": "datasets/multiuav_plat/nautilus/qwen25_7b_accuracy_complete_v1/checkpoint.zip",
+      "checkpoint_sha256": "797ae05ab2c6a4a029657ce739a697b23f65048f6753ac561f1a38a3d45f3072",
+      "scored_rows": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_7b_scored_rows.zip",
+      "scored_rows_sha256": "f25e8df9df6b0c46e1ca0186794fa566d97a80ebf50a6b004b292d7723e4866e"
+    }
+  ],
+  "expected_cases_per_model": 1420,
+  "expected_execute_per_model": 852,
+  "expected_nonexecute_per_model": 568,
+  "interpretation": "Retrospective diagnostic on inspected held-out outputs. It is neither a prospective held-out result nor a change to the registered M1-M4 experiment. Count potential static plan fidelity and unsafe continuation together."
+}

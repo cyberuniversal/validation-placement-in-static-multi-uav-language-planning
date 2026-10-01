@@ -1,0 +1,80 @@
+{
+  "analysis_id": "multiuav_endpoint_resolution_diagnostic_v2",
+  "interpretation": "Retrospective diagnostic on inspected held-out outputs. It is neither a prospective held-out result nor a change to the registered M1-M4 experiment. Count potential static plan fidelity and unsafe continuation together.",
+  "models": [
+    {
+      "after_stage_counts": {
+        "accepted": 560,
+        "parse_error": 368,
+        "post_plan_endpoint_schema": 422,
+        "post_plan_identifier_grounding": 4,
+        "post_plan_parameter_grounding": 32,
+        "post_plan_safety_bounds": 34
+      },
+      "before_stage_counts": {
+        "accepted": 3,
+        "parse_error": 368,
+        "post_plan_endpoint_schema": 1042,
+        "post_plan_identifier_grounding": 4,
+        "post_plan_parameter_grounding": 2,
+        "post_plan_safety_bounds": 1
+      },
+      "counts": {
+        "after_validator_admitted_execute": 309,
+        "after_validator_admitted_nonexecute": 251,
+        "before_validator_admitted_execute": 1,
+        "before_validator_admitted_nonexecute": 2,
+        "execute_cases": 852,
+        "nonexecute_cases": 568,
+        "potential_static_fidelity_execute": 49,
+        "resolved_calls": 2854
+      },
+      "derived_rows": {
+        "path": "outputs/evaluations/multiuav_endpoint_resolution_v2/3b_derived_rows.jsonl",
+        "sha256": "4e09e39b96277d92fe66d02f3a66d2ad485dc4259565b24a9753b0e120aa1abf"
+      },
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1"
+    },
+    {
+      "after_stage_counts": {
+        "accepted": 486,
+        "parse_error": 429,
+        "post_plan_endpoint_schema": 106,
+        "post_plan_identifier_grounding": 3,
+        "post_plan_parameter_grounding": 320,
+        "post_plan_safety_bounds": 76
+      },
+      "before_stage_counts": {
+        "accepted": 33,
+        "parse_error": 429,
+        "post_plan_endpoint_schema": 940,
+        "post_plan_identifier_grounding": 3,
+        "post_plan_parameter_grounding": 9,
+        "post_plan_safety_bounds": 6
+      },
+      "counts": {
+        "after_validator_admitted_execute": 281,
+        "after_validator_admitted_nonexecute": 187,
+        "before_validator_admitted_execute": 2,
+        "before_validator_admitted_nonexecute": 13,
+        "execute_cases": 852,
+        "nonexecute_cases": 568,
+        "potential_static_fidelity_execute": 158,
+        "resolved_calls": 4191
+      },
+      "derived_rows": {
+        "path": "outputs/evaluations/multiuav_endpoint_resolution_v2/7b_derived_rows.jsonl",
+        "sha256": "d4ec91570184cc234135051751eb5c94c9cc89f14e4916f76a6436641944db1a"
+      },
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+    }
+  ],
+  "new_model_inference": false,
+  "protocol_sha256": "82e862ded759734be30835ef1d80d51d7d89271a013fa50cb5ee18096be5be63",
+  "registered_study_changed": false,
+  "resolver_sha256": "c62124ca118d0ac3fffe606ac6b4d78fe9486226bb9dac5508019761d3f43253",
+  "source_sha256": "7be0fc4d88091ee140bb2dd92581e36c6fb0b099ef3acf94bce45bab5abde52d",
+  "status": "post_hoc_after_heldout_output_inspection"
+}

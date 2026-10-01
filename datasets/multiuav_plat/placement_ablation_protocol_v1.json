@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "protocol_id": "multiuav_placement_ablation_v1",
+  "status": "frozen_reviewer_requested_posthoc_addendum",
+  "registered_study_changed": false,
+  "new_model_inference": false,
+  "frozen_before_outcome_computation": true,
+  "purpose": "Isolate deterministic validation enforcement timing on identical retained M3 traces.",
+  "input_scope": {
+    "method": "M3_stage_wise",
+    "models": [
+      {
+        "model_id": "Qwen/Qwen2.5-3B-Instruct",
+        "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+        "checkpoint_sha256": "5726cea162cd7b104440d069c5cdc107086db5ebcae9d66126dd7ec013665bd5",
+        "scored_rows_sha256": "44c756afbe476c420f33543495340ed4c82b98fa6979f1c6a25822e0fd2cc0d1"
+      },
+      {
+        "model_id": "Qwen/Qwen2.5-7B-Instruct",
+        "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+        "checkpoint_sha256": "797ae05ab2c6a4a029657ce739a697b23f65048f6753ac561f1a38a3d45f3072",
+        "scored_rows_sha256": "f25e8df9df6b0c46e1ca0186794fa566d97a80ebf50a6b004b292d7723e4866e"
+      }
+    ],
+    "expected_source_clusters": 284,
+    "expected_variants_per_cluster": 5,
+    "expected_traces_per_model": 1420,
+    "expected_calls_per_trace": 2
+  },
+  "controlled_factors": [
+    "model checkpoint and revision",
+    "agent-visible context",
+    "prompt content",
+    "decoding parameters",
+    "first-call output",
+    "second-call output",
+    "model-call count",
+    "ledger validator rules",
+    "post-plan validator rules",
+    "gold labels"
+  ],
+  "changed_factor": "order in which the retained pre-plan validation result is enforced at the system release boundary",
+  "policies": {
+    "early_preplan_enforcement": "Apply first-call backend and ledger validity before the retained final generation can determine the released system disposition. The second call remains a shadow call for pairing and is not interpreted as operational early-stopping compute.",
+    "deferred_release_enforcement": "Interpret the retained final generation first; if it requests EXECUTE, apply the identical retained ledger result and post-plan validator before release. A model CLARIFY or BLOCK is preserved."
+  },
+  "outcomes": {
+    "primary": [
+      "unsupported_continuation_nonexecute",
+      "false_nonexecution_execute"
+    ],
+    "secondary": [
+      "decision_correct",
+      "strict_case_success",
+      "static_plan_fidelity_execute"
+    ]
+  },
+  "statistics": {
+    "contrast": "early_preplan_enforcement minus deferred_release_enforcement",
+    "resampling_unit": "source_task_cluster",
+    "bootstrap_draws": 10000,
+    "confidence_level": 0.95,
+    "bootstrap_seed": "shepherd-multiuav-placement-ablation-v1"
+  },
+  "interpretation_limits": [
+    "This is a paired trace-replay ablation, not new model inference.",
+    "It identifies the effect of deterministic enforcement order conditional on the retained M3 transcripts.",
+    "It does not estimate latency or energy savings from operational early termination because both retained calls already occurred.",
+    "It does not establish simulator execution success or physical mission success.",
+    "It does not test a second model family."
+  ],
+  "source_baseline_commit": "fac55aef2daab70ca8a0bf8e5ebb4bcfe0d62380"
+}

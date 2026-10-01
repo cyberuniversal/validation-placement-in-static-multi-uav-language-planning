@@ -23,6 +23,13 @@ rejected 43 of 249 fully instantiated upstream reference plans. These are
 static benchmark diagnostics, not simulator execution, physical flight, or a
 general safety guarantee.
 
+A reviewer-requested paired trace replay subsequently held the M3 prompt,
+visible context, both model generations, validators, and model-call count fixed
+while changing only deterministic enforcement order. Early versus deferred
+enforcement had identical unsupported continuation (0/568), false non-execution
+(852/852), and static plan fidelity (0/852) for both checkpoints. This post-hoc
+result does not change the registered study and does not support a compute claim.
+
 M4 is **model-call-count-matched** to M3. It is not matched for latency, tokens,
 memory, or energy.
 
@@ -66,6 +73,7 @@ python -m pytest -q
 python -m ruff check src scripts tests paper/build_resource_figure.py
 python scripts/analyze_multiuav_reviewer_feedback.py
 python scripts/build_multiuav_reviewer_figure.py
+python scripts/analyze_multiuav_placement_ablation.py
 ```
 
 Exact reconstruction, inference, admission, analysis, and manuscript commands

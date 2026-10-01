@@ -68,7 +68,10 @@ contributes to the observed negative result. A separate three-repetition RTX
 confounded by termination behavior and generated-token count. Thus, the tested
 configurations change failure containment, but the experiment does not show
 reliable executable/non-executable discrimination, executable planning, or a
-causal effect of validation placement alone.
+ causal effect of validation placement alone. A reviewer-requested paired replay
+ then held prompts, both generations, validators, and call count fixed while
+ changing only enforcement order. It found no difference in unsupported
+ continuation, false non-execution, or static plan fidelity.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -303,7 +306,12 @@ pass the upstream benchmark's fully instantiated official API plans through
 the frozen static validator using the corresponding canonical visible context.
 Plans with unresolved upstream template fields are excluded rather than
 imputed. This last diagnostic tests validator compatibility only; it is not an
-official-server or simulator execution test.
+ official-server or simulator execution test. Fourth, we replay every retained
+ two-call \Mthree trace under early and deferred deterministic enforcement. The
+ prompt, visible context, both generated outputs, model-call count, ledger
+ validator, post-plan validator, and labels are identical. The second call is a
+ shadow call in the early condition, so this analysis isolates release-policy
+ order but cannot estimate operational early-stop compute.
 
 \subsection{Exploratory Resource Outcomes}
 
@@ -460,6 +468,43 @@ the strict-success difference was $0.1605$ ($[0.1513,0.1688]$). For 7B
 differences remained exactly zero. These intervals are post-hoc sensitivity
 results over 15 sessions, not replacements for the registered source-task
 cluster intervals.
+
+\subsection{Placement-Controlled Trace Replay}
+
+The reviewer-requested replay changed only when the retained pre-plan result was
+enforced. Table~\ref{tab:placement_replay} shows that timing alone changed none
+of the safety or executable-planning outcomes. For both checkpoints, each policy
+had 0/568 unsupported continuations, 852/852 false non-executions, and 0/852
+executable static-plan successes. All early-minus-deferred differences for these
+three outcomes were exactly zero, with degenerate 95\% source-task-cluster
+bootstrap intervals $[0,0]$.
+
+\begin{table}[t]
+\caption{Paired M3 trace replay. Strict success is over 1,420 cases; other
+denominators are shown in the headers.}
+\label{tab:placement_replay}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+Model & Policy & Unsupported $/568$ & False nonexec. $/852$ & Strict $/1420$ \\
+\midrule
+3B & Early & 0 & 852 & 0 \\
+3B & Deferred & 0 & 852 & 0 \\
+7B & Early & 0 & 852 & 0 \\
+7B & Deferred & 0 & 852 & 228 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The 7B strict-success difference was instead attributable to disposition
+reporting. Deferred enforcement preserved 228 correct final-call \textsc{Clarify}
+or \textsc{Block} decisions, whereas strict early enforcement represented a gate
+failure as \textsc{Contained}, as required by the frozen scoring contract. The
+early-minus-deferred strict-success difference was $-0.1606$ (95\% interval
+$[-0.1697,-0.1507]$); for 3B it was exactly zero. Thus, the original nonzero 7B
+\Mthree result did not arise from validation placement alone.
 
 \subsection{Failure and Containment-Stage Analysis}
 
@@ -625,9 +670,11 @@ not resource parity. Prompt length, generated-token count, validation behavior,
 and termination patterns remain consequential. At the same time, these
 differences limit the causal interpretation of ``placement'': \Mthree and
 \Mfour are complete pipeline alternatives, not the same validator moved to a
-different stage. A future isolation study should hold validation rules and
-prompt content fixed while changing only the point at which the rules are
-applied.
+ different stage. The paired trace replay supplies the narrower matched test:
+ when prompt content, generations, rules, and calls were fixed, enforcement
+ timing changed neither unsupported continuation nor executable fidelity. Its
+ scope is conditional on retained \Mthree traces, not a prospective comparison
+ of independently generated matched pipelines.
 
 \subsection{Implications for Multi-UAV Language Interfaces}
 
@@ -661,7 +708,9 @@ causally. The 30-cluster construction pilot is not a substitute for a larger
 stratified human audit of labels, outputs, and validator decisions.
 
 Fourth, the experimental configurations differ in more than validation
-placement. In particular, \Mfour matches \Mthree only on model-call count.
+ placement. In particular, \Mfour matches \Mthree only on model-call count. The
+ post-hoc placement replay removes these observed confounds but is conditional
+ on retained \Mthree transcripts and cannot estimate early-stop compute.
 Fifth, accuracy uncertainty is registered at the source-task level. The
 post-hoc session-clustered sensitivity preserves the principal directions, but
 15 sessions remain a small higher-level sample and do not support a rich
@@ -693,12 +742,12 @@ instantiated upstream reference plans.
 The defensible contribution is therefore a paired containment-and-measurement
 protocol and its negative, mixed empirical result. The study does not show that
 stage-wise validation is universally cheaper, that placement alone caused the
-observed differences, that \Mthree discriminates executable requests better
+ observed configuration differences, that \Mthree discriminates executable requests better
 than indiscriminate refusal, or that the tested system can safely execute
 autonomous multi-UAV missions. A stronger follow-up must first correct and
-re-audit validator agreement, then hold prompts and validation rules fixed
-while varying only placement, and finally evaluate executable planning in an
-official environment.
+ re-audit validator agreement, prospectively test matched pipelines across
+ additional model families, and finally evaluate executable planning in an
+ official environment.
 
 \section*{Generative AI Use Declaration}
 

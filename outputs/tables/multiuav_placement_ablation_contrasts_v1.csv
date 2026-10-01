@@ -1,0 +1,11 @@
+model_id,metric,contrast,point_estimate,ci_lower,ci_upper,cluster_count,bootstrap_draws
+Qwen/Qwen2.5-3B-Instruct,unsupported_continuation_nonexecute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-3B-Instruct,false_nonexecution_execute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-3B-Instruct,decision_correct,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-3B-Instruct,strict_case_success,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-3B-Instruct,static_plan_fidelity_execute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-7B-Instruct,unsupported_continuation_nonexecute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-7B-Instruct,false_nonexecution_execute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000
+Qwen/Qwen2.5-7B-Instruct,decision_correct,early_preplan_enforcement_minus_deferred_release_enforcement,-0.16056338028169015,-0.16971830985915495,-0.1507042253521127,284,10000
+Qwen/Qwen2.5-7B-Instruct,strict_case_success,early_preplan_enforcement_minus_deferred_release_enforcement,-0.16056338028169015,-0.16971830985915495,-0.1507042253521127,284,10000
+Qwen/Qwen2.5-7B-Instruct,static_plan_fidelity_execute,early_preplan_enforcement_minus_deferred_release_enforcement,0.0,0.0,0.0,284,10000

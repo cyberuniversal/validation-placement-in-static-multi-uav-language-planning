@@ -22,6 +22,8 @@
 - `legacy_components_excluded`: `pass`
 - `negative_result_disclosed`: `pass`
 - `no_unresolved_manuscript_placeholders`: `pass`
+- `placement_ablation_valid`: `pass`
+- `placement_findings_traced`: `pass`
 - `required_literature_resolves`: `pass`
 - `resource_admission_valid`: `pass`
 - `resource_analysis_valid`: `pass`
@@ -64,7 +66,9 @@
 | `bibliography` | `reports/week9_bibliography.md` | `8df96032877631c51d213a3528570c1acafabef016112296bb97c3837ead32bd` |
 | `final_architecture` | `docs/final_pipeline_architecture.md` | `89766f1641ef261a33aa7456e2a2b6b9690996adebceccc0508e54bf48497657` |
 | `manuscript` | `reports/multiuav_validation_placement_manuscript_v1.md` | `dbddbc8623fa05c8c6bba828b4031b4459c7ceb9a4a18a96b33fdf11be7cc281` |
-| `publication_tex` | `paper/main.tex` | `ff231afa1bd081239300e3f536e5ff1057e1fbdda1c6d7ce17852259a1f949d3` |
+| `placement_ablation_protocol` | `datasets/multiuav_plat/placement_ablation_protocol_v1.json` | `1bfd46d8bdb348f033b4e837b6a2d35ae11b43ff168437297d3ad71c36ef049b` |
+| `placement_ablation_summary` | `outputs/evaluations/multiuav_placement_ablation_v1/summary.json` | `d9bb681cd22a9fa7c47111eebb4593b7fd3f7cda59f44da7ea92883ea37d0acc` |
+| `publication_tex` | `paper/main.tex` | `ed759a91c62ee884085a8ce5e2347e83edc65ce5c33d8c5f12f51d6338c384ee` |
 | `resource_admission` | `datasets/multiuav_plat/resource_campaign_admission_v1.json` | `577cd104de3f1c502477246e612979b92deb11bb7fb73abc5ea7dab7105a1ebd` |
 | `resource_analysis_deviation` | `datasets/multiuav_plat/resource_analysis_protocol_deviation_v1.json` | `caa3a04089cfbe3a346f56e65e76b66c9540ff50b33d919c79fba998dddd12f2` |
 | `resource_analysis_freeze` | `datasets/multiuav_plat/resource_analysis_freeze_v1.json` | `af6c157aabd251d10766d12fa36474688ae92369ceafa5f3346ac0dcf3752843` |

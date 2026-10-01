@@ -19,6 +19,7 @@ def audit_multiuav_manuscript(
     manuscript_path: Path | None = None,
     resource_manifest_path: Path | None = None,
     reviewer_summary_path: Path | None = None,
+    placement_summary_path: Path | None = None,
 ) -> dict[str, Any]:
     """Audit aggregate evidence and manuscript claims without raw-row access."""
 
@@ -43,6 +44,14 @@ def audit_multiuav_manuscript(
         / "multiuav_reviewer_analysis_v1"
         / "summary.json"
     ).resolve()
+    placement_summary_path = (
+        placement_summary_path
+        or root
+        / "outputs"
+        / "evaluations"
+        / "multiuav_placement_ablation_v1"
+        / "summary.json"
+    ).resolve()
     paths = {
         "accuracy_admission": root
         / "datasets/multiuav_plat/accuracy_matrix_admission_v1.json",
@@ -63,6 +72,9 @@ def audit_multiuav_manuscript(
         "accuracy_failure_cases": root
         / "outputs/evaluations/multiuav_accuracy_failure_cases_v1.zip",
         "reviewer_analysis_summary": reviewer_summary_path,
+        "placement_ablation_summary": placement_summary_path,
+        "placement_ablation_protocol": root
+        / "datasets/multiuav_plat/placement_ablation_protocol_v1.json",
         "reviewer_figure_manifest": root
         / "paper/figures/accuracy_refusal_aware_outcomes_v2_manifest.json",
         "reviewer_revision_ledger": root / "docs/corl_reviewer_revision_ledger.md",
@@ -113,6 +125,7 @@ def audit_multiuav_manuscript(
     accuracy_bootstrap = _read_object(paths["accuracy_bootstrap_summary"])
     accuracy_figures = _read_object(paths["accuracy_figure_manifest"])
     reviewer_analysis = _read_object(paths["reviewer_analysis_summary"])
+    placement_analysis = _read_object(paths["placement_ablation_summary"])
     reviewer_figure = _read_object(paths["reviewer_figure_manifest"])
     resource_admission = _read_object(paths["resource_admission"])
     resource_summary = _read_object(paths["resource_analysis_summary"])
@@ -159,6 +172,9 @@ def audit_multiuav_manuscript(
             "reviewer_analysis_valid": _reviewer_analysis_valid(
                 reviewer_analysis
             ),
+            "placement_ablation_valid": _placement_ablation_valid(
+                placement_analysis
+            ),
             "reviewer_figure_manifest_valid": _manifest_valid(
                 reviewer_figure,
                 root=root,
@@ -172,6 +188,18 @@ def audit_multiuav_manuscript(
                     "17.3\\%",
                     "session-clustered sensitivity",
                     "accuracy_refusal_aware_outcomes_v2.pdf",
+                )
+            ),
+            "placement_findings_traced": all(
+                value in publication_tex
+                for value in (
+                    "Placement-Controlled Trace Replay",
+                    "0/568 unsupported continuations",
+                    "852/852 false non-executions",
+                    "0/852",
+                    "executable static-plan successes",
+                    "-0.1606",
+                    "[-0.1697,-0.1507]",
                 )
             ),
             "resource_admission_valid": (
@@ -314,6 +342,53 @@ def _reviewer_analysis_valid(summary: Mapping[str, Any]) -> bool:
     return isinstance(sessions, list) and len(sessions) == 8 and all(
         item.get("sessions") == 15 for item in sessions
     )
+
+
+def _placement_ablation_valid(summary: Mapping[str, Any]) -> bool:
+    if (
+        summary.get("status")
+        != "reviewer_requested_placement_ablation_complete"
+        or summary.get("registered_study_changed") is not False
+        or summary.get("new_model_inference_performed") is not False
+        or summary.get("raw_model_output_exposed_in_derivatives") is not False
+    ):
+        return False
+    models = summary.get("models")
+    if not isinstance(models, list) or len(models) != 2:
+        return False
+    by_id = {str(item.get("model_id")): item for item in models}
+    expected = {
+        "Qwen/Qwen2.5-3B-Instruct": {"early": 0, "deferred": 0},
+        "Qwen/Qwen2.5-7B-Instruct": {"early": 0, "deferred": 228},
+    }
+    if set(by_id) != set(expected):
+        return False
+    for model_id, strict in expected.items():
+        descriptive = by_id[model_id].get("descriptive")
+        if not isinstance(descriptive, Mapping) or descriptive.get("paired_traces") != 1420:
+            return False
+        policies = descriptive.get("policies")
+        if not isinstance(policies, Mapping):
+            return False
+        for policy_id, label in (
+            ("early_preplan_enforcement", "early"),
+            ("deferred_release_enforcement", "deferred"),
+        ):
+            policy = policies.get(policy_id)
+            if not isinstance(policy, Mapping):
+                return False
+            if not (
+                policy.get("unsupported_continuation_nonexecute")
+                == {"numerator": 0, "denominator": 568, "rate": 0.0}
+                and policy.get("false_nonexecution_execute")
+                == {"numerator": 852, "denominator": 852, "rate": 1.0}
+                and policy.get("static_plan_fidelity_execute")
+                == {"numerator": 0, "denominator": 852, "rate": 0.0}
+                and policy.get("strict_case_success", {}).get("numerator")
+                == strict[label]
+            ):
+                return False
+    return True
 
 
 def render_manuscript_audit(audit: Mapping[str, Any]) -> str:

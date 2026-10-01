@@ -28,9 +28,11 @@ executable cases. A zero-call policy that always blocks achieved 20.0\% strict
 success, exceeding the 7B stage-wise configuration's 16.1\%, showing that
 containment alone does not establish useful discrimination. A post-hoc audit
 also found that the frozen validator rejected 43 of 249 fully instantiated
-upstream reference plans. The study is therefore a negative evaluation result:
-pipeline configuration changes where failures stop, but the tested system does
-not demonstrate executable planning or a causal effect of validation placement.
+ upstream reference plans. A paired replay that held prompts, generations,
+ validators, and call count fixed found no placement-only change in containment,
+ false non-execution, or static plan fidelity. The study is therefore a negative
+ result: the tested system contains failures but does not demonstrate executable
+ planning, and the original configuration difference is not a placement effect.
 \end{abstract}
 
 \keywords{physical AI safety, robot planning, failure containment, evaluation}
@@ -51,9 +53,10 @@ advance on a registered non-executable case. \emph{Static plan fidelity} means
 conformance with frozen schema, endpoint, parameter, and command validators; it
 does not mean simulator or physical success. Our contributions are: (1) a
 paired five-variant benchmark for evidence availability and resource conflict;
-(2) a comparison of four complete validation pipelines with frozen model and
-prompt versions; and (3) a refusal-aware analysis that separates containment
-from executable competence and audits the validator against upstream plans.
+ (2) a comparison of four complete validation pipelines with frozen model and
+ prompt versions; and (3) a refusal-aware analysis that separates containment
+ from executable competence, audits the validator against upstream plans, and
+ replays identical traces under early versus deferred enforcement.
 
 \section{Experimental Design}
 
@@ -89,9 +92,11 @@ aggregated by source task and use 10,000 fixed-seed percentile-bootstrap draws.
 We score a deterministic always-\textsc{Block} reference over unique cases,
 repeat paired contrasts by resampling the 15 held-out sessions, partition every
 executable failure into one observed location, and pass fully instantiated
-upstream API plans through the frozen validator. Unresolved upstream templates
-are excluded rather than imputed. These diagnostics do not change the
-registered analysis and invoke no model.
+ upstream API plans through the frozen validator. We also replay each retained
+ two-call \Mthree trace under early and deferred enforcement while holding the
+ prompt, both generations, validators, and call count fixed. Unresolved upstream
+ templates are excluded rather than imputed. These diagnostics do not change
+ the registered analysis and invoke no model.
 
 \section{Results}
 
@@ -124,6 +129,38 @@ directions: $-0.6829$ ($[-0.7220,-0.6373]$) and $0.1605$
 ($[0.1513,0.1688]$), respectively. Only 15 sessions were available, so this is
 a robustness check rather than a rich hierarchical analysis.
 
+\paragraph{Placement-only replay.}
+Across both checkpoints, early and deferred enforcement produced identical
+unsupported continuation (0/568), false non-execution (852/852), and executable
+static plan fidelity (0/852). For 3B, both policies also had zero strict success.
+For 7B, deferred enforcement preserved 228 correct final model refusals or
+clarifications (16.1\%), whereas strict early containment recorded none as exact
+decisions; the early-minus-deferred difference was $-0.1606$ (95\% source-task-
+cluster interval $[-0.1697,-0.1507]$). Thus, enforcement timing alone did not
+create the safety or planning advantage attributed to \Mthree; its nonzero 7B
+success came from the second-call decision. Because both calls were retained,
+this replay makes no compute-saving claim.
+
+\begin{table}[t]
+  \centering
+  \caption{Paired \Mthree trace replay. Unsupported continuation is over 568
+  non-executable cases; false non-execution and static plan fidelity are over
+  852 executable cases; strict success is over all 1,420 cases.}
+  \label{tab:placement-replay}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Model & Enforcement & Unsupported & False nonexec. & Static fidelity & Strict success \\
+    \midrule
+    3B & Early    & 0 & 852 & 0 & 0 \\
+    3B & Deferred & 0 & 852 & 0 & 0 \\
+    7B & Early    & 0 & 852 & 0 & 0 \\
+    7B & Deferred & 0 & 852 & 0 & 228 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \paragraph{Where executable cases failed.}
 For 3B \Mthree, 544/852 executable cases stopped before planning and 308/852
 failed output parsing. For 7B \Mthree, 637/852 produced a model non-execution
@@ -155,10 +192,11 @@ The central result is containment without competence. \Mthree suppresses
 unsupported continuation, but an indiscriminate block policy is stronger on
 the aggregate success metric and no tested method produces a valid executable
 plan. The official-plan audit additionally shows that the evaluation mechanism
-itself rejects a nontrivial fraction of upstream plans. A stronger follow-up
-must first reconcile and re-audit validator rules, then hold prompts and rules
-fixed while changing only placement, and finally test execution in an official
-environment.
+ itself rejects a nontrivial fraction of upstream plans. The controlled replay
+ further shows that moving deterministic enforcement alone did not improve
+ release safety or executable fidelity. A stronger follow-up must first reconcile
+ and re-audit validator rules, prospectively test matched pipelines beyond one
+ retained transcript family, and evaluate execution in an official environment.
 
 The study uses controlled derivatives rather than live operator missions, two
 sizes from one model family, a 30-cluster human pilot, and one GPU for resource
@@ -166,8 +204,9 @@ measurement. It performs no official simulator or physical execution. The
 source-task bootstrap is registered; the session bootstrap is post-hoc and has
 only 15 units. The resource campaign has three repetitions, and board energy is
 not whole-system or UAV energy. These limits prevent claims of general robot
-safety, practical mission capability, or causal superiority of one validation
-placement.
+ safety, practical mission capability, or broad causal superiority of one
+ validation placement. The placement replay is conditional on retained \Mthree
+ traces and is not a prospective compute experiment.
 
 \section{Conclusion}
 
@@ -175,10 +214,11 @@ Validation pipelines can move where failures are contained, but containment is
 not evidence of planning competence. In this controlled study, stage-wise
 validation eliminated unsupported continuation while failing every executable
 case, underperforming always-\textsc{Block} on aggregate strict success, and
-interacting with a validator that rejected 17.3\% of auditable upstream plans.
-The defensible contribution is a refusal-aware evaluation protocol and a
-negative empirical result that identifies what must be fixed before stronger
-physical-AI safety claims are possible.
+ interacting with a validator that rejected 17.3\% of auditable upstream plans.
+ Under identical trace replay, enforcement timing changed neither containment
+ nor executable fidelity. The defensible contribution is a refusal-aware
+ evaluation protocol and a negative empirical result that identifies what must
+ be fixed before stronger physical-AI safety claims are possible.
 
 \bibliography{references}
 

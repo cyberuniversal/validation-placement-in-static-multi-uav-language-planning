@@ -34,6 +34,8 @@ class MultiUavManuscriptAuditTests(unittest.TestCase):
         self.assertTrue(audit["mentor_review_ready"])
         self.assertTrue(audit["checks"]["review_resolution_present"])
         self.assertTrue(audit["checks"]["reviewer_analysis_valid"])
+        self.assertTrue(audit["checks"]["placement_ablation_valid"])
+        self.assertTrue(audit["checks"]["placement_findings_traced"])
         self.assertTrue(audit["checks"]["reviewer_figure_manifest_valid"])
         self.assertTrue(audit["checks"]["reviewer_findings_traced"])
         text_binding = audit["artifact_bindings"]["accuracy_contrast_table"]
@@ -104,6 +106,27 @@ class MultiUavManuscriptAuditTests(unittest.TestCase):
 
         self.assertFalse(audit["valid"])
         self.assertIn("reviewer_analysis_valid", audit["failed_checks"])
+
+    def test_placement_summary_mutation_is_rejected(self) -> None:
+        source = (
+            ROOT
+            / "outputs/evaluations/multiuav_placement_ablation_v1/summary.json"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            summary_path = Path(temporary) / "summary.json"
+            summary = json.loads(source.read_text(encoding="utf-8"))
+            deferred = summary["models"][1]["descriptive"]["policies"][
+                "deferred_release_enforcement"
+            ]
+            deferred["strict_case_success"]["numerator"] = 229
+            summary_path.write_text(json.dumps(summary), encoding="utf-8")
+
+            audit = audit_multiuav_manuscript(
+                ROOT, placement_summary_path=summary_path
+            )
+
+        self.assertFalse(audit["valid"])
+        self.assertIn("placement_ablation_valid", audit["failed_checks"])
 
 
 if __name__ == "__main__":

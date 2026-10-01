@@ -61,6 +61,7 @@ python scripts/analyze_multiuav_accuracy.py
 python scripts/build_multiuav_accuracy_figures.py
 python scripts/analyze_multiuav_reviewer_feedback.py
 python scripts/build_multiuav_reviewer_figure.py
+python scripts/analyze_multiuav_placement_ablation.py
 ```
 
 The analysis command performs the registered 10,000-draw source-cluster
@@ -74,6 +75,12 @@ audit of fully instantiated upstream reference plans against the frozen
 validator. The reviewer-figure command plots positively oriented containment
 and strict-success outcomes and labels the always-BLOCK result as post-hoc.
 Neither command invokes a model.
+
+The placement-ablation command consumes only immutable M3 checkpoint traces and
+scored rows bound in `placement_ablation_protocol_v1.json`. It writes paired
+early-versus-deferred replay rows, 10,000-draw source-cluster bootstrap evidence,
+and compact rate and contrast tables without exposing raw model text. It invokes
+no model and makes no operational early-stop compute claim.
 
 ## Resource Campaign
 
@@ -98,6 +105,7 @@ campaign evidence.
 python scripts/audit_multiuav_manuscript.py
 python scripts/analyze_multiuav_reviewer_feedback.py
 python scripts/build_multiuav_reviewer_figure.py
+python scripts/analyze_multiuav_placement_ablation.py
 python -m pytest -q
 python -m ruff check src scripts tests paper/build_resource_figure.py
 Set-Location paper

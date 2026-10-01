@@ -1,0 +1,2 @@
+held_out_source_tasks,eligible_fully_instantiated,excluded_unresolved_or_missing,validator_accepted,validator_rejected,acceptance_rate,containment_stage_counts
+284,249,35,206,43,0.8273092369477911,"{""accepted"": 206, ""post_plan_endpoint_schema"": 1, ""post_plan_parameter_grounding"": 3, ""post_plan_safety_bounds"": 39}"

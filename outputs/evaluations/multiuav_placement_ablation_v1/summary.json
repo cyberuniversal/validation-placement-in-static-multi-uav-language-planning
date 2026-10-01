@@ -1,0 +1,435 @@
+{
+  "artifacts": {
+    "bootstrap_evidence": {
+      "bytes": 31128,
+      "path": "outputs/evaluations/multiuav_placement_ablation_v1/placement_bootstrap_evidence.zip",
+      "sha256": "7089f35f74b9571fa9c39ecf95e6468ae7eddb3d1a348a76b5e48aa5da1b842b"
+    },
+    "contrasts": {
+      "bytes": 1537,
+      "path": "outputs/tables/multiuav_placement_ablation_contrasts_v1.csv",
+      "sha256": "ae53e49e77fdad44024ada098b7dbdf1f30db69f353ca53813b057be006e1783"
+    },
+    "rates": {
+      "bytes": 2226,
+      "path": "outputs/tables/multiuav_placement_ablation_rates_v1.csv",
+      "sha256": "d0cd73b36fc53d74c904664f641d8c90c91528d7fcae98f06944fcf38f8af980"
+    },
+    "replay_rows": {
+      "bytes": 183545,
+      "path": "outputs/evaluations/multiuav_placement_ablation_v1/placement_replay_rows.zip",
+      "sha256": "ad3d97beb11beded94ce4870c0eb093554523d8e210460a7500d44955b0f0676"
+    }
+  },
+  "claim_limit": "Paired trace replay isolates deterministic enforcement order on retained M3 transcripts. It does not estimate operational early-stop compute, test another model family, or establish simulator or physical mission success.",
+  "models": [
+    {
+      "checkpoint": {
+        "bytes": 5168036,
+        "path": "datasets/multiuav_plat/nautilus/qwen25_3b_accuracy_complete_v1/checkpoint.zip",
+        "sha256": "5726cea162cd7b104440d069c5cdc107086db5ebcae9d66126dd7ec013665bd5"
+      },
+      "descriptive": {
+        "ablation_contract_version": "multiuav_placement_ablation_v1",
+        "paired_traces": 1420,
+        "policies": {
+          "deferred_release_enforcement": {
+            "containment_stage_counts": {
+              "final_output_parse": 494,
+              "model_nonexecution": 1,
+              "pre_plan_accepted": 3,
+              "pre_plan_evidence_provenance": 872,
+              "pre_plan_ledger_parse": 50
+            },
+            "decision_correct": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "false_nonexecution_execute": {
+              "denominator": 852,
+              "numerator": 852,
+              "rate": 1.0
+            },
+            "release_authorized": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "rows": 1420,
+            "static_plan_fidelity_execute": {
+              "denominator": 852,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "strict_case_success": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "unsupported_continuation_nonexecute": {
+              "denominator": 568,
+              "numerator": 0,
+              "rate": 0.0
+            }
+          },
+          "early_preplan_enforcement": {
+            "containment_stage_counts": {
+              "pre_plan_accepted": 12,
+              "pre_plan_evidence_provenance": 1309,
+              "pre_plan_ledger_parse": 99
+            },
+            "decision_correct": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "false_nonexecution_execute": {
+              "denominator": 852,
+              "numerator": 852,
+              "rate": 1.0
+            },
+            "release_authorized": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "rows": 1420,
+            "static_plan_fidelity_execute": {
+              "denominator": 852,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "strict_case_success": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "unsupported_continuation_nonexecute": {
+              "denominator": 568,
+              "numerator": 0,
+              "rate": 0.0
+            }
+          }
+        },
+        "rows": 2840
+      },
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+      "paired_cluster_bootstraps": {
+        "decision_correct": {
+          "cases_per_method_per_cluster": 5,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:decision_correct"
+        },
+        "false_nonexecution_execute": {
+          "cases_per_method_per_cluster": 3,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:false_nonexecution_execute"
+        },
+        "static_plan_fidelity_execute": {
+          "cases_per_method_per_cluster": 3,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:static_plan_fidelity_execute"
+        },
+        "strict_case_success": {
+          "cases_per_method_per_cluster": 5,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:strict_case_success"
+        },
+        "unsupported_continuation_nonexecute": {
+          "cases_per_method_per_cluster": 2,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:unsupported_continuation_nonexecute"
+        }
+      },
+      "scored_rows": {
+        "bytes": 229230,
+        "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_3b_scored_rows.zip",
+        "sha256": "44c756afbe476c420f33543495340ed4c82b98fa6979f1c6a25822e0fd2cc0d1"
+      }
+    },
+    {
+      "checkpoint": {
+        "bytes": 4903801,
+        "path": "datasets/multiuav_plat/nautilus/qwen25_7b_accuracy_complete_v1/checkpoint.zip",
+        "sha256": "797ae05ab2c6a4a029657ce739a697b23f65048f6753ac561f1a38a3d45f3072"
+      },
+      "descriptive": {
+        "ablation_contract_version": "multiuav_placement_ablation_v1",
+        "paired_traces": 1420,
+        "policies": {
+          "deferred_release_enforcement": {
+            "containment_stage_counts": {
+              "final_output_parse": 270,
+              "model_nonexecution": 1115,
+              "pre_plan_accepted": 1,
+              "pre_plan_evidence_provenance": 31,
+              "pre_plan_ledger_parse": 3
+            },
+            "decision_correct": {
+              "denominator": 1420,
+              "numerator": 228,
+              "rate": 0.16056338028169015
+            },
+            "false_nonexecution_execute": {
+              "denominator": 852,
+              "numerator": 852,
+              "rate": 1.0
+            },
+            "release_authorized": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "rows": 1420,
+            "static_plan_fidelity_execute": {
+              "denominator": 852,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "strict_case_success": {
+              "denominator": 1420,
+              "numerator": 228,
+              "rate": 0.16056338028169015
+            },
+            "unsupported_continuation_nonexecute": {
+              "denominator": 568,
+              "numerator": 0,
+              "rate": 0.0
+            }
+          },
+          "early_preplan_enforcement": {
+            "containment_stage_counts": {
+              "pre_plan_accepted": 140,
+              "pre_plan_decision_consistency": 1,
+              "pre_plan_evidence_provenance": 1273,
+              "pre_plan_ledger_parse": 6
+            },
+            "decision_correct": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "false_nonexecution_execute": {
+              "denominator": 852,
+              "numerator": 852,
+              "rate": 1.0
+            },
+            "release_authorized": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "rows": 1420,
+            "static_plan_fidelity_execute": {
+              "denominator": 852,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "strict_case_success": {
+              "denominator": 1420,
+              "numerator": 0,
+              "rate": 0.0
+            },
+            "unsupported_continuation_nonexecute": {
+              "denominator": 568,
+              "numerator": 0,
+              "rate": 0.0
+            }
+          }
+        },
+        "rows": 2840
+      },
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "paired_cluster_bootstraps": {
+        "decision_correct": {
+          "cases_per_method_per_cluster": 5,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": -0.16971830985915495,
+            "method": "percentile_cluster_bootstrap",
+            "upper": -0.1507042253521127
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": -0.16056338028169015,
+          "raw_bootstrap_draws_sha256": "7f8ffb793481ae96254694deef89f1907aaa258920edb7ab7fd91fdf99ce9d18",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:decision_correct"
+        },
+        "false_nonexecution_execute": {
+          "cases_per_method_per_cluster": 3,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:false_nonexecution_execute"
+        },
+        "static_plan_fidelity_execute": {
+          "cases_per_method_per_cluster": 3,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:static_plan_fidelity_execute"
+        },
+        "strict_case_success": {
+          "cases_per_method_per_cluster": 5,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": -0.16971830985915495,
+            "method": "percentile_cluster_bootstrap",
+            "upper": -0.1507042253521127
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": -0.16056338028169015,
+          "raw_bootstrap_draws_sha256": "bf510d7f70dc9da55902ac3d83010e5f43c15fbd38fa6b8604e0b3ddc89189ae",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:strict_case_success"
+        },
+        "unsupported_continuation_nonexecute": {
+          "cases_per_method_per_cluster": 2,
+          "cluster_count": 284,
+          "confidence_interval": {
+            "confidence_level": 0.95,
+            "lower": 0.0,
+            "method": "percentile_cluster_bootstrap",
+            "upper": 0.0
+          },
+          "contrast": "early_preplan_enforcement_minus_deferred_release_enforcement",
+          "draws": 10000,
+          "method_a": "early_preplan_enforcement",
+          "method_b": "deferred_release_enforcement",
+          "metric_field": "metric_value",
+          "point_estimate": 0.0,
+          "raw_bootstrap_draws_sha256": "32de948c898564c50e9dd87cd6aff2fd8b73295aa70fc471c437f25f4562cd2f",
+          "resampling_unit": "source_task_cluster",
+          "seed": "shepherd-multiuav-placement-ablation-v1:unsupported_continuation_nonexecute"
+        }
+      },
+      "scored_rows": {
+        "bytes": 239135,
+        "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/qwen25_7b_scored_rows.zip",
+        "sha256": "f25e8df9df6b0c46e1ca0186794fa566d97a80ebf50a6b004b292d7723e4866e"
+      }
+    }
+  ],
+  "new_model_inference_performed": false,
+  "protocol": {
+    "bytes": 3258,
+    "path": "datasets/multiuav_plat/placement_ablation_protocol_v1.json",
+    "sha256": "1bfd46d8bdb348f033b4e837b6a2d35ae11b43ff168437297d3ad71c36ef049b"
+  },
+  "raw_model_output_exposed_in_derivatives": false,
+  "registered_study_changed": false,
+  "schema_version": 1,
+  "scoring_summary": {
+    "bytes": 34273,
+    "path": "outputs/evaluations/multiuav_accuracy_scoring_v1/summary.json",
+    "sha256": "9b800a4ab2a06ba7f4a3de2848640f19c8cfe06e58924d9d1a508d5710076b2c"
+  },
+  "status": "reviewer_requested_placement_ablation_complete"
+}

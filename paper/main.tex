@@ -22,7 +22,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \hypersetup{
-  pdftitle={Validation Placement in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study},
+  pdftitle={Validation Pipeline Configurations in Static Multi-UAV Language Planning: A Paired Failure-Containment and Compute Study},
   pdfauthor={Mohammed Alnuwaiser and Aishwarya Tomar}
 }
 
@@ -31,7 +31,7 @@
 \newcommand{\Mthree}{\textsc{M3}\xspace}
 \newcommand{\Mfour}{\textsc{M4}\xspace}
 
-\title{Validation Placement in Static Multi-UAV Language Planning: A Paired
+\title{Validation Pipeline Configurations in Static Multi-UAV Language Planning: A Paired
 Failure-Containment and Compute Study}
 
 \author{
@@ -57,21 +57,25 @@ Qwen2.5 checkpoints. The compared configurations are monolithic planning
 provenance validation (\Mthree), and a two-call post-plan configuration matched
 to \Mthree only by model-call count (\Mfour). With Qwen2.5-7B, \Mthree produced
 no unsupported continuation in 568 registered non-executable cases, compared
-with 388 cases for \Mone and 15 for \Mfour. Its registered all-case success rate
-was 228/1,420, but all 228 successes were correct containment outcomes; every
-method had zero static plan fidelity on the 852 executable cases. With
-Qwen2.5-3B, \Mthree improved containment relative to \Mone, yet all four
-methods had zero registered all-case success. A separate three-repetition RTX
-3090 campaign showed model-dependent compute trade-offs: relative to \Mone,
-\Mthree increased time and GPU-board energy for the 3B checkpoint but reduced
-both for the 7B checkpoint. These findings show that pipeline configuration can
-change static failure containment and local resource use. They do not establish
-executable plan fidelity, physical-flight safety, or generality beyond the
-tested benchmark, models, and hardware.
+with 388 cases for \Mone and 15 for \Mfour. However, \Mthree falsely refused or
+failed all 852 executable cases. Its 16.1\% all-case success rate was lower than
+the 20.0\% achieved by a post-hoc deterministic policy that always blocks, and
+every model--method combination had zero static plan fidelity on executable
+cases. A post-hoc validator audit accepted 206 of 249 fully instantiated
+upstream reference plans and rejected 43, showing that validator mismatch also
+contributes to the observed negative result. A separate three-repetition RTX
+3090 campaign showed model-dependent compute differences that remain
+confounded by termination behavior and generated-token count. Thus, the tested
+configurations change failure containment, but the experiment does not show
+reliable executable/non-executable discrimination, executable planning, or a
+ causal effect of validation placement alone. A reviewer-requested paired replay
+ then held prompts, both generations, validators, and call count fixed while
+ changing only enforcement order. It found no difference in unsupported
+ continuation, false non-execution, or static plan fidelity.
 \end{abstract}
 
 \begin{IEEEkeywords}
-multi-UAV systems, natural-language planning, validation placement, failure
+multi-UAV systems, natural-language planning, validation pipelines, failure
 containment, static plan fidelity, local inference measurement
 \end{IEEEkeywords}
 
@@ -229,8 +233,8 @@ network access by the inference process but is not equivalent to an externally
 enforced firewall.
 
 The code, frozen protocols, raw checkpoints, processed tables, figures, and
-run metadata are available in the public artifact snapshot at
-\url{https://github.com/cyberuniversal/shepherd-ai/tree/8cc059c17f67b733e3e4fe07d2683f89434e8c88}.
+run metadata are available in the public artifact repository at
+\url{https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning}.
 
 \begin{table*}[t]
 \caption{Frozen reproducibility identifiers. SHA-256 values are shown in full;
@@ -285,6 +289,30 @@ then evaluated using 10,000 fixed-seed percentile-bootstrap draws. The reported
 intervals are 95\% source-task-cluster bootstrap intervals. No
 null-hypothesis tests are reported.
 
+\subsection{Post-Hoc Reviewer-Requested Diagnostics}
+
+The registered analysis remains unchanged. To test whether containment alone
+outperforms indiscriminate refusal, we additionally score a deterministic
+always-\textsc{Block} reference over the same unique case set. It makes no model
+calls, contains every non-executable case, falsely refuses every executable
+case, and succeeds only when the registered disposition is \textsc{Block}.
+This is a post-hoc reference policy, not a registered model baseline.
+
+We also perform three post-hoc diagnostics. First, we repeat the paired
+accuracy contrasts by averaging within each of the 15 held-out sessions and
+bootstrapping sessions rather than source tasks. Second, we assign every
+executable-case failure to one mutually exclusive observed location. Third, we
+pass the upstream benchmark's fully instantiated official API plans through
+the frozen static validator using the corresponding canonical visible context.
+Plans with unresolved upstream template fields are excluded rather than
+imputed. This last diagnostic tests validator compatibility only; it is not an
+ official-server or simulator execution test. Fourth, we replay every retained
+ two-call \Mthree trace under early and deferred deterministic enforcement. The
+ prompt, visible context, both generated outputs, model-call count, ledger
+ validator, post-plan validator, and labels are identical. The second call is a
+ shadow call in the early condition, so this analysis isolates release-policy
+ order but cannot estimate operational early-stop compute.
+
 \subsection{Exploratory Resource Outcomes}
 
 The resource campaign uses 30 stratified held-out source-task clusters, all
@@ -306,29 +334,35 @@ energy.
 
 \subsection{Descriptive Accuracy Outcomes}
 
-Figure~\ref{fig:accuracy_primary} reports the two registered outcomes for all
-four methods. With Qwen2.5-3B, unsupported-continuation rates were 79.0\% for
-\Mone, 0.4\% for \Mtwo, 0\% for \Mthree, and 0.2\% for \Mfour. Nevertheless,
+Figure~\ref{fig:accuracy_primary} reports positively oriented containment and
+strict success for all four methods and the post-hoc refusal reference. With
+Qwen2.5-3B, containment rates were 21.0\% for \Mone, 99.6\% for \Mtwo, 100\%
+for \Mthree, and 99.8\% for \Mfour. Nevertheless,
 all four 3B configurations had zero strict case success. The 3B \Mthree
 configuration was therefore conservative on the registered non-executable
 cases but did not satisfy the complete disposition and static-fidelity
 criteria.
 
-With Qwen2.5-7B, unsupported-continuation rates were 68.3\% for \Mone, 2.3\%
-for \Mtwo, 0\% for \Mthree, and 2.6\% for \Mfour. Strict case-success rates
+With Qwen2.5-7B, containment rates were 31.7\% for \Mone, 97.7\% for \Mtwo,
+100\% for \Mthree, and 97.4\% for \Mfour. Strict case-success rates
 were 0\%, 0\%, 16.1\%, and 0.8\%, respectively. In counts, \Mthree produced no
 unsupported continuation in 568 non-executable cases, whereas \Mone produced
 388 and \Mfour produced 15. \Mthree recorded 228 strict successes among all
-1,420 cases, and \Mfour recorded 12.
+1,420 cases, and \Mfour recorded 12. The always-\textsc{Block} reference
+contained all 568 non-executable cases but scored 284/1,420 (20.0\%) strict
+success by correctly blocking the conflict cases while incorrectly blocking
+all clarification and executable cases. It therefore exceeded 7B \Mthree on
+the aggregate strict-success metric despite having no planning capability.
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.68\textwidth]{figures/accuracy_primary_outcomes_corrected_600dpi.png}
-\caption{Registered primary outcomes for the four configurations and two
-checkpoints. Unsupported continuation is evaluated on 568 non-executable cases
-per method; lower is better. Strict case success is evaluated on all 1,420
-cases per method; every nonzero success bar consists exclusively of correct
-outcomes on non-executable cases.}
+\includegraphics[width=0.92\textwidth]{figures/accuracy_refusal_aware_outcomes_v2.pdf}
+\caption{Containment and strict case success, both oriented so higher is
+better. Containment is one minus unsupported-continuation rate on 568
+non-executable cases; strict success uses all 1,420 cases. Always-\textsc{Block}
+is a post-hoc deterministic reference with zero model calls and zero
+executable-plan fidelity. Every nonzero strict-success bar consists exclusively
+of correct outcomes on non-executable cases.}
 \label{fig:accuracy_primary}
 \end{figure*}
 
@@ -425,6 +459,53 @@ Model & Method & Unsafe & Contained & Any strict \\
 \end{tabular}
 \end{table}
 
+A post-hoc session-clustered sensitivity analysis preserved the registered
+directions. For 7B \Mthree{} minus \Mone, the session-weighted unsupported-
+continuation difference was $-0.6829$ (95\% interval $[-0.7220,-0.6373]$), and
+the strict-success difference was $0.1605$ ($[0.1513,0.1688]$). For 7B
+\Mthree{} minus \Mfour, the corresponding differences were $-0.0259$
+($[-0.0476,-0.0086]$) and $0.1522$ ($[0.1410,0.1615]$). The 3B strict-success
+differences remained exactly zero. These intervals are post-hoc sensitivity
+results over 15 sessions, not replacements for the registered source-task
+cluster intervals.
+
+\subsection{Placement-Controlled Trace Replay}
+
+The reviewer-requested replay changed only when the retained pre-plan result was
+enforced. Table~\ref{tab:placement_replay} shows that timing alone changed none
+of the safety or executable-planning outcomes. For both checkpoints, each policy
+had 0/568 unsupported continuations, 852/852 false non-executions, and 0/852
+executable static-plan successes. All early-minus-deferred differences for these
+three outcomes were exactly zero, with degenerate 95\% source-task-cluster
+bootstrap intervals $[0,0]$.
+
+\begin{table}[t]
+\caption{Paired M3 trace replay. Strict success is over 1,420 cases; other
+denominators are shown in the headers.}
+\label{tab:placement_replay}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+Model & Policy & Unsupported $/568$ & False nonexec. $/852$ & Strict $/1420$ \\
+\midrule
+3B & Early & 0 & 852 & 0 \\
+3B & Deferred & 0 & 852 & 0 \\
+7B & Early & 0 & 852 & 0 \\
+7B & Deferred & 0 & 852 & 228 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The 7B strict-success difference was instead attributable to disposition
+reporting. Deferred enforcement preserved 228 correct final-call \textsc{Clarify}
+or \textsc{Block} decisions, whereas strict early enforcement represented a gate
+failure as \textsc{Contained}, as required by the frozen scoring contract. The
+early-minus-deferred strict-success difference was $-0.1606$ (95\% interval
+$[-0.1697,-0.1507]$); for 3B it was exactly zero. Thus, the original nonzero 7B
+\Mthree result did not arise from validation placement alone.
+
 \subsection{Failure and Containment-Stage Analysis}
 
 Table~\ref{tab:failure_counts} decomposes the principal failure diagnostics.
@@ -489,6 +570,22 @@ Model & Method & Before plan & After plan & Final parse & Model non-execution & 
 \end{tabular}
 \end{table*}
 
+The mutually exclusive executable-case taxonomy further localizes the zero-
+fidelity result. For 3B \Mthree, 544/852 cases stopped at pre-plan validation
+and 308/852 failed output parsing. For 7B \Mthree, 637/852 produced a model
+non-execution decision, 187/852 failed output parsing, and 28/852 stopped at
+pre-plan validation. Thus, \Mthree's zero unsupported continuation did not
+reflect successful discrimination: it never released a statically valid plan
+for an executable request.
+
+The upstream-reference diagnostic found 249 fully instantiated official plans
+among the 284 held-out tasks; 35 plans with unresolved or missing template
+fields were excluded without imputation. The frozen validator accepted
+206/249 (82.7\%) and rejected 43/249 (17.3\%): one at endpoint schema, three at
+parameter grounding, and 39 at safety bounds. This demonstrates validator
+mismatch on the auditable subset. It does not explain every model failure, but
+it prevents attribution of all zero-fidelity outcomes to the language models.
+
 \subsection{Exploratory Resource Contrasts}
 
 Relative to \Mone, 3B \Mthree added one model call, 3,297.68 input tokens,
@@ -529,7 +626,8 @@ negative values indicate less.}
 
 \subsection{Containment Improved, but Executable Utility Did Not}
 
-The strongest result is a containment result. Both checkpoints show that the
+The strongest result is a containment result, but the refusal reference shows
+why containment cannot stand alone. Both checkpoints show that the
 stage-wise configuration can prevent unsupported continuation on the
 registered non-executable cases. That behavior is important because it reduces
 the chance that a fluent but unsupported plan is passed downstream. It is not,
@@ -538,6 +636,13 @@ directly: \Mthree contained every non-executable case but achieved no strict
 success. The 7B checkpoint gave 228 correct strict outcomes, but all occurred
 on non-executable cases. No tested method produced a statically valid plan on
 an executable case.
+
+Moreover, always blocking achieved the same perfect containment and a higher
+aggregate strict-success rate than 7B \Mthree. The study therefore does not
+show that \Mthree reliably distinguishes executable from non-executable
+requests. Its value in this experiment is narrower: it identifies a pipeline
+configuration that suppresses unsupported continuation, while exposing an
+over-conservatism problem that must be solved before practical use.
 
 This decomposition changes the interpretation of the all-case success
 contrast. The positive 7B contrast does not mean that \Mthree completed more
@@ -555,16 +660,21 @@ and GPU-board energy relative to \Mone. For 7B, it reduced both despite an
 additional call. The 7B configuration also generated fewer output tokens than
 \Mone and substantially fewer than \Mfour. Shorter generation provides a
 plausible measured explanation for the lower latency and energy, but the
-experiment does not isolate that mechanism causally.
+experiment does not isolate that mechanism causally. In particular, the 7B
+resource advantage cannot be interpreted as intrinsic computational
+efficiency because \Mthree frequently terminated without producing an
+executable plan.
 
 The \Mthree{} versus \Mfour comparison further shows that model-call parity is
 not resource parity. Prompt length, generated-token count, validation behavior,
 and termination patterns remain consequential. At the same time, these
 differences limit the causal interpretation of ``placement'': \Mthree and
 \Mfour are complete pipeline alternatives, not the same validator moved to a
-different stage. A future isolation study should hold validation rules and
-prompt content fixed while changing only the point at which the rules are
-applied.
+ different stage. The paired trace replay supplies the narrower matched test:
+ when prompt content, generations, rules, and calls were fixed, enforcement
+ timing changed neither unsupported continuation nor executable fidelity. Its
+ scope is conditional on retained \Mthree traces, not a prospective comparison
+ of independently generated matched pipelines.
 
 \subsection{Implications for Multi-UAV Language Interfaces}
 
@@ -591,15 +701,20 @@ produce cues that differ from naturally occurring failures. Second, the study
 uses two sizes from one model family; the observed scale dependence may not
 generalize to other checkpoints or decoding regimes. Third, static validators
 do not establish official-server, simulator, or physical-flight execution.
-The complete failure of executable fidelity could reflect model planning
-errors, validator mismatch, or both; the 30-cluster construction pilot is not a
-substitute for a stratified human audit of executable outputs.
+The post-hoc reference-plan audit establishes validator mismatch on 43 of 249
+fully instantiated upstream plans, while the failure taxonomy also shows many
+parse, endpoint, and non-execution failures. It does not apportion all failures
+causally. The 30-cluster construction pilot is not a substitute for a larger
+stratified human audit of labels, outputs, and validator decisions.
 
 Fourth, the experimental configurations differ in more than validation
-placement. In particular, \Mfour matches \Mthree only on model-call count.
-Fifth, accuracy uncertainty is clustered by source task even though source
-tasks are nested within 15 held-out sessions; the post-hoc session summary does
-not replace a session-clustered or hierarchical sensitivity analysis. Sixth,
+ placement. In particular, \Mfour matches \Mthree only on model-call count. The
+ post-hoc placement replay removes these observed confounds but is conditional
+ on retained \Mthree transcripts and cannot estimate early-stop compute.
+Fifth, accuracy uncertainty is registered at the source-task level. The
+post-hoc session-clustered sensitivity preserves the principal directions, but
+15 sessions remain a small higher-level sample and do not support a rich
+hierarchical model. Sixth,
 the resource study contains 30 source-task clusters, three repetitions, and one
 RTX 3090. Peak memory is an observed maximum rather than baseline-subtracted
 usage, and GPU-board energy is not whole-system energy.
@@ -618,16 +733,21 @@ behavior. Stage-wise evidence and provenance validation eliminated unsupported
 continuation on the registered non-executable cases for both tested Qwen2.5
 checkpoints. With Qwen2.5-7B it also increased the registered strict case-success
 aggregate relative to monolithic and model-call-count-matched configurations,
-but every success was a correct non-executable outcome. All methods had zero
-static plan fidelity on executable cases.
+but every success was a correct non-executable outcome. An always-block policy
+had the same perfect containment and a higher aggregate success rate, while all
+methods had zero static plan fidelity on executable cases. The official-plan
+audit also found that the frozen validator rejected 17.3\% of fully
+instantiated upstream reference plans.
 
 The defensible contribution is therefore a paired containment-and-measurement
-protocol and its mixed empirical result. The study does not show that
+protocol and its negative, mixed empirical result. The study does not show that
 stage-wise validation is universally cheaper, that placement alone caused the
-observed differences, or that the tested system can safely execute autonomous
-multi-UAV missions. Future work should isolate placement from other pipeline
-changes, audit validator agreement, and evaluate executable planning in an
-official environment before progressing to physical systems.
+ observed configuration differences, that \Mthree discriminates executable requests better
+than indiscriminate refusal, or that the tested system can safely execute
+autonomous multi-UAV missions. A stronger follow-up must first correct and
+ re-audit validator agreement, prospectively test matched pipelines across
+ additional model families, and finally evaluate executable planning in an
+ official environment.
 
 \section*{Generative AI Use Declaration}
 

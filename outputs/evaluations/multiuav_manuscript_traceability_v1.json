@@ -84,6 +84,24 @@
       "path": "reports/multiuav_validation_placement_manuscript_v1.md",
       "sha256": "dbddbc8623fa05c8c6bba828b4031b4459c7ceb9a4a18a96b33fdf11be7cc281"
     },
+    "placement_ablation_protocol": {
+      "bytes": 3258,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "datasets/multiuav_plat/placement_ablation_protocol_v1.json",
+      "sha256": "1bfd46d8bdb348f033b4e837b6a2d35ae11b43ff168437297d3ad71c36ef049b"
+    },
+    "placement_ablation_summary": {
+      "bytes": 16962,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "outputs/evaluations/multiuav_placement_ablation_v1/summary.json",
+      "sha256": "d9bb681cd22a9fa7c47111eebb4593b7fd3f7cda59f44da7ea92883ea37d0acc"
+    },
+    "publication_tex": {
+      "bytes": 39928,
+      "hash_basis": "raw_bytes",
+      "path": "paper/main.tex",
+      "sha256": "ed759a91c62ee884085a8ce5e2347e83edc65ce5c33d8c5f12f51d6338c384ee"
+    },
     "resource_admission": {
       "bytes": 23582,
       "hash_basis": "utf8_lf_normalized",
@@ -155,6 +173,24 @@
       "hash_basis": "utf8_lf_normalized",
       "path": "docs/multiuav_review_resolution_final.md",
       "sha256": "5598fd9b4968ee84699c4fc1a621cb06fd2289f98d1ff2ea8263e5ce76a9a386"
+    },
+    "reviewer_analysis_summary": {
+      "bytes": 13567,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "outputs/evaluations/multiuav_reviewer_analysis_v1/summary.json",
+      "sha256": "3724c904afb7548a9a23b4025b270cf2598cca2930f5c0e767987fac1c7f167b"
+    },
+    "reviewer_figure_manifest": {
+      "bytes": 1044,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "paper/figures/accuracy_refusal_aware_outcomes_v2_manifest.json",
+      "sha256": "ab93a00962b62bc02fc36bf4eade579be050ec171b27a4dfee1661737c8cb1b9"
+    },
+    "reviewer_revision_ledger": {
+      "bytes": 4059,
+      "hash_basis": "utf8_lf_normalized",
+      "path": "docs/corl_reviewer_revision_ledger.md",
+      "sha256": "b5b2dc9f3c992e3ba573a09c82c39fe4b5e758fec97637c3303adacbf819a8b9"
     }
   },
   "audit_version": "multiuav_manuscript_traceability_v1",
@@ -173,6 +209,8 @@
     "legacy_components_excluded": true,
     "negative_result_disclosed": true,
     "no_unresolved_manuscript_placeholders": true,
+    "placement_ablation_valid": true,
+    "placement_findings_traced": true,
     "required_literature_resolves": true,
     "resource_admission_valid": true,
     "resource_analysis_valid": true,
@@ -182,6 +220,9 @@
     "resource_secondary_exploratory_disclosed": true,
     "resource_values_traced": true,
     "review_resolution_present": true,
+    "reviewer_analysis_valid": true,
+    "reviewer_figure_manifest_valid": true,
+    "reviewer_findings_traced": true,
     "standalone_references_complete": true,
     "static_fidelity_limit_disclosed": true,
     "within_qwen_limit_disclosed": true,
@@ -223,8 +264,8 @@
   ],
   "schema_version": 1,
   "source_code_sha256": {
-    "audit_multiuav_manuscript.py": "8a0f853a7ede52120bb5d320ca97ca884bd6e2aafdb00dfd59936baa2465bd61",
-    "multiuav_manuscript_audit.py": "808b3eec5119fc8637a3db9d657e54985df980d60e67fb860a482b125ba7be53"
+    "audit_multiuav_manuscript.py": "39e20a8cd83be51b5849c29c0b8c42c0d406120424f41839b96948a64b5a4fa3",
+    "multiuav_manuscript_audit.py": "9149c436257ab19e8e30c2db9903f8304defc609d21e1619d6370efce27b78d2"
   },
   "status": "manuscript_internal_traceability_passed_final_package_pending",
   "valid": true

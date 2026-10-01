@@ -1,0 +1,3 @@
+model_id,reference_id,analysis_status,model_calls,cases,executable_cases,nonexecution_cases,registered_clarify_cases,registered_block_cases,unsupported_continuation_cases,unsupported_continuation_rate,containment_rate,false_nonexecution_execute,false_nonexecution_rate_execute,static_plan_fidelity_execute,static_plan_fidelity_rate_execute,strict_success_cases,strict_success_rate
+Qwen/Qwen2.5-3B-Instruct,always_block_post_hoc,reviewer_requested_post_hoc_deterministic_reference,0,1420,852,568,284,284,0,0.0,1.0,852,1.0,0,0.0,284,0.2
+Qwen/Qwen2.5-7B-Instruct,always_block_post_hoc,reviewer_requested_post_hoc_deterministic_reference,0,1420,852,568,284,284,0,0.0,1.0,852,1.0,0,0.0,284,0.2

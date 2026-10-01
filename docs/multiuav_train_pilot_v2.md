@@ -98,3 +98,52 @@ Before a claim-bearing follow-up, address the detected generated-label defects
 and acquire new independent, adjudicated missions. All 75 benchmark source
 sessions were assigned to the original study; neither its calibration nor
 inspected test split is a fresh final test for this candidate.
+
+## Official AGENT observation feasibility probe
+
+The follow-up probed the upstream server on the same 15 reviewed **training**
+sessions, with one selected source task per session. It restored the task and
+world through the upstream session controller, then used the official HTTP
+`GET /drones` and `GET /drones/{id}/nearby/targets` routes with the AGENT role.
+The AGENT's `GET /sessions/current/data` returned HTTP 403 in every case. The
+controller setup had SYSTEM-level access to the source world, including its
+target count; those fields were not supplied to an AGENT model. No model was
+loaded, no drone command was issued, and no simulator task was evaluated.
+
+In the 15 distinct sessions, at least one target was locally observed at the
+initial drone positions in 11 sessions; no target was locally observed in four.
+Each restored source world had targets. These counts establish only that the
+official local-perception route works and that initial AGENT observations are
+sometimes incomplete. They do not establish target search, closed-loop
+planning, static plan fidelity, or a safety improvement. The observed target
+IDs and coordinates remain in ignored raw output, separate from the sanitized
+aggregate. No held-out session was used for this probe.
+
+The upstream HTTP `POST /sessions` setup route hung in this local harness,
+including for a name-only session. Both attempted processes were terminated;
+no conclusion about its behavior in a deployed server follows. The successful
+probe used `session_controller.create_session_from_dict` and
+`set_current_session` for SYSTEM setup while retaining official AGENT HTTP
+observation and role checks. This is a feasibility probe, not an end-to-end
+official-server execution result.
+
+The isolated environment used Python 3.12, the upstream server requirements,
+and locally installed `shapely==2.1.2` and `numpy==2.5.3`; the upstream
+requirements omitted Shapely. Raw files are ignored under
+`outputs/multiuav/train-observation-probe-v2/<source-task-id>/`. Each summary
+records source and upstream hashes and the raw-file SHA-256. The aggregate
+validator checks all 15 selected cases, distinct sessions, checksums, role
+denial, no-model/no-command flags, and counts before writing a sanitized
+summary. Reproduce with the isolated environment, using a case ID from the
+reviewed training selection:
+
+```powershell
+.venv-multiuav-server/Scripts/python scripts/probe_multiuav_train_observations_v2.py --case-id 4c8040f9:canonical_execute --raw-output outputs/multiuav/train-observation-probe-v2/4c8040f9/raw_agent_observations.json --summary-output outputs/multiuav/train-observation-probe-v2/4c8040f9/summary.json
+python scripts/analyze_multiuav_train_observations_v2.py --root outputs/multiuav/train-observation-probe-v2 --output outputs/evaluations/multiuav_train_observation_probe_v2/summary.json
+```
+
+The next gate is a train-only, AGENT-role observation/replanning pilot that
+actually moves or searches, with strict separation between SYSTEM setup and
+AGENT evidence. This probe does not clear that gate. Prospective paper claims
+additionally require independent missions and adjudication; neither is
+currently available.

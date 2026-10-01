@@ -1,0 +1,135 @@
+{
+  "all_agent_privileged_data_http_status": 403,
+  "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+  "case_count": 15,
+  "cases": [
+    {
+      "agent_drone_count": 10,
+      "case_id": "05e12d8e:canonical_execute",
+      "distinct_locally_observed_target_count": 0,
+      "raw_agent_observations_sha256": "a71b2822670067c43be2a3426329ae704a21872e4bc37f6f3bdf93937aa9699c",
+      "session_id": "e76728cc",
+      "source_target_count_setup_only": 8
+    },
+    {
+      "agent_drone_count": 30,
+      "case_id": "1036bedf:canonical_execute",
+      "distinct_locally_observed_target_count": 13,
+      "raw_agent_observations_sha256": "298e65e4fd8bf1ca8bd9f05e3adbb6fb8cf72021aa79e6bcf6a47f44776f9397",
+      "session_id": "3ec31656",
+      "source_target_count_setup_only": 20
+    },
+    {
+      "agent_drone_count": 5,
+      "case_id": "14fd1139:canonical_execute",
+      "distinct_locally_observed_target_count": 0,
+      "raw_agent_observations_sha256": "a42c4b21b3db6dd77dcd1d9003e23b248a2bcc1fd4bf09093c8df29770c9c785",
+      "session_id": "3973d0d6",
+      "source_target_count_setup_only": 3
+    },
+    {
+      "agent_drone_count": 15,
+      "case_id": "1905e0ad:canonical_execute",
+      "distinct_locally_observed_target_count": 2,
+      "raw_agent_observations_sha256": "27bbfec7d77b74032aff685882e5eef4be36524de4fd655616f0230362a2ec6d",
+      "session_id": "35ce64d8",
+      "source_target_count_setup_only": 20
+    },
+    {
+      "agent_drone_count": 5,
+      "case_id": "4c8040f9:canonical_execute",
+      "distinct_locally_observed_target_count": 1,
+      "raw_agent_observations_sha256": "1a1e21aedb518a49af123b83b8ed39516d49c052dabd6e72192dddb03ca17e38",
+      "session_id": "04cd6269",
+      "source_target_count_setup_only": 3
+    },
+    {
+      "agent_drone_count": 3,
+      "case_id": "4cea97cd:canonical_execute",
+      "distinct_locally_observed_target_count": 1,
+      "raw_agent_observations_sha256": "250cbd2d107dceb121acc8aa45c6ad52ddb98ae9eb8ca36ebdf0ff1f69bdd033",
+      "session_id": "bad1e9e5",
+      "source_target_count_setup_only": 3
+    },
+    {
+      "agent_drone_count": 5,
+      "case_id": "519784ca:canonical_execute",
+      "distinct_locally_observed_target_count": 0,
+      "raw_agent_observations_sha256": "a77025323cfac7ec5c99de7f58758549db2cf1aff1047250e444c7d1406184e9",
+      "session_id": "0f23ff1e",
+      "source_target_count_setup_only": 5
+    },
+    {
+      "agent_drone_count": 20,
+      "case_id": "67cbff58:canonical_execute",
+      "distinct_locally_observed_target_count": 6,
+      "raw_agent_observations_sha256": "a96dbd356d82b100210f1e7a4b588d1b35603c983fc9c04e7b9218f265bac5c9",
+      "session_id": "b3c8ded2",
+      "source_target_count_setup_only": 30
+    },
+    {
+      "agent_drone_count": 10,
+      "case_id": "6c4a6010:canonical_execute",
+      "distinct_locally_observed_target_count": 1,
+      "raw_agent_observations_sha256": "299bd34028f572ad2995ccc39e80a54d107c69bfc40a3bc9c9db461b540372c0",
+      "session_id": "0567e470",
+      "source_target_count_setup_only": 6
+    },
+    {
+      "agent_drone_count": 8,
+      "case_id": "91130026:canonical_execute",
+      "distinct_locally_observed_target_count": 4,
+      "raw_agent_observations_sha256": "7e11d14db8e3b4e3fcecf662fb0001b9c4757047118a9f972aaa025032beb33c",
+      "session_id": "13b94391",
+      "source_target_count_setup_only": 6
+    },
+    {
+      "agent_drone_count": 10,
+      "case_id": "9b355a03:canonical_execute",
+      "distinct_locally_observed_target_count": 5,
+      "raw_agent_observations_sha256": "982e1146e61161bc1ddddac8db80f2c2c8010298ce7d6f56a8d42d809dd26cd3",
+      "session_id": "139a4109",
+      "source_target_count_setup_only": 10
+    },
+    {
+      "agent_drone_count": 20,
+      "case_id": "a45a0c87:canonical_execute",
+      "distinct_locally_observed_target_count": 8,
+      "raw_agent_observations_sha256": "99f8d9fc7f9495ecef943540e6e80c02d897d4c726e3b2c6f1e233f82525b0e6",
+      "session_id": "cc05a425",
+      "source_target_count_setup_only": 10
+    },
+    {
+      "agent_drone_count": 8,
+      "case_id": "ac5f85f8:canonical_execute",
+      "distinct_locally_observed_target_count": 0,
+      "raw_agent_observations_sha256": "05f1f25855d2dbb24952e546baaef64a7ae42aab00faea241912d7190412237f",
+      "session_id": "72ccacd0",
+      "source_target_count_setup_only": 5
+    },
+    {
+      "agent_drone_count": 30,
+      "case_id": "c96a0146:canonical_execute",
+      "distinct_locally_observed_target_count": 16,
+      "raw_agent_observations_sha256": "42c39440a17b33586551c6d459cac2e932942ca184b97431393e9b1312716147",
+      "session_id": "550aa487",
+      "source_target_count_setup_only": 100
+    },
+    {
+      "agent_drone_count": 20,
+      "case_id": "cf6f176c:canonical_execute",
+      "distinct_locally_observed_target_count": 12,
+      "raw_agent_observations_sha256": "755dda424eab6be1e20666621af5aa4820d363d207682bdcb6ae089d862354be",
+      "session_id": "793e7745",
+      "source_target_count_setup_only": 15
+    }
+  ],
+  "cases_with_locally_observed_targets": 11,
+  "cases_with_no_locally_observed_targets": 4,
+  "distinct_session_count": 15,
+  "drone_command_issued": false,
+  "model_loaded": false,
+  "simulator_task_evaluated": false,
+  "status": "train_only_official_agent_observation_feasibility_not_paper_evaluation",
+  "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+}

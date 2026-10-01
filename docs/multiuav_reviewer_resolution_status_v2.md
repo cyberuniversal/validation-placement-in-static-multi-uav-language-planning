@@ -19,10 +19,12 @@ promoted into prospective paper performance.
 | Source tasks share 15 held-out sessions | Post-hoc session-clustered intervals and session counts are reported separately from source-task-clustered primary intervals. | More independent sessions for stable higher-level uncertainty; the present 15 cannot justify a rich hierarchical model. |
 | Resource evidence: one RTX 3090, 30 clusters, three repetitions | Hardware and repetition limits are disclosed; raw resource evidence is preserved. | Replicate on independently controlled hardware and/or more clusters/repetitions after the executable-utility problem is solved. Not done. |
 
-The immediate technical next gate is a train-only closed-loop AGENT observation
-and replanning pilot. It must use official AGENT-visible observations, avoid
-privileged world fields, preserve every failed attempt, and measure both
-executable utility and unsafe continuation. The source sessions in the frozen
+The scripted train-only official-server probe now verifies a bounded AGENT
+observation-command-observation cycle on two reviewed cases, but both official
+task checks failed. It is not a model-driven planning result. The immediate
+technical next gate is a pinned-model run through this loop, followed by
+train-only diagnosis of executable utility and unsafe continuation. It must
+avoid privileged world fields and preserve every failed attempt. The source sessions in the frozen
 study have already been assigned or inspected; a later claim-bearing test
 requires new untouched sessions and independent adjudication. Neither is
 available at this time. Do not relabel a retrospective replay as that test.

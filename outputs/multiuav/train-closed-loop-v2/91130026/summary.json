@@ -1,0 +1,19 @@
+{
+  "agent_privileged_data_http_status": 403,
+  "attempted_commands": 4,
+  "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+  "case_id": "91130026:canonical_execute",
+  "final_locally_observed_target_count": 3,
+  "initial_locally_observed_target_count": 4,
+  "max_commands": 4,
+  "model_loaded": false,
+  "policy": "deterministic_visible_target_or_local_search_v1",
+  "raw_sha256": "43caba5752ffba6cbb2eaa00777c53d3511f08e522f560ca081201d5a0190a50",
+  "session_id": "13b94391",
+  "source_task_id": "91130026",
+  "status": "train_only_scripted_agent_loop_not_model_or_paper_evaluation",
+  "stop_reason": "command_budget_exhausted",
+  "successful_commands": 4,
+  "task_check_result": false,
+  "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+}

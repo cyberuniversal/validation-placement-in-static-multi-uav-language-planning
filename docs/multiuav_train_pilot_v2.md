@@ -147,3 +147,49 @@ actually moves or searches, with strict separation between SYSTEM setup and
 AGENT evidence. This probe does not clear that gate. Prospective paper claims
 additionally require independent missions and adjudication; neither is
 currently available.
+
+## Bounded official-server closed-loop development probe
+
+`scripts/probe_multiuav_train_closed_loop_v2.py` adds a deliberately scripted
+AGENT loop for infrastructure testing. Each step reads `/drones`, each drone's
+`/nearby/targets`, and AGENT task progress. It issues only `take_off` or
+`move_to`, then observes again. It chooses a locally visible named target when
+available; otherwise it takes a one-perceived-radius cardinal search step
+inside the public canvas. There is no model in these two runs, no hidden target
+position supplied to the policy, and no claim of instruction fidelity. The
+official server can still reject a command for collision or other reasons;
+such a rejection stops the loop. An AGENT request to the privileged session
+data endpoint returned 403 before either loop.
+
+Two reviewed training cases were run with four-command budgets:
+
+| Case | Initial/final locally visible targets | Command outcomes | Official task check |
+|---|---:|---|---|
+| `14fd1139:canonical_execute` | 0 / 0 | 4/4 succeeded; one takeoff and three search moves | false |
+| `91130026:canonical_execute` | 4 / 3 | 4/4 succeeded; one takeoff, one move toward a locally observed target, two search moves | false |
+
+The second case's AGENT task-progress readout rose from 0% to 9%; this is not
+task completion. Both runs are negative on the official task check. Their raw
+AGENT responses, commands, and server replies remain in ignored local
+`outputs/multiuav/train-closed-loop-v2/<source-task-id>/raw.json`. Hash-linked
+sanitized summaries are kept separately. The raw responses must not be
+confused with model-generated actions or with the frozen static study.
+
+```powershell
+.venv-multiuav-server/Scripts/python scripts/probe_multiuav_train_closed_loop_v2.py --case-id 14fd1139:canonical_execute --max-commands 4 --raw-output outputs/multiuav/train-closed-loop-v2/14fd1139/raw.json --summary-output outputs/multiuav/train-closed-loop-v2/14fd1139/summary.json
+.venv-multiuav-server/Scripts/python scripts/probe_multiuav_train_closed_loop_v2.py --case-id 91130026:canonical_execute --max-commands 4 --raw-output outputs/multiuav/train-closed-loop-v2/91130026/raw.json --summary-output outputs/multiuav/train-closed-loop-v2/91130026/summary.json
+```
+
+`scripts/run_multiuav_train_model_loop_v2.py` is a separate, bounded 3B
+follow-up. It prompts the same pinned Qwen2.5-3B-Instruct revision for one of
+four high-level choices: take off, move to a target presently observed by the
+chosen drone, search one cardinal direction, or stop. Deterministic code
+resolves target positions only from fresh AGENT observations and search steps
+only from current drone position and perceived radius. It rejects ambiguous
+JSON, unknown IDs, out-of-bounds or repeated destinations, and unsupported
+commands. This does **not** make the resulting flight collision-safe or
+mission-correct; the official server still decides whether each command
+succeeds. The model is never given reference commands or target records from
+SYSTEM setup. Its raw prompts/generations and server exchanges must be retained
+separately from summaries, including on failure. No model-driven result is
+claimed until a GPU execution and the resulting task check are verified.

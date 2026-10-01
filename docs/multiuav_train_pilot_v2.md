@@ -27,6 +27,20 @@ The script supports a no-model preflight:
 python scripts/run_multiuav_train_pilot_v2.py --results outputs/multiuav/train-pilot-v2/results.jsonl --summary outputs/multiuav/train-pilot-v2/run_summary.json --preflight-only
 ```
 
+The Nautilus run is specified by
+`infra/nautilus/train-pilot-3b-v2-job.yaml` and uses code commit
+`81542027268e54358f9deabe0b932e5ed0b4cd73`. Once the raw summary is
+complete, retrieve the raw JSONL and summary from the PVC without modifying
+them and run:
+
+```powershell
+python scripts/analyze_multiuav_train_pilot_v2.py --results <raw-results.jsonl> --run-summary <run-summary.json> --benchmark external/MultiUAV-Plat/benchmark/benchmark.zip --output-dir outputs/evaluations/multiuav_train_pilot_v2
+```
+
+The analysis checks input hashes and completeness, then writes only sanitized
+case-level failure categories, planned command names, official command names,
+and an aggregate summary. The raw prompt and generation remain separate.
+
 An actual run additionally requires `--cache-audit` pointing to the verified
 pinned 3B snapshot audit on the same host. It must run with GPU access and the
 `[inference]` dependencies. Preserve raw outputs and failed runs; analyze them

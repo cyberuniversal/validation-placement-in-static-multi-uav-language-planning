@@ -8,6 +8,10 @@ import tempfile
 import unittest
 
 from scripts.run_multiuav_train_pilot_v2 import _read_completed, select_cases
+from scripts.analyze_multiuav_train_pilot_v2 import (
+    DEFAULT_BENCHMARK,
+    _official_commands,
+)
 
 
 class TrainPilotTests(unittest.TestCase):
@@ -38,6 +42,12 @@ class TrainPilotTests(unittest.TestCase):
             path.write_text((json.dumps(row) + "\n") * 2, encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "duplicate"):
                 _read_completed(path, "frozen", {"case-1"})
+
+    def test_pinned_benchmark_covers_selected_official_commands(self) -> None:
+        selected = {case["source_task_id"] for case in select_cases()}
+        commands = _official_commands(DEFAULT_BENCHMARK, selected)
+        self.assertEqual(set(commands), selected)
+        self.assertTrue(all(commands.values()))
 
 
 if __name__ == "__main__":

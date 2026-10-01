@@ -19,12 +19,16 @@ promoted into prospective paper performance.
 | Source tasks share 15 held-out sessions | Post-hoc session-clustered intervals and session counts are reported separately from source-task-clustered primary intervals. | More independent sessions for stable higher-level uncertainty; the present 15 cannot justify a rich hierarchical model. |
 | Resource evidence: one RTX 3090, 30 clusters, three repetitions | Hardware and repetition limits are disclosed; raw resource evidence is preserved. | Replicate on independently controlled hardware and/or more clusters/repetitions after the executable-utility problem is solved. Not done. |
 
-The scripted train-only official-server probe now verifies a bounded AGENT
+The scripted train-only official-server probe verifies a bounded AGENT
 observation-command-observation cycle on two reviewed cases, but both official
-task checks failed. It is not a model-driven planning result. The immediate
-technical next gate is a pinned-model run through this loop, followed by
-train-only diagnosis of executable utility and unsafe continuation. It must
-avoid privileged world fields and preserve every failed attempt. The source sessions in the frozen
+task checks failed. The pinned 3B model was then run through the loop on
+reviewed training cases: two attempts rejected a model-selected SEARCH before
+takeoff, and an explicit-takeoff development probe accepted one deterministic
+prelude but rejected the model's malformed STOP. None produced a model-selected
+server command or task completion. These are negative development results,
+not a revised paper result. The next technical gate is a redesigned, frozen
+model action interface that can act from local observations without giving up
+the fail-closed checks. The source sessions in the frozen
 study have already been assigned or inspected; a later claim-bearing test
 requires new untouched sessions and independent adjudication. Neither is
 available at this time. Do not relabel a retrospective replay as that test.

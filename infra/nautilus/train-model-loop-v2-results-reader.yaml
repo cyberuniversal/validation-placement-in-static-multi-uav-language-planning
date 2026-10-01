@@ -16,7 +16,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                  - ry-gpu-03.sdsc.optiputer.net
+                  - nautilus-it-gpu05.fullerton.edu
   containers:
     - name: reader
       image: alpine:3.20

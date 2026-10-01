@@ -243,3 +243,24 @@ Each actual command response in this probe is also appended and fsynced to a
 separate `.commands.jsonl` journal before the next observation. The journal
 is raw evidence and stays beside the raw model trace on the PVC; the run
 summary records its SHA-256 when present.
+
+Attempt 4 (`validation-placement-train-model-loop-3b-v2-a4`) completed on an
+NVIDIA L4 for `14fd1139:canonical_execute`. Preflight passed and the pinned
+3B model loaded. One deterministic takeoff prelude succeeded and was recorded
+in the command journal. After fresh AGENT observation, the model made one call
+and returned `STOP` with extra parameters. The strict action resolver rejected
+it as `stop_has_parameters`; **no model-selected command** was issued. The
+official task check was false. The run summary binds both the copied raw
+model trace and the command journal by SHA-256; both hashes were verified.
+Raw files remain on the PVC and in the local ignored attempt-4 directory, with
+job/pod YAML and logs preserved separately. The one successful command must
+not be reported as model planning success.
+
+Across these two model-action variants on one reviewed training case plus the
+explicit-takeoff probe on another, the system has not shown model-driven
+search or task completion. Repeated prompt edits against these inspected
+cases would be training-set tuning. The next research gate is a redesigned,
+frozen action interface or constrained output mechanism tested first on
+training cases and then on genuinely untouched, independently adjudicated
+missions. Those missions and reviewer are not currently available. The
+frozen paper's zero executable static plan-fidelity result is unchanged.

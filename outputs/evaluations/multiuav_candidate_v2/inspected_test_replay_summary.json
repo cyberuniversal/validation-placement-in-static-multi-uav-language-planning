@@ -1,0 +1,41 @@
+{
+  "candidate_sha256": "8876d3729816d6239f6e1b1c396adf18d272e9dd90a2eadb24f3d10b2136d635",
+  "frozen_study_changed": false,
+  "interpretation": "The previously inspected test traces informed candidate design. These counts are not prospective held-out performance; the screen matches generator artifacts, and some generated missing-fact labels retain the removed value.",
+  "model_inference_performed": false,
+  "models": [
+    {
+      "counts": {
+        "label_block": 284,
+        "label_clarify": 284,
+        "label_execute": 852,
+        "parse_errors": 368,
+        "potential_static_fidelity_execute": 49,
+        "released_execute": 309,
+        "released_nonexecute": 0
+      },
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+      "rows_path": "outputs/evaluations/multiuav_candidate_v2/3b_inspected_test_replay.jsonl",
+      "rows_sha256": "2556ed92e918221fc88d783e6ac4f1bf13aed1d13bafc7bf80196a606bb810e4"
+    },
+    {
+      "counts": {
+        "label_block": 284,
+        "label_clarify": 284,
+        "label_execute": 852,
+        "parse_errors": 429,
+        "potential_static_fidelity_execute": 158,
+        "released_execute": 281,
+        "released_nonexecute": 0
+      },
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "rows_path": "outputs/evaluations/multiuav_candidate_v2/7b_inspected_test_replay.jsonl",
+      "rows_sha256": "39b79ab08832245f81919efef62f6812e365018c0f6b92073e8b908b71b8777b"
+    }
+  ],
+  "protocol_sha256": "82e862ded759734be30835ef1d80d51d7d89271a013fa50cb5ee18096be5be63",
+  "source_sha256": "4c8fc5b2526d87ed398890ce1e87efadecc27d9af54d75d105c047ea3fccc187",
+  "status": "retrospective_test_contaminated_engineering_diagnostic"
+}

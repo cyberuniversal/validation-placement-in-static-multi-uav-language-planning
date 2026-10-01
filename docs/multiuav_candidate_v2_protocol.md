@@ -48,6 +48,38 @@ train/calibration/test split, and the original test outputs informed the URL
 diagnostic. There is no genuinely untouched source-session test set in this
 repository for the follow-up.
 
+After commit `fa84f1c4937281840d9be4f5d4475e6c9d5dbc53`, the unmodified
+candidate was audited on calibration with
+`python scripts/audit_multiuav_candidate_v2.py --split calibration`.
+Among 1,450 generated cases, it agreed with 1,443 proposed decisions. Two
+CLARIFY and five EXECUTE cases were screened as BLOCK. All seven belong to
+source tasks `664cc6ac` and `e23fd2a2`, whose instructions ask four drones to
+act while the visible fleet has three and the named drones repeat. These cases
+need human adjudication before calling the candidate wrong or the generated
+labels correct. Seven additional missing-information instructions still contain
+the value recorded as removed. The calibration audit remains a generator-label
+check, not a planning result.
+
+## Inspected-test replay (contaminated)
+
+`python scripts/analyze_multiuav_candidate_replay_v2.py` replays the frozen
+M1 outputs through this already frozen candidate. The original test outputs
+were inspected before candidate design, and the screen recognizes phrases
+introduced by the case generator. Thus this replay is an engineering
+counterfactual, **not** prospective held-out evidence for the manuscript.
+
+| Model | Released on 852 labeled executable cases | Official-command matches among released | Released on 568 labeled non-executable cases |
+|---|---:|---:|---:|
+| Qwen2.5-3B-Instruct | 309 | 49 | 0 |
+| Qwen2.5-7B-Instruct | 281 | 158 | 0 |
+
+The official-command match uses the existing scorer. A static match is not
+simulator or physical execution. The zero in the rightmost column is partly a
+generator-template result and does not establish safety for natural language
+outside these controlled variants. Original checkpoints and registered tables
+remain unchanged. Aggregate and sanitized per-case records are preserved beside
+the train/calibration audits.
+
 Before a revised paper claim, obtain and audit independent new mission cases,
 freeze the entire candidate and scoring protocol, run new model inference, and
 report executable static plan fidelity, false refusal, and unsupported

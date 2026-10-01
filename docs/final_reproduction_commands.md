@@ -109,6 +109,19 @@ pdflatex -interaction=nonstopmode -halt-on-error main.tex
 The final IEEE conference manuscript is `paper/main.tex`; the compiled copy is
 `paper/main.pdf`. The compact resource figure is regenerated from the frozen
 CSV under `paper/data/`. A TeX distribution providing `IEEEtran` is required.
+Build the anonymous CoRL 2026 SPAIS workshop version separately:
+
+```powershell
+Set-Location paper/corl_2026_spais_anonymous
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+bibtex main
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+```
+
+The resulting `main.pdf` is four pages total, with three content pages and one
+references page. The package uses the official anonymous CoRL 2026 style.
+
 The editable deck is generated with the bundled `@oai/artifact-tool` runtime:
 
 ```powershell

@@ -46,3 +46,8 @@ paper/neurips_2026_anonymous/main.pdf
 paper/*.aux
 paper/*.log
 paper/*.out
+paper/corl_2026_spais_anonymous/*.aux
+paper/corl_2026_spais_anonymous/*.bbl
+paper/corl_2026_spais_anonymous/*.blg
+paper/corl_2026_spais_anonymous/*.log
+paper/corl_2026_spais_anonymous/*.out

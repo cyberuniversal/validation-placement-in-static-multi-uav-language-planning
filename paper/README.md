@@ -26,3 +26,7 @@ The separate anonymous NeurIPS 2026 package is under
 `neurips_2026_anonymous/`. It uses the official annual style and includes the
 required checklist without changing the frozen scientific results.
 
+The reviewer-revised anonymous CoRL 2026 SPAIS workshop package is under
+`corl_2026_spais_anonymous/`. It uses the official CoRL submission style and
+fits the workshop's four-page content limit, excluding references.
+

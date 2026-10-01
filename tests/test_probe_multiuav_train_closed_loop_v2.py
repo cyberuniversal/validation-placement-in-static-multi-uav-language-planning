@@ -92,6 +92,7 @@ class ClosedLoopProbeTests(unittest.TestCase):
 
     def test_loop_reobserves_after_each_command(self) -> None:
         client = FakeClient()
+        journal: list[dict] = []
         case = {
             "source_task_id": "task-1",
             "context": {
@@ -99,7 +100,10 @@ class ClosedLoopProbeTests(unittest.TestCase):
                 "session": {"canvas_width": 20, "canvas_height": 20},
             },
         }
-        result = run_case(client, {"X-API-Key": "agent"}, case, max_commands=2)
+        result = run_case(
+            client, {"X-API-Key": "agent"}, case,
+            max_commands=2, on_command=journal.append,
+        )
         self.assertEqual(len(result["snapshots"]), 3)
         self.assertEqual([item["action"]["command"] for item in result["commands"]], [
             "take_off", "move_to",
@@ -107,6 +111,7 @@ class ClosedLoopProbeTests(unittest.TestCase):
         self.assertEqual(len(result["snapshots"][-1]["nearby_targets_by_drone"]["drone-1"]), 1)
         self.assertEqual(result["agent_privileged_data_http_status"], 403)
         self.assertEqual(result["task_check"]["result"], False)
+        self.assertEqual(journal, result["commands"])
 
     def test_privileged_access_fails_closed(self) -> None:
         case = {

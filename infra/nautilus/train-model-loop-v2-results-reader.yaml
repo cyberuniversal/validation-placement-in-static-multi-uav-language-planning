@@ -16,7 +16,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                  - gpu-17.nrp.mghpcc.org
+                  - ry-gpu-03.sdsc.optiputer.net
   containers:
     - name: reader
       image: alpine:3.20

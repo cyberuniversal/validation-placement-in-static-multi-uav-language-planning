@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -21,7 +22,7 @@ from shepherd_ai.multiuav_model_cache import verify_cached_snapshot  # noqa: E40
 from shepherd_ai.multiuav_prompts import PromptMessage, PromptRequest  # noqa: E402
 from shepherd_ai.multiuav_qwen_backend import LocalQwenBackend, QwenBackendConfig  # noqa: E402
 from shepherd_ai.multiuav_runner import ModelBackend  # noqa: E402
-from scripts.probe_multiuav_train_closed_loop_v2 import run_case  # noqa: E402
+from scripts.probe_multiuav_train_closed_loop_v2 import run_case, select_action  # noqa: E402
 from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
     EXPECTED_BENCHMARK_SHA256,
     EXPECTED_UPSTREAM_COMMIT,
@@ -202,6 +203,7 @@ class ModelActionSelector:
     def __init__(self, backend: ModelBackend) -> None:
         self.backend = backend
         self.trace: list[dict[str, Any]] = []
+        self.deterministic_prelude: list[dict[str, Any]] = []
 
     def __call__(
         self,
@@ -211,6 +213,21 @@ class ModelActionSelector:
         canvas: tuple[float, float],
         previous_destinations: set[tuple[float, float]],
     ) -> dict[str, Any] | None:
+        if (
+            not self.trace
+            and not self.deterministic_prelude
+            and "take off" in instruction.casefold()
+            and drones
+            and all(float(drone["position"]["z"]) <= 0 for drone in drones)
+        ):
+            action = select_action(
+                instruction, drones, nearby_targets, canvas, previous_destinations,
+            )
+            if action is not None and action["command"] == "take_off":
+                self.deterministic_prelude.append({
+                    "action": action, "basis": "explicit_takeoff_instruction_and_agent_visible_drone",
+                })
+                return action
         request = build_request(
             instruction, drones, nearby_targets, canvas,
             previous_destinations, len(self.trace),
@@ -266,6 +283,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
+        "policy": "explicit_takeoff_prelude_then_model_high_level_actions_v1",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",
@@ -278,6 +296,7 @@ def main() -> None:
         print(json.dumps({"status": "preflight_only", "case_id": case["case_id"]}))
         return
     selector: ModelActionSelector | None = None
+    journal_path = args.raw_output.with_suffix(".commands.jsonl")
     try:
         import torch  # noqa: PLC0415
 
@@ -293,6 +312,16 @@ def main() -> None:
         from api.server import ROLE_SECRETS, UserRole, app, session_controller  # noqa: PLC0415
 
         headers = {"X-API-Key": ROLE_SECRETS[UserRole.AGENT]}
+        if journal_path.exists():
+            raise ValueError("command journal already exists; use a new attempt directory")
+        journal_path.parent.mkdir(parents=True, exist_ok=True)
+
+        def journal(record: dict[str, Any]) -> None:
+            with journal_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(record, sort_keys=True) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+
         with TestClient(app) as client:
             setup = session_payload(source, case["source_task_id"])
             setup["id"] = source["id"]
@@ -300,13 +329,21 @@ def main() -> None:
             session_controller.sessions[restored.id] = restored
             if session_controller.set_current_session(restored.id) is None:
                 raise RuntimeError("official session controller did not activate training session")
-            run = run_case(client, headers, case, max_commands=args.max_commands, choose_action=selector)
-        raw = {"configuration": config, "run": run, "model_calls": selector.trace}
+            run = run_case(
+                client, headers, case, max_commands=args.max_commands,
+                choose_action=selector, on_command=journal,
+            )
+        raw = {
+            "configuration": config, "run": run,
+            "deterministic_prelude": selector.deterministic_prelude,
+            "model_calls": selector.trace,
+        }
         args.raw_output.parent.mkdir(parents=True, exist_ok=True)
         args.raw_output.write_text(json.dumps(raw, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         summary.update({
             "status": "complete_train_only_unscored",
             "model_call_count": len(selector.trace),
+            "deterministic_prelude_action_count": len(selector.deterministic_prelude),
             "attempted_commands": len(run["commands"]),
             "successful_commands": sum(
                 item["response"]["http_status"] == 200
@@ -320,19 +357,27 @@ def main() -> None:
             "raw_sha256": sha256(args.raw_output),
             "completed_at_utc": datetime.now(timezone.utc).isoformat(),
         })
+        if journal_path.exists():
+            summary["command_journal_sha256"] = sha256(journal_path)
     except BaseException as error:
         summary.update({
             "status": "failed_preserved", "error_type": type(error).__name__,
             "error_message": str(error),
             "model_call_count": len(selector.trace) if selector else 0,
         })
-        if selector and selector.trace:
+        if selector and (selector.trace or selector.deterministic_prelude):
             args.raw_output.parent.mkdir(parents=True, exist_ok=True)
             args.raw_output.write_text(
-                json.dumps({"configuration": config, "model_calls": selector.trace}, indent=2, sort_keys=True) + "\n",
+                json.dumps({
+                    "configuration": config,
+                    "deterministic_prelude": selector.deterministic_prelude,
+                    "model_calls": selector.trace,
+                }, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
             summary["raw_sha256"] = sha256(args.raw_output)
+        if journal_path.exists():
+            summary["command_journal_sha256"] = sha256(journal_path)
         raise
     finally:
         args.summary_output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

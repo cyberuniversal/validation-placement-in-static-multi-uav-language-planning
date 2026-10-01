@@ -223,3 +223,23 @@ AGENT-visible drone altitude: a grounded drone may only `TAKE_OFF` or `STOP`.
 The deterministic gate remains unchanged. This is iterative development on
 the same reviewed training task and must not be presented as an untouched
 evaluation or a causal comparison with M1--M4.
+
+Attempt 3 (`validation-placement-train-model-loop-3b-v2-a3`) also completed
+with the pinned 3B checkpoint, but the model again chose `SEARCH` for a grounded
+drone. The unchanged resolver rejected it as `drone_not_airborne`; zero
+commands were issued and the task check was false. Prompting alone did not
+repair this training case. The raw request/generation and complete run evidence
+are retained on the PVC and locally under the attempt-3 directory, with
+matching raw SHA-256. This second negative result must remain visible.
+
+A subsequent **development** probe uses an instruction that explicitly says
+"take off" (`14fd1139:canonical_execute`). A deterministic, AGENT-visible
+takeoff prelude is separated in the raw trace from model calls. After the
+server confirms takeoff, the model receives fresh AGENT observations and
+selects the next high-level action. Any command count or task result must
+separately identify that deterministic prelude; it is not an M1--M4 result,
+and a model-driven planning success has not yet been shown.
+Each actual command response in this probe is also appended and fsynced to a
+separate `.commands.jsonl` journal before the next observation. The journal
+is raw evidence and stays beside the raw model trace on the PVC; the run
+summary records its SHA-256 when present.

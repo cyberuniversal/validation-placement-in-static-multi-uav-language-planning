@@ -185,6 +185,21 @@ class ModelLoopTests(unittest.TestCase):
         self.assertEqual(selector.trace[-1]["resolution"], "model_stop")
         self.assertEqual(result["stop_reason"], "no_bounded_action")
 
+    def test_explicit_takeoff_prelude_uses_no_model_call(self) -> None:
+        backend = SequenceBackend([choice("SEARCH", direction="EAST")])
+        selector = ModelActionSelector(backend)
+        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        first = selector("Take off and search", [grounded], {"drone-1": []},
+                         (20, 20), set())
+        self.assertEqual(first["command"], "take_off")
+        self.assertEqual(backend.calls, 0)
+        self.assertEqual(len(selector.deterministic_prelude), 1)
+        second = selector(
+            "Take off and search", [DRONE], {"drone-1": []}, (20, 20), set(),
+        )
+        self.assertEqual(second["command"], "move_to")
+        self.assertEqual(backend.calls, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -133,6 +133,7 @@ def run_case(
         [str, list[dict[str, Any]], Mapping[str, list[dict[str, Any]]],
          tuple[float, float], set[tuple[float, float]]], dict[str, Any] | None,
     ] = select_action,
+    on_command: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     if max_commands < 1 or max_commands > 12:
         raise ValueError("pilot command budget must be between 1 and 12")
@@ -159,7 +160,10 @@ def run_case(
         if action["command"] == "move_to":
             destinations.add((action["x"], action["y"]))
         response = issue_action(client, headers, action)
-        commands.append({"action": action, "response": response})
+        command_record = {"action": action, "response": response}
+        commands.append(command_record)
+        if on_command is not None:
+            on_command(command_record)
         snapshots.append(agent_snapshot(client, headers))
         if response["http_status"] != 200 or response["body"].get("status") != "success":
             stop_reason = "command_rejected_or_failed"

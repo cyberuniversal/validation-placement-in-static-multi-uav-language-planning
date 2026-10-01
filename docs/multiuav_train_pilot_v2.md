@@ -193,3 +193,14 @@ succeeds. The model is never given reference commands or target records from
 SYSTEM setup. Its raw prompts/generations and server exchanges must be retained
 separately from summaries, including on failure. No model-driven result is
 claimed until a GPU execution and the resulting task check are verified.
+
+The first Nautilus model-loop job
+`validation-placement-train-model-loop-3b-v2` reached an NVIDIA A10 node but
+never started its container: repeated pulls of the pinned PyTorch image failed
+with `context canceled` and `ImagePullBackOff`. No preflight, model load, or
+UAV command occurred. Its job/pod YAML and scheduler/pull events are preserved
+under the local ignored
+`outputs/multiuav/train-model-loop-v2/91130026/attempt-1-local-evidence/`.
+After capturing that evidence, the non-running job was removed. Attempt 2
+retains the same model, source case, and command budget while excluding the
+image-pull-failing node. Do not count attempt 1 as an experiment result.

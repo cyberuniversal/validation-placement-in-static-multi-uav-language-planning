@@ -1,0 +1,126 @@
+Name:             validation-placement-train-model-loop-3b-v2-n8xbm
+Namespace:        aiea-interns
+Priority:         0
+Service Account:  default
+Node:             hcc-nrp-shor-c5817.unl.edu/129.93.153.146
+Start Time:       Thu, 01 Oct 2026 23:20:00 +0300
+Labels:           app.kubernetes.io/name=validation-placement
+                  batch.kubernetes.io/controller-uid=eae7bec8-2faf-49b0-97a2-661c3030b115
+                  batch.kubernetes.io/job-name=validation-placement-train-model-loop-3b-v2
+                  controller-uid=eae7bec8-2faf-49b0-97a2-661c3030b115
+                  job-name=validation-placement-train-model-loop-3b-v2
+                  validation-placement/stage=train-model-loop-3b-v2
+Annotations:      cni.projectcalico.org/containerID: d047372a8d2fceae32606c486f8ff1675e045d0e4b4c900402ad9c8849525826
+                  cni.projectcalico.org/podIP: 10.244.78.177/32
+                  cni.projectcalico.org/podIPs: 10.244.78.177/32,fdf0:17b3:c3ec:1f79:10::cb39/128
+                  kubernetes.io/limit-ranger:
+                    LimitRanger plugin set: ephemeral-storage request for container train-model-loop; ephemeral-storage limit for container train-model-loop
+                  nrp.ai/username: http://cilogon.org/serverE/users/539948
+Status:           Pending
+IP:               10.244.78.177
+IPs:
+  IP:           10.244.78.177
+  IP:           fdf0:17b3:c3ec:1f79:10::cb39
+Controlled By:  Job/validation-placement-train-model-loop-3b-v2
+Containers:
+  train-model-loop:
+    Container ID:  
+    Image:         pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -lc
+    Args:
+      set -euo pipefail
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      repo=/workspace/repo-validation-placement-model-loop-0b6c762
+      if [[ ! -d "${repo}/.git" ]]; then
+        git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+      fi
+      git -C "${repo}" fetch origin codex/executable-fidelity-v2
+      git -C "${repo}" checkout --detach 0b6c762a3b30162962ef4b0e670113f75ea9cec4
+      upstream="${repo}/external/MultiUAV-Plat"
+      if [[ ! -d "${upstream}/.git" ]]; then
+        git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
+      fi
+      git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+      output=/workspace/results/train-model-loop-v2/91130026/attempt-1
+      mkdir -p "${output}"
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 4 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/preflight_summary.json" \
+        --preflight-only
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 4 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/run_summary.json"
+      
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:                2
+      ephemeral-storage:  50Gi
+      memory:             16Gi
+      nvidia.com/gpu:     1
+    Requests:
+      cpu:                2
+      ephemeral-storage:  0
+      memory:             16Gi
+      nvidia.com/gpu:     1
+    Environment:
+      HF_HOME:               /workspace/hf-cache
+      HF_HUB_OFFLINE:        1
+      TRANSFORMERS_OFFLINE:  1
+      SDL_VIDEODRIVER:       dummy
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6gkhz (ro)
+      /workspace from workspace (rw)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  workspace:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  shepherd-ai-539948
+    ReadOnly:   false
+  kube-api-access-6gkhz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Guaranteed
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+                             nvidia.com/gpu:PreferNoSchedule op=Exists
+Events:
+  Type     Reason                  Age                  From                     Message
+  ----     ------                  ----                 ----                     -------
+  Warning  FailedScheduling        19m (x19 over 20m)   default-scheduler        0/533 nodes are available: 10 Insufficient cpu, 19 node(s) were unschedulable, 225 node(s) had untolerated taint(s), 227 node(s) didn't match Pod's node affinity/selector, 62 Insufficient nvidia.com/gpu, 7 Insufficient memory. no new claims to deallocate, preemption: 0/533 nodes are available: 14 Insufficient nvidia.com/gpu, 47 No preemption victims found for incoming pod, 472 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling        18m (x6 over 18m)    default-scheduler        0/533 nodes are available: 19 node(s) were unschedulable, 225 node(s) had untolerated taint(s), 227 node(s) didn't match Pod's node affinity/selector, 62 Insufficient nvidia.com/gpu, 7 Insufficient memory, 9 Insufficient cpu. no new claims to deallocate, preemption: 0/533 nodes are available: 14 Insufficient nvidia.com/gpu, 47 No preemption victims found for incoming pod, 472 Preemption is not helpful for scheduling.
+  Normal   SuccessfulAttachVolume  15m                  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-245732b3-eebc-489d-a191-c461f2c42a23"
+  Warning  Failed                  4m43s (x2 over 10m)  kubelet                  spec.containers{train-model-loop}: Failed to pull image "pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime": rpc error: code = Canceled desc = failed to pull and unpack image "docker.io/pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime": context canceled
+  Warning  Failed                  4m43s (x2 over 10m)  kubelet                  spec.containers{train-model-loop}: Error: ErrImagePull
+  Normal   BackOff                 4m30s (x2 over 10m)  kubelet                  spec.containers{train-model-loop}: Back-off pulling image "pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime"
+  Warning  Failed                  4m30s (x2 over 10m)  kubelet                  spec.containers{train-model-loop}: Error: ImagePullBackOff
+  Normal   Pulling                 4m18s (x3 over 15m)  kubelet                  spec.containers{train-model-loop}: Pulling image "pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime"

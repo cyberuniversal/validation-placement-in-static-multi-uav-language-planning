@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: validation-placement-train-model-loop-3b-v2
+  name: validation-placement-train-model-loop-3b-v2-a2
   namespace: aiea-interns
   labels:
     app.kubernetes.io/name: validation-placement
-    validation-placement/stage: train-model-loop-3b-v2
+    validation-placement/stage: train-model-loop-3b-v2-a2
 spec:
   activeDeadlineSeconds: 5400
   backoffLimit: 0
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: validation-placement
-        validation-placement/stage: train-model-loop-3b-v2
+        validation-placement/stage: train-model-loop-3b-v2-a2
     spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 120
@@ -28,6 +28,10 @@ spec:
                       - NVIDIA-GeForce-RTX-3090
                       - NVIDIA-A10
                       - NVIDIA-L4
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - hcc-nrp-shor-c5817.unl.edu
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100
               preference:
@@ -59,7 +63,7 @@ spec:
               git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
               python -m pip install --no-cache-dir -e "${repo}[inference]"
               python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
-              output=/workspace/results/train-model-loop-v2/91130026/attempt-1
+              output=/workspace/results/train-model-loop-v2/91130026/attempt-2
               mkdir -p "${output}"
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 91130026:canonical_execute \

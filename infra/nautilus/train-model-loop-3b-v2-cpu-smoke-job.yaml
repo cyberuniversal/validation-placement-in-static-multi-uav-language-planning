@@ -64,8 +64,6 @@ spec:
               value: "1"
             - name: TRANSFORMERS_OFFLINE
               value: "1"
-            - name: CUDA_VISIBLE_DEVICES
-              value: ""
             - name: SDL_VIDEODRIVER
               value: dummy
           resources:

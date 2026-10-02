@@ -316,3 +316,8 @@ constraints; its job/pod YAML and pod description are preserved under
 It was removed while still Pending before submitting `a8`, which adds compatible
 RTX 4090 and V100 GPU types to the existing pool. These are scheduling retries
 of the same train-only option-menu experiment, not additional model results.
+Attempt `a8` likewise remained Pending without a node or model output; its
+placement evidence is preserved under `attempt8_pending/`. It was retired
+before `a9` added T4 and RTX 2080 Ti GPUs, which have sufficient nominal VRAM
+for the pinned 3B half-precision weights but still require an actual runtime
+load check. Neither pending attempt is evidence of model behavior.

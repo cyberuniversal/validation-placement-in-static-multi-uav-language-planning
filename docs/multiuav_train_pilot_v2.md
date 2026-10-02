@@ -321,3 +321,11 @@ placement evidence is preserved under `attempt8_pending/`. It was retired
 before `a9` added T4 and RTX 2080 Ti GPUs, which have sufficient nominal VRAM
 for the pinned 3B half-precision weights but still require an actual runtime
 load check. Neither pending attempt is evidence of model behavior.
+
+The separate `cpu1` job is a one-command development smoke for the same pinned
+3B model and reviewed training task. It sets `CUDA_VISIBLE_DEVICES` empty and
+requests no GPU. The existing backend still requests float16 weights, so CPU
+performance and even load feasibility are unverified until the job runs. Its
+distinct PVC output directory must preserve any preflight, failure, model
+generation, and official-server response. It is not a paper resource condition
+or an independent accuracy experiment.

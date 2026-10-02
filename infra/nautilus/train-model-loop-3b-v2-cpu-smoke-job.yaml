@@ -1,0 +1,84 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: validation-placement-train-model-loop-3b-v2-cpu1
+  namespace: aiea-interns
+  labels:
+    app.kubernetes.io/name: validation-placement
+    validation-placement/stage: train-model-loop-3b-v2-cpu1
+spec:
+  activeDeadlineSeconds: 3600
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: validation-placement
+        validation-placement/stage: train-model-loop-3b-v2-cpu1
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: train-model-loop-cpu
+          image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -euo pipefail
+              apt-get update
+              apt-get install -y --no-install-recommends git ca-certificates
+              rm -rf /var/lib/apt/lists/*
+              repo=/workspace/repo-validation-placement-model-loop-cpu1
+              if [[ ! -d "${repo}/.git" ]]; then
+                git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+              fi
+              git -C "${repo}" fetch origin codex/executable-fidelity-v2
+              git -C "${repo}" checkout --detach 0f68a5efce8aff66be8cc711f85680a16cb51c08
+              upstream="${repo}/external/MultiUAV-Plat"
+              if [[ ! -d "${upstream}/.git" ]]; then
+                git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
+              fi
+              git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+              python -m pip install --no-cache-dir -e "${repo}[inference]"
+              python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+              output=/workspace/results/train-model-loop-v2/14fd1139/cpu-smoke-1
+              mkdir -p "${output}"
+              python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+                --case-id 14fd1139:canonical_execute \
+                --max-commands 1 \
+                --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+                --cache-dir /workspace/hf-cache \
+                --raw-output "${output}/raw.json" \
+                --summary-output "${output}/preflight_summary.json" \
+                --preflight-only
+              python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+                --case-id 14fd1139:canonical_execute \
+                --max-commands 1 \
+                --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+                --cache-dir /workspace/hf-cache \
+                --raw-output "${output}/raw.json" \
+                --summary-output "${output}/run_summary.json"
+          env:
+            - name: HF_HOME
+              value: /workspace/hf-cache
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: TRANSFORMERS_OFFLINE
+              value: "1"
+            - name: CUDA_VISIBLE_DEVICES
+              value: ""
+            - name: SDL_VIDEODRIVER
+              value: dummy
+          resources:
+            requests:
+              cpu: "8"
+              memory: 24Gi
+            limits:
+              cpu: "8"
+              memory: 24Gi
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: shepherd-ai-539948

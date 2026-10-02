@@ -22,7 +22,7 @@ from shepherd_ai.multiuav_model_cache import verify_cached_snapshot  # noqa: E40
 from shepherd_ai.multiuav_prompts import PromptMessage, PromptRequest  # noqa: E402
 from shepherd_ai.multiuav_qwen_backend import LocalQwenBackend, QwenBackendConfig  # noqa: E402
 from shepherd_ai.multiuav_runner import ModelBackend  # noqa: E402
-from scripts.probe_multiuav_train_closed_loop_v2 import run_case, select_action  # noqa: E402
+from scripts.probe_multiuav_train_closed_loop_v2 import run_case  # noqa: E402
 from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
     EXPECTED_BENCHMARK_SHA256,
     EXPECTED_UPSTREAM_COMMIT,
@@ -37,11 +37,7 @@ from scripts.run_multiuav_train_pilot_v2 import (  # noqa: E402
     select_cases,
 )
 
-ACTION_SCHEMA = {
-    "actions": ["TAKE_OFF", "MOVE_TO_OBSERVED_TARGET", "SEARCH", "STOP"],
-    "fields": ["action", "drone_id", "target_id", "direction"],
-    "search_directions": ["NORTH", "EAST", "SOUTH", "WEST"],
-}
+ACTION_SCHEMA = {"fields": ["option_id"], "stop_option_id": "STOP"}
 _DIRECTION = {
     "NORTH": (0, 1), "EAST": (1, 0),
     "SOUTH": (0, -1), "WEST": (-1, 0),
@@ -65,6 +61,68 @@ def _unique_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
+def available_actions(
+    drones: list[dict[str, Any]],
+    nearby_targets: Mapping[str, list[dict[str, Any]]],
+    canvas: tuple[float, float],
+    previous_destinations: set[tuple[float, float]],
+) -> list[dict[str, Any]]:
+    """Construct bounded commands only from the current AGENT observation."""
+
+    width, height = canvas
+    if not all(math.isfinite(v) and v > 0 for v in (width, height)):
+        return []
+    choices: list[dict[str, Any]] = []
+    for drone in sorted(drones, key=lambda item: str(item["id"])):
+        drone_id = str(drone["id"])
+        position = drone["position"]
+        altitude = float(position["z"])
+        if not math.isfinite(altitude):
+            continue
+        if altitude <= 0:
+            takeoff_altitude = min(10.0, float(drone["max_altitude"]))
+            if math.isfinite(takeoff_altitude) and takeoff_altitude > 0:
+                choices.append({
+                    "description": f"Take off {drone['name']}",
+                    "action": {
+                        "command": "take_off", "drone_id": drone_id,
+                        "altitude": takeoff_altitude,
+                    },
+                })
+            continue
+        for target in sorted(nearby_targets.get(drone_id, []), key=lambda item: str(item["id"])):
+            x, y = (float(target["position"][axis]) for axis in ("x", "y"))
+            if (math.isfinite(x) and math.isfinite(y)
+                    and 0 <= x <= width and 0 <= y <= height
+                    and (x, y) not in previous_destinations):
+                choices.append({
+                    "description": f"Move {drone['name']} to observed {target['name']}",
+                    "action": {
+                        "command": "move_to", "drone_id": drone_id,
+                        "x": x, "y": y, "source": "agent_local_target_observation",
+                    },
+                })
+        radius = float(drone["perceived_radius"])
+        if not math.isfinite(radius) or radius <= 0:
+            continue
+        x0, y0 = (float(position[axis]) for axis in ("x", "y"))
+        if not all(math.isfinite(v) for v in (x0, y0)):
+            continue
+        for direction, (dx, dy) in _DIRECTION.items():
+            x, y = x0 + dx * radius, y0 + dy * radius
+            if 0 <= x <= width and 0 <= y <= height and (x, y) not in previous_destinations:
+                choices.append({
+                    "description": f"Search {direction.lower()} with {drone['name']}",
+                    "action": {
+                        "command": "move_to", "drone_id": drone_id,
+                        "x": x, "y": y, "source": "bounded_local_search",
+                    },
+                })
+    for index, choice in enumerate(choices, start=1):
+        choice["option_id"] = f"O{index}"
+    return choices
+
+
 def build_request(
     instruction: str,
     drones: list[dict[str, Any]],
@@ -72,8 +130,12 @@ def build_request(
     canvas: tuple[float, float],
     previous_destinations: set[tuple[float, float]],
     call_index: int,
+    choices: list[dict[str, Any]] | None = None,
 ) -> PromptRequest:
-    """Expose only current AGENT observations and a high-level action catalog."""
+    """Expose current AGENT observations and admissible one-step options."""
+
+    if choices is None:
+        choices = available_actions(drones, nearby_targets, canvas, previous_destinations)
 
     visible = {
         "instruction": instruction,
@@ -92,37 +154,31 @@ def build_request(
             ]
             for drone_id, targets in nearby_targets.items()
         },
-        "allowed_actions_by_drone": {
-            str(drone["id"]): (
-                ["TAKE_OFF", "STOP"]
-                if float(drone["position"]["z"]) <= 0
-                else (["MOVE_TO_OBSERVED_TARGET", "SEARCH", "STOP"]
-                      if nearby_targets.get(str(drone["id"])) else ["SEARCH", "STOP"])
-            )
-            for drone in drones
-        },
         "previous_destinations": [list(point) for point in sorted(previous_destinations)],
-        "action_schema": ACTION_SCHEMA,
+        "options": [
+            {"option_id": choice["option_id"], "description": choice["description"]}
+            for choice in choices
+        ],
+        "stop_option_id": "STOP",
     }
     messages = (
         PromptMessage(
             role="system",
             content=(
                 "You control one bounded step of a training-only simulated UAV task. "
-                "Return exactly one JSON object with keys action, drone_id, target_id, direction. "
-                "Use null for unused fields. MOVE_TO_OBSERVED_TARGET requires a target ID "
-                "in that drone's nearby_targets_by_drone list. SEARCH uses a cardinal "
-                "direction and only a short bounded step. Never invent coordinates, "
-                "target IDs, or drone IDs. Follow allowed_actions_by_drone: a "
-                "grounded drone must TAKE_OFF before SEARCH or MOVE_TO_OBSERVED_TARGET. "
-                "STOP when evidence is insufficient."
+                "Return exactly one JSON object with one key, option_id. Choose one "
+                "option_id from options, or STOP if the mission instruction itself is "
+                "insufficient, contradictory, or no listed step can responsibly help. "
+                "A target absent from nearby_targets_by_drone may be found by a listed "
+                "bounded search step; absence from this local observation alone is not "
+                "a reason to STOP. Never invent an option ID or coordinates."
             ),
         ),
         PromptMessage(role="user", content=_canonical(visible)),
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_high_level_v2",
+        prompt_contract_version="train_closed_loop_option_menu_v3",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -135,12 +191,9 @@ def build_request(
 
 def resolve_model_action(
     raw: str,
-    drones: list[dict[str, Any]],
-    nearby_targets: Mapping[str, list[dict[str, Any]]],
-    canvas: tuple[float, float],
-    previous_destinations: set[tuple[float, float]],
+    choices: list[dict[str, Any]],
 ) -> tuple[dict[str, Any] | None, str]:
-    """Fail closed unless the model's choice resolves from current visible state."""
+    """Fail closed unless the selected ID is in the freshly constructed menu."""
 
     try:
         value = json.loads(raw, object_pairs_hook=_unique_pairs)
@@ -148,62 +201,19 @@ def resolve_model_action(
         return None, "invalid_json"
     if not isinstance(value, dict) or set(value) != set(ACTION_SCHEMA["fields"]):
         return None, "action_schema_mismatch"
-    action = value["action"]
-    if action == "STOP":
-        if any(value[key] is not None for key in ("drone_id", "target_id", "direction")):
-            return None, "stop_has_parameters"
+    option_id = value["option_id"]
+    if option_id == "STOP":
         return None, "model_stop"
-    if action not in ACTION_SCHEMA["actions"]:
-        return None, "unknown_action"
-    drone = next((item for item in drones if item["id"] == value["drone_id"]), None)
-    if drone is None:
-        return None, "unknown_drone"
-    drone_id = str(drone["id"])
-    position = drone["position"]
-    if action == "TAKE_OFF":
-        if value["target_id"] is not None or value["direction"] is not None:
-            return None, "takeoff_has_extra_parameters"
-        if float(position["z"]) > 0:
-            return None, "drone_already_airborne"
-        altitude = min(10.0, float(drone["max_altitude"]))
-        if not math.isfinite(altitude) or altitude <= 0:
-            return None, "invalid_altitude"
-        return {"command": "take_off", "drone_id": drone_id, "altitude": altitude}, "resolved"
-    if float(position["z"]) <= 0:
-        return None, "drone_not_airborne"
-    if action == "MOVE_TO_OBSERVED_TARGET":
-        if value["direction"] is not None or not isinstance(value["target_id"], str):
-            return None, "invalid_target_choice"
-        target = next(
-            (item for item in nearby_targets.get(drone_id, []) if item["id"] == value["target_id"]),
-            None,
-        )
-        if target is None:
-            return None, "target_not_locally_observed"
-        x, y = (float(target["position"][axis]) for axis in ("x", "y"))
-        source = "agent_local_target_observation"
-    else:
-        if value["target_id"] is not None or value["direction"] not in _DIRECTION:
-            return None, "invalid_search_choice"
-        dx, dy = _DIRECTION[value["direction"]]
-        step = float(drone["perceived_radius"])
-        if not math.isfinite(step) or step <= 0:
-            return None, "invalid_search_step"
-        x = float(position["x"]) + dx * step
-        y = float(position["y"]) + dy * step
-        source = "bounded_local_search"
-    if not all(math.isfinite(v) for v in (x, y)) or not (0 <= x <= canvas[0] and 0 <= y <= canvas[1]):
-        return None, "destination_out_of_bounds"
-    if (x, y) in previous_destinations:
-        return None, "repeated_destination"
-    return {"command": "move_to", "drone_id": drone_id, "x": x, "y": y, "source": source}, "resolved"
+    choice = next((item for item in choices if item["option_id"] == option_id), None)
+    if choice is None:
+        return None, "unknown_option"
+    return dict(choice["action"]), "resolved"
 
 
 class ModelActionSelector:
     def __init__(self, backend: ModelBackend) -> None:
         self.backend = backend
         self.trace: list[dict[str, Any]] = []
-        self.deterministic_prelude: list[dict[str, Any]] = []
 
     def __call__(
         self,
@@ -213,35 +223,24 @@ class ModelActionSelector:
         canvas: tuple[float, float],
         previous_destinations: set[tuple[float, float]],
     ) -> dict[str, Any] | None:
-        if (
-            not self.trace
-            and not self.deterministic_prelude
-            and "take off" in instruction.casefold()
-            and drones
-            and all(float(drone["position"]["z"]) <= 0 for drone in drones)
-        ):
-            action = select_action(
-                instruction, drones, nearby_targets, canvas, previous_destinations,
-            )
-            if action is not None and action["command"] == "take_off":
-                self.deterministic_prelude.append({
-                    "action": action, "basis": "explicit_takeoff_instruction_and_agent_visible_drone",
-                })
-                return action
+        choices = available_actions(drones, nearby_targets, canvas, previous_destinations)
+        if not choices:
+            return None
         request = build_request(
             instruction, drones, nearby_targets, canvas,
-            previous_destinations, len(self.trace),
+            previous_destinations, len(self.trace), choices,
         )
         generation = self.backend.generate(request)
         if generation.generation_status != "GENERATED":
             action, resolution = None, "generation_not_completed"
         else:
             action, resolution = resolve_model_action(
-                generation.raw_output, drones, nearby_targets, canvas, previous_destinations,
+                generation.raw_output, choices,
             )
         self.trace.append({
             "request": request.to_dict(),
             "generation": generation.to_dict(),
+            "offered_actions": choices,
             "resolution": resolution,
         })
         return action
@@ -283,7 +282,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "explicit_takeoff_prelude_then_model_high_level_actions_v1",
+        "policy": "agent_visible_option_menu_v3",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",
@@ -335,7 +334,6 @@ def main() -> None:
             )
         raw = {
             "configuration": config, "run": run,
-            "deterministic_prelude": selector.deterministic_prelude,
             "model_calls": selector.trace,
         }
         args.raw_output.parent.mkdir(parents=True, exist_ok=True)
@@ -343,7 +341,7 @@ def main() -> None:
         summary.update({
             "status": "complete_train_only_unscored",
             "model_call_count": len(selector.trace),
-            "deterministic_prelude_action_count": len(selector.deterministic_prelude),
+            "deterministic_prelude_action_count": 0,
             "attempted_commands": len(run["commands"]),
             "successful_commands": sum(
                 item["response"]["http_status"] == 200
@@ -365,12 +363,11 @@ def main() -> None:
             "error_message": str(error),
             "model_call_count": len(selector.trace) if selector else 0,
         })
-        if selector and (selector.trace or selector.deterministic_prelude):
+        if selector and selector.trace:
             args.raw_output.parent.mkdir(parents=True, exist_ok=True)
             args.raw_output.write_text(
                 json.dumps({
                     "configuration": config,
-                    "deterministic_prelude": selector.deterministic_prelude,
                     "model_calls": selector.trace,
                 }, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",

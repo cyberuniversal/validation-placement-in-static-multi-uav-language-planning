@@ -7,6 +7,7 @@ import unittest
 
 from scripts.run_multiuav_train_model_loop_v2 import (
     ModelActionSelector,
+    available_actions,
     build_request,
     resolve_model_action,
 )
@@ -22,12 +23,8 @@ DRONE = {
 TARGET = {"id": "target-1", "name": "Fixed Target 1", "position": {"x": 12, "y": 11}}
 
 
-def choice(action: str, *, drone_id: str | None = "drone-1",
-           target_id: str | None = None, direction: str | None = None) -> str:
-    return json.dumps({
-        "action": action, "drone_id": drone_id,
-        "target_id": target_id, "direction": direction,
-    })
+def choice(option_id: str) -> str:
+    return json.dumps({"option_id": option_id})
 
 
 class FakeBackend:
@@ -89,9 +86,10 @@ class FakeClient:
 
 
 class ModelLoopTests(unittest.TestCase):
-    def resolve(self, raw: str, *, targets: list[dict] | None = None) -> tuple[dict | None, str]:
-        return resolve_model_action(
-            raw, [DRONE], {"drone-1": targets if targets is not None else [TARGET]},
+    def menu(self, *, drone: dict | None = None,
+             targets: list[dict] | None = None) -> list[dict]:
+        return available_actions(
+            [drone or DRONE], {"drone-1": targets if targets is not None else [TARGET]},
             (20, 20), set(),
         )
 
@@ -100,9 +98,10 @@ class ModelLoopTests(unittest.TestCase):
                                 (20, 20), set(), 0)
         payload = json.loads(request.messages[1].content)
         self.assertEqual(payload["nearby_targets_by_drone"]["drone-1"][0]["id"], "target-1")
-        self.assertEqual(payload["allowed_actions_by_drone"]["drone-1"], [
-            "MOVE_TO_OBSERVED_TARGET", "SEARCH", "STOP",
-        ])
+        self.assertEqual(payload["options"][0]["description"],
+                         "Move Drone 1 to observed Fixed Target 1")
+        self.assertEqual(payload["stop_option_id"], "STOP")
+        self.assertNotIn("action", payload["options"][0])
         for forbidden in ("related_apis", "commands", "execution_check_apis", "official_plan"):
             self.assertNotIn(forbidden, request.messages[1].content)
 
@@ -111,46 +110,49 @@ class ModelLoopTests(unittest.TestCase):
         request = build_request("Search", [grounded], {"drone-1": []},
                                 (20, 20), set(), 0)
         payload = json.loads(request.messages[1].content)
-        self.assertEqual(payload["allowed_actions_by_drone"]["drone-1"], [
-            "TAKE_OFF", "STOP",
-        ])
+        self.assertEqual(len(payload["options"]), 1)
+        self.assertEqual(payload["options"][0]["description"], "Take off Drone 1")
 
     def test_observed_target_resolves_to_server_coordinate(self) -> None:
-        action, status = self.resolve(choice("MOVE_TO_OBSERVED_TARGET", target_id="target-1"))
+        action, status = resolve_model_action(choice("O1"), self.menu())
         self.assertEqual(status, "resolved")
         self.assertEqual((action["x"], action["y"]), (12, 11))
 
-    def test_unobserved_target_and_raw_coordinates_fail(self) -> None:
-        action, status = self.resolve(choice("MOVE_TO_OBSERVED_TARGET", target_id="hidden"))
+    def test_unoffered_option_and_raw_coordinates_fail(self) -> None:
+        action, status = resolve_model_action(choice("O999"), self.menu())
         self.assertIsNone(action)
-        self.assertEqual(status, "target_not_locally_observed")
-        action, status = self.resolve('{"action":"SEARCH","drone_id":"drone-1",'
-                                      '"target_id":null,"direction":"EAST","x":99}')
+        self.assertEqual(status, "unknown_option")
+        action, status = resolve_model_action('{"option_id":"O1","x":99}', self.menu())
         self.assertIsNone(action)
         self.assertEqual(status, "action_schema_mismatch")
 
     def test_duplicate_json_key_fails_closed(self) -> None:
-        raw = '{"action":"STOP","action":"SEARCH","drone_id":"drone-1",' \
-              '"target_id":null,"direction":"EAST"}'
-        action, status = self.resolve(raw)
+        raw = '{"option_id":"STOP","option_id":"O1"}'
+        action, status = resolve_model_action(raw, self.menu())
         self.assertIsNone(action)
         self.assertEqual(status, "invalid_json")
 
-    def test_search_uses_bounded_radius_and_rejects_outside_canvas(self) -> None:
-        action, status = self.resolve(choice("SEARCH", direction="EAST"), targets=[])
+    def test_search_uses_bounded_radius_and_omits_outside_canvas(self) -> None:
+        menu = self.menu(targets=[])
+        east = next(item for item in menu if "east" in item["description"])
+        action, status = resolve_model_action(choice(east["option_id"]), menu)
         self.assertEqual(status, "resolved")
         self.assertEqual((action["x"], action["y"]), (15, 10))
         edge = {**DRONE, "position": {"x": 19, "y": 10, "z": 10}}
-        action, status = resolve_model_action(
-            choice("SEARCH", direction="EAST"), [edge], {"drone-1": []}, (20, 20), set()
-        )
-        self.assertIsNone(action)
-        self.assertEqual(status, "destination_out_of_bounds")
+        self.assertFalse(any(
+            "east" in item["description"] for item in self.menu(drone=edge, targets=[])
+        ))
 
-    def test_takeoff_rejects_airborne_drone(self) -> None:
-        action, status = self.resolve(choice("TAKE_OFF"))
-        self.assertIsNone(action)
-        self.assertEqual(status, "drone_already_airborne")
+    def test_takeoff_only_offered_when_grounded(self) -> None:
+        self.assertFalse(any(item["action"]["command"] == "take_off" for item in self.menu()))
+        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        self.assertEqual(self.menu(drone=grounded)[0]["action"]["command"], "take_off")
+
+    def test_previous_destination_removes_target_and_search_option(self) -> None:
+        menu = available_actions([DRONE], {"drone-1": [TARGET]},
+                                 (20, 20), {(12, 11), (15, 10)})
+        self.assertFalse(any("Fixed Target 1" in item["description"] for item in menu))
+        self.assertFalse(any("east" in item["description"] for item in menu))
 
     def test_model_failure_is_preserved_without_action(self) -> None:
         backend = FakeBackend("not json")
@@ -162,9 +164,9 @@ class ModelLoopTests(unittest.TestCase):
 
     def test_fake_model_drives_reobservation_then_stops(self) -> None:
         backend = SequenceBackend([
-            choice("TAKE_OFF"),
-            choice("SEARCH", direction="EAST"),
-            choice("STOP", drone_id=None),
+            choice("O1"),
+            choice("O2"),
+            choice("STOP"),
         ])
         selector = ModelActionSelector(backend)
         case = {
@@ -185,20 +187,19 @@ class ModelLoopTests(unittest.TestCase):
         self.assertEqual(selector.trace[-1]["resolution"], "model_stop")
         self.assertEqual(result["stop_reason"], "no_bounded_action")
 
-    def test_explicit_takeoff_prelude_uses_no_model_call(self) -> None:
-        backend = SequenceBackend([choice("SEARCH", direction="EAST")])
+    def test_explicit_takeoff_is_model_selected(self) -> None:
+        backend = SequenceBackend([choice("O1")])
         selector = ModelActionSelector(backend)
         grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
         first = selector("Take off and search", [grounded], {"drone-1": []},
                          (20, 20), set())
         self.assertEqual(first["command"], "take_off")
-        self.assertEqual(backend.calls, 0)
-        self.assertEqual(len(selector.deterministic_prelude), 1)
-        second = selector(
-            "Take off and search", [DRONE], {"drone-1": []}, (20, 20), set(),
-        )
-        self.assertEqual(second["command"], "move_to")
         self.assertEqual(backend.calls, 1)
+
+    def test_stop_never_issues_command(self) -> None:
+        action, status = resolve_model_action(choice("STOP"), self.menu())
+        self.assertIsNone(action)
+        self.assertEqual(status, "model_stop")
 
 
 if __name__ == "__main__":

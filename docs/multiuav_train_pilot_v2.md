@@ -264,3 +264,29 @@ frozen action interface or constrained output mechanism tested first on
 training cases and then on genuinely untouched, independently adjudicated
 missions. Those missions and reviewer are not currently available. The
 frozen paper's zero executable static plan-fidelity result is unchanged.
+
+## Agent-visible option-menu follow-up
+
+The next train-only interface replaces free-form action JSON with a fresh menu
+of one-step commands derived from the current AGENT drone list, nearby-target
+observations, canvas, and previously attempted destinations. Grounded drones
+have only bounded takeoff options; airborne drones have bounded cardinal search
+and locally observed target-move options. The model returns an `option_id` or
+`STOP`; only a listed ID can resolve to a command. A missing local target alone
+is not treated as insufficient mission evidence, because searching can reveal
+it. `STOP` remains available for genuinely insufficient or contradictory
+instructions. No hidden target coordinates, official command, or expected
+decision enters the menu or prompt.
+
+This changes the development action interface, not the registered M1--M4
+study. It removes the deterministic takeoff prelude: a takeoff now counts as
+model-selected only if the model selects its offered ID. The menu limits action
+syntax and geometry but does not prove collision safety, instruction fidelity,
+or task completion. The official server must still accept commands, and a
+successful task check is required before describing mission completion.
+
+This interface has focused unit tests. A GPU/official-server outcome is **not
+evaluated** until a new immutable run records its model selection, command
+journal, task check, and failed attempts. Repeated tuning on reviewed training
+cases is development, not independent evaluation; the frozen paper result
+remains unchanged.

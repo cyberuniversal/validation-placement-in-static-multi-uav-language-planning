@@ -331,3 +331,8 @@ performance and even load feasibility are unverified until the job runs. Its
 distinct PVC output directory must preserve any preflight, failure, model
 generation, and official-server response. It is not a paper resource condition
 or an independent accuracy experiment.
+The CPU pod started and installed dependencies but was stopped before preflight
+or model load: the GPU `a9` pod obtained a V100 node, and the PVC could not be
+mounted by both pods on different nodes. The CPU output directory was empty.
+Its job/pod YAML and log are preserved under `cpu_smoke_preempted_by_gpu/`.
+This is an infrastructure interruption, not a CPU inference result.

@@ -12,7 +12,7 @@ from scripts.run_multiuav_train_model_loop_v2 import (
     resolve_model_action,
 )
 from shepherd_ai.multiuav_runner import GenerationResult
-from scripts.probe_multiuav_train_closed_loop_v2 import run_case
+from scripts.probe_multiuav_train_closed_loop_v2 import issue_action, run_case
 
 
 DRONE = {
@@ -74,12 +74,15 @@ class FakeClient:
             return FakeResponse(200, {"result": False})
         raise AssertionError(f"unexpected GET {path}")
 
-    def post(self, path: str, *, params: dict[str, float], headers: dict[str, str]) -> FakeResponse:
+    def post(self, path: str, *, params: dict[str, float] | None = None,
+             json: dict | None = None, headers: dict[str, str]) -> FakeResponse:
         if path.endswith("/take_off"):
             self.drone["position"]["z"] = params["altitude"]
         elif path.endswith("/move_to"):
             self.drone["position"]["x"] = params["x"]
             self.drone["position"]["y"] = params["y"]
+        elif path.endswith("/move_along_path"):
+            self.drone["position"].update(json["waypoints"][-1])
         else:
             raise AssertionError(f"unexpected POST {path}")
         return FakeResponse(200, {"status": "success"})
@@ -153,6 +156,36 @@ class ModelLoopTests(unittest.TestCase):
                                  (20, 20), {(12, 11), (15, 10)})
         self.assertFalse(any("Fixed Target 1" in item["description"] for item in menu))
         self.assertFalse(any("east" in item["description"] for item in menu))
+
+    def test_observed_circle_offers_bounded_coverage_path(self) -> None:
+        drone = {**DRONE, "task_radius": 2}
+        circle = {
+            "id": "area-1", "name": "Circle Target 2", "type": "circle",
+            "position": {"x": 10, "y": 10}, "radius": 4,
+        }
+        menu = self.menu(drone=drone, targets=[circle])
+        sweep = next(item for item in menu if "Sweep" in item["description"])
+        action, status = resolve_model_action(choice(sweep["option_id"]), menu)
+        self.assertEqual(status, "resolved")
+        self.assertEqual(action["command"], "move_along_path")
+        self.assertEqual(action["source"], "agent_visible_circle_geometry")
+        self.assertGreaterEqual(len(action["waypoints"]), 2)
+        self.assertLessEqual(len(action["waypoints"]), 24)
+        self.assertTrue(all(0 <= point["x"] <= 20 and 0 <= point["y"] <= 20
+                            for point in action["waypoints"]))
+        response = issue_action(FakeClient(), {"X-API-Key": "agent"}, action)
+        self.assertEqual(response["body"]["status"], "success")
+
+    def test_circle_sweep_requires_visible_valid_geometry(self) -> None:
+        drone = {**DRONE, "task_radius": 2}
+        invalid = {
+            "id": "area-1", "name": "Circle Target 2", "type": "circle",
+            "position": {"x": 18, "y": 10}, "radius": 4,
+        }
+        self.assertFalse(any("Sweep" in item["description"]
+                             for item in self.menu(drone=drone, targets=[invalid])))
+        self.assertFalse(any("Sweep" in item["description"]
+                             for item in self.menu(targets=[invalid])))
 
     def test_model_failure_is_preserved_without_action(self) -> None:
         backend = FakeBackend("not json")

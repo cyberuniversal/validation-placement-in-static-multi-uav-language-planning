@@ -91,6 +91,12 @@ def available_actions(
                 })
             continue
         for target in sorted(nearby_targets.get(drone_id, []), key=lambda item: str(item["id"])):
+            sweep = _circle_sweep_action(drone, target, canvas, previous_destinations)
+            if sweep is not None:
+                choices.append({
+                    "description": f"Sweep observed {target['name']} area with {drone['name']}",
+                    "action": sweep,
+                })
             x, y = (float(target["position"][axis]) for axis in ("x", "y"))
             if (math.isfinite(x) and math.isfinite(y)
                     and 0 <= x <= width and 0 <= y <= height
@@ -123,6 +129,47 @@ def available_actions(
     return choices
 
 
+def _circle_sweep_action(
+    drone: Mapping[str, Any], target: Mapping[str, Any],
+    canvas: tuple[float, float], previous_destinations: set[tuple[float, float]],
+) -> dict[str, Any] | None:
+    if target.get("type") != "circle":
+        return None
+    try:
+        cx = float(target["position"]["x"])
+        cy = float(target["position"]["y"])
+        radius = float(target["radius"])
+        task_radius = float(drone["task_radius"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    width, height = canvas
+    if (not all(math.isfinite(value) for value in (cx, cy, radius, task_radius))
+            or radius <= 0 or task_radius <= 0
+            or cx - radius < 0 or cx + radius > width
+            or cy - radius < 0 or cy + radius > height):
+        return None
+    margin = min(task_radius, radius)
+    low, high = -radius + margin, radius - margin
+    rows = max(1, math.ceil((high - low) / (2 * task_radius)) + 1)
+    if rows > 12:
+        return None
+    offsets = [0.0] if rows == 1 else [
+        low + (high - low) * index / (rows - 1) for index in range(rows)
+    ]
+    waypoints = [
+        {"x": cx + side * radius, "y": cy + offset}
+        for index, offset in enumerate(offsets)
+        for side in ((-1, 1) if index % 2 == 0 else (1, -1))
+    ]
+    if all((point["x"], point["y"]) in previous_destinations
+           for point in waypoints):
+        return None
+    return {
+        "command": "move_along_path", "drone_id": str(drone["id"]),
+        "waypoints": waypoints, "source": "agent_visible_circle_geometry",
+    }
+
+
 def build_request(
     instruction: str,
     drones: list[dict[str, Any]],
@@ -143,13 +190,15 @@ def build_request(
         "drones": [
             {
                 key: drone[key]
-                for key in ("id", "name", "status", "position", "max_altitude", "perceived_radius")
+                for key in ("id", "name", "status", "position", "max_altitude", "perceived_radius", "task_radius")
+                if key in drone
             }
             for drone in drones
         ],
         "nearby_targets_by_drone": {
             drone_id: [
-                {key: target[key] for key in ("id", "name", "position")}
+                {key: target[key] for key in ("id", "name", "position", "type", "radius")
+                 if key in target}
                 for target in targets
             ]
             for drone_id, targets in nearby_targets.items()
@@ -171,14 +220,15 @@ def build_request(
                 "insufficient, contradictory, or no listed step can responsibly help. "
                 "A target absent from nearby_targets_by_drone may be found by a listed "
                 "bounded search step; absence from this local observation alone is not "
-                "a reason to STOP. Never invent an option ID or coordinates."
+                "a reason to STOP. For area coverage, prefer an offered observed-area "
+                "sweep to a target-center move. Never invent an option ID or coordinates."
             ),
         ),
         PromptMessage(role="user", content=_canonical(visible)),
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v3",
+        prompt_contract_version="train_closed_loop_option_menu_v4",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -282,7 +332,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v3",
+        "policy": "agent_visible_option_menu_v4_circle_sweep",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

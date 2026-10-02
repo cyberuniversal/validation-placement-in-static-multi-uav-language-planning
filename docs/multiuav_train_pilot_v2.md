@@ -363,3 +363,24 @@ names with Nautilus's numeric hardware labels: more than 10,240 MiB VRAM and
 CUDA compute major version 7 through 10, while keeping the known-bad host
 excluded. This is a scheduling change only, and runtime compatibility remains
 subject to actual model-load evidence.
+
+Attempt `a12` completed on an NVIDIA RTX A4000 (16,376 MiB) with the same v3
+option menu and pinned 3B checkpoint. On reviewed training case
+`91130026:canonical_execute`, 12 model-selected commands were accepted (five
+takeoffs, seven moves). Official task progress rose from 0% to 11%, but the
+task check was false against the instruction's 95% coverage requirement. The
+model saw nearby targets, yet v3 only offered a target-center move and cardinal
+search, not a coverage path derived from the target's visible shape. Its raw
+generation and command journal remain in the ignored PVC and local
+`outputs/multiuav/train-model-loop-v2/91130026/attempt-12/` paths and match
+the hashes in `run_summary.json`. Job/pod YAML and log are preserved under
+`attempt12_complete/`. This is partial training progress, not mission success.
+
+Option-menu v4 adds one bounded circle-sweep option only when an airborne
+drone's AGENT-visible `task_radius` and a locally observed circle's center and
+radius are finite and wholly within the public canvas. The model must select
+the offered ID. The command uses the official `move_along_path` route with
+`allow_partial_move=false`; the official server retains collision and battery
+checks. No unseen target geometry, hidden reference plan, or task label is
+used. Polygon coverage and discovery of non-visible targets are not solved by
+this option. A later run is required before claiming any outcome for v4.

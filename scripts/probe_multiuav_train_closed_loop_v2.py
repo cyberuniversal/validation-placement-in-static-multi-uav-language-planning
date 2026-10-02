@@ -117,6 +117,13 @@ def issue_action(client: Any, headers: dict[str, str], action: Mapping[str, Any]
     elif action["command"] == "move_to":
         path = f"/drones/{drone_id}/command/move_to"
         params = {"x": action["x"], "y": action["y"]}
+    elif action["command"] == "move_along_path":
+        path = f"/drones/{drone_id}/command/move_along_path"
+        response = client.post(
+            path, json={"waypoints": action["waypoints"], "allow_partial_move": False},
+            headers=headers,
+        )
+        return {"http_status": response.status_code, "body": response.json()}
     else:
         raise ValueError("unsupported pilot command")
     response = client.post(path, params=params, headers=headers)
@@ -159,6 +166,9 @@ def run_case(
             break
         if action["command"] == "move_to":
             destinations.add((action["x"], action["y"]))
+        elif action["command"] == "move_along_path":
+            destinations.update((point["x"], point["y"])
+                                for point in action["waypoints"])
         response = issue_action(client, headers, action)
         command_record = {"action": action, "response": response}
         commands.append(command_record)

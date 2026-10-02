@@ -384,3 +384,11 @@ the offered ID. The command uses the official `move_along_path` route with
 checks. No unseen target geometry, hidden reference plan, or task label is
 used. Polygon coverage and discovery of non-visible targets are not solved by
 this option. A later run is required before claiming any outcome for v4.
+
+Attempt `a13` was assigned an NVIDIA A10 but stalled in the container's
+HTTP Ubuntu package-index update before model preflight or inference. Its
+job/pod manifests and log are retained under `attempt13_setup_blocked/`;
+there is no model result from that attempt. Attempt `a14` keeps the same
+reviewed training case, pinned model, code revision, and v4 option menu,
+but switches Ubuntu package sources to HTTPS during startup. It uses a new
+output directory so setup attempts and model results cannot be conflated.

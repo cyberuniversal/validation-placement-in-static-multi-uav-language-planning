@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: validation-placement-train-model-loop-3b-v2-a13
+  name: validation-placement-train-model-loop-3b-v2-a14
   namespace: aiea-interns
   labels:
     app.kubernetes.io/name: validation-placement
-    validation-placement/stage: train-model-loop-3b-v2-a13
+    validation-placement/stage: train-model-loop-3b-v2-a14
 spec:
   activeDeadlineSeconds: 5400
   backoffLimit: 0
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: validation-placement
-        validation-placement/stage: train-model-loop-3b-v2-a13
+        validation-placement/stage: train-model-loop-3b-v2-a14
     spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 120
@@ -50,6 +50,7 @@ spec:
           args:
             - |
               set -euo pipefail
+              sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
               apt-get update
               apt-get install -y --no-install-recommends git ca-certificates
               rm -rf /var/lib/apt/lists/*
@@ -66,7 +67,7 @@ spec:
               git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
               python -m pip install --no-cache-dir -e "${repo}[inference]"
               python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
-              output=/workspace/results/train-model-loop-v2/91130026/attempt-13
+              output=/workspace/results/train-model-loop-v2/91130026/attempt-14
               mkdir -p "${output}"
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 91130026:canonical_execute \

@@ -66,15 +66,28 @@ def available_actions(
     nearby_targets: Mapping[str, list[dict[str, Any]]],
     canvas: tuple[float, float],
     previous_destinations: set[tuple[float, float]],
+    instruction: str | None = None,
 ) -> list[dict[str, Any]]:
     """Construct bounded commands only from the current AGENT observation."""
 
     width, height = canvas
     if not all(math.isfinite(v) and v > 0 for v in (width, height)):
         return []
+    named_target_ids = {
+        str(target["id"])
+        for targets in nearby_targets.values()
+        for target in targets
+        if instruction and str(target["name"]).casefold() in instruction.casefold()
+    }
+    focused_drones = {
+        drone_id for drone_id, targets in nearby_targets.items()
+        if any(str(target["id"]) in named_target_ids for target in targets)
+    }
     choices: list[dict[str, Any]] = []
     for drone in sorted(drones, key=lambda item: str(item["id"])):
         drone_id = str(drone["id"])
+        if focused_drones and drone_id not in focused_drones:
+            continue
         position = drone["position"]
         altitude = float(position["z"])
         if not math.isfinite(altitude):
@@ -91,6 +104,8 @@ def available_actions(
                 })
             continue
         for target in sorted(nearby_targets.get(drone_id, []), key=lambda item: str(item["id"])):
+            if focused_drones and str(target["id"]) not in named_target_ids:
+                continue
             sweep = _circle_sweep_action(drone, target, canvas, previous_destinations)
             if sweep is not None:
                 choices.append({
@@ -108,6 +123,8 @@ def available_actions(
                         "x": x, "y": y, "source": "agent_local_target_observation",
                     },
                 })
+        if focused_drones:
+            continue
         radius = float(drone["perceived_radius"])
         if not math.isfinite(radius) or radius <= 0:
             continue
@@ -182,7 +199,8 @@ def build_request(
     """Expose current AGENT observations and admissible one-step options."""
 
     if choices is None:
-        choices = available_actions(drones, nearby_targets, canvas, previous_destinations)
+        choices = available_actions(drones, nearby_targets, canvas, previous_destinations,
+                                    instruction)
 
     visible = {
         "instruction": instruction,
@@ -228,7 +246,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v4",
+        prompt_contract_version="train_closed_loop_option_menu_v5",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -273,7 +291,8 @@ class ModelActionSelector:
         canvas: tuple[float, float],
         previous_destinations: set[tuple[float, float]],
     ) -> dict[str, Any] | None:
-        choices = available_actions(drones, nearby_targets, canvas, previous_destinations)
+        choices = available_actions(drones, nearby_targets, canvas, previous_destinations,
+                                    instruction)
         if not choices:
             return None
         request = build_request(
@@ -332,7 +351,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v4_circle_sweep",
+        "policy": "agent_visible_option_menu_v5_named_target_focus",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

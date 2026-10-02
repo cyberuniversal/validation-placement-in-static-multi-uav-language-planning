@@ -1,0 +1,164 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"batch/v1","kind":"Job","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"validation-placement","validation-placement/stage":"train-model-loop-3b-v2-a14"},"name":"validation-placement-train-model-loop-3b-v2-a14","namespace":"aiea-interns"},"spec":{"activeDeadlineSeconds":5400,"backoffLimit":0,"template":{"metadata":{"labels":{"app.kubernetes.io/name":"validation-placement","validation-placement/stage":"train-model-loop-3b-v2-a14"}},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"kubernetes.io/hostname","operator":"In","values":["ry-gpu-03.sdsc.optiputer.net"]}]},"weight":100}],"requiredDuringSchedulingIgnoredDuringExecution":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"nvidia.com/gpu.memory","operator":"Gt","values":["10240"]},{"key":"nvidia.com/gpu.compute.major","operator":"Gt","values":["6"]},{"key":"nvidia.com/gpu.compute.major","operator":"Lt","values":["11"]},{"key":"kubernetes.io/hostname","operator":"NotIn","values":["hcc-nrp-shor-c5817.unl.edu"]}]}]}}},"containers":[{"args":["set -euo pipefail\nsed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list\napt-get update\napt-get install -y --no-install-recommends git ca-certificates\nrm -rf /var/lib/apt/lists/*\nrepo=/workspace/repo-validation-placement-model-loop-0b6c762\nif [[ ! -d \"${repo}/.git\" ]]; then\n  git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git \"${repo}\"\nfi\ngit -C \"${repo}\" fetch origin codex/executable-fidelity-v2\ngit -C \"${repo}\" checkout --detach 30d981363eaaf8e176353ddfe0cb9dd9bfb6cda8\nupstream=\"${repo}/external/MultiUAV-Plat\"\nif [[ ! -d \"${upstream}/.git\" ]]; then\n  git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git \"${upstream}\"\nfi\ngit -C \"${upstream}\" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f\npython -m pip install --no-cache-dir -e \"${repo}[inference]\"\npython -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0\noutput=/workspace/results/train-model-loop-v2/91130026/attempt-14\nmkdir -p \"${output}\"\npython \"${repo}/scripts/run_multiuav_train_model_loop_v2.py\" \\\n  --case-id 91130026:canonical_execute \\\n  --max-commands 12 \\\n  --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \\\n  --cache-dir /workspace/hf-cache \\\n  --raw-output \"${output}/raw.json\" \\\n  --summary-output \"${output}/preflight_summary.json\" \\\n  --preflight-only\npython \"${repo}/scripts/run_multiuav_train_model_loop_v2.py\" \\\n  --case-id 91130026:canonical_execute \\\n  --max-commands 12 \\\n  --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \\\n  --cache-dir /workspace/hf-cache \\\n  --raw-output \"${output}/raw.json\" \\\n  --summary-output \"${output}/run_summary.json\"\n"],"command":["/bin/bash","-lc"],"env":[{"name":"HF_HOME","value":"/workspace/hf-cache"},{"name":"HF_HUB_OFFLINE","value":"1"},{"name":"TRANSFORMERS_OFFLINE","value":"1"},{"name":"SDL_VIDEODRIVER","value":"dummy"}],"image":"pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime","name":"train-model-loop","resources":{"limits":{"cpu":"2","memory":"16Gi","nvidia.com/gpu":"1"},"requests":{"cpu":"2","memory":"16Gi","nvidia.com/gpu":"1"}},"volumeMounts":[{"mountPath":"/workspace","name":"workspace"}]}],"restartPolicy":"Never","terminationGracePeriodSeconds":120,"volumes":[{"name":"workspace","persistentVolumeClaim":{"claimName":"shepherd-ai-539948"}}]}}}}
+    nrp.ai/username: http://cilogon.org/serverE/users/539948
+  creationTimestamp: "2026-10-02T11:31:17Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/name: validation-placement
+    validation-placement/stage: train-model-loop-3b-v2-a14
+  name: validation-placement-train-model-loop-3b-v2-a14
+  namespace: aiea-interns
+  resourceVersion: "15007476383"
+  uid: 02b67ade-37dd-4322-908b-5b740d462cfd
+spec:
+  activeDeadlineSeconds: 5400
+  backoffLimit: 0
+  completionMode: NonIndexed
+  completions: 1
+  manualSelector: false
+  parallelism: 1
+  podReplacementPolicy: TerminatingOrFailed
+  selector:
+    matchLabels:
+      batch.kubernetes.io/controller-uid: 02b67ade-37dd-4322-908b-5b740d462cfd
+  suspend: false
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: validation-placement
+        batch.kubernetes.io/controller-uid: 02b67ade-37dd-4322-908b-5b740d462cfd
+        batch.kubernetes.io/job-name: validation-placement-train-model-loop-3b-v2-a14
+        controller-uid: 02b67ade-37dd-4322-908b-5b740d462cfd
+        job-name: validation-placement-train-model-loop-3b-v2-a14
+        validation-placement/stage: train-model-loop-3b-v2-a14
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ry-gpu-03.sdsc.optiputer.net
+            weight: 100
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.memory
+                operator: Gt
+                values:
+                - "10240"
+              - key: nvidia.com/gpu.compute.major
+                operator: Gt
+                values:
+                - "6"
+              - key: nvidia.com/gpu.compute.major
+                operator: Lt
+                values:
+                - "11"
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - hcc-nrp-shor-c5817.unl.edu
+      containers:
+      - args:
+        - |
+          set -euo pipefail
+          sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates
+          rm -rf /var/lib/apt/lists/*
+          repo=/workspace/repo-validation-placement-model-loop-0b6c762
+          if [[ ! -d "${repo}/.git" ]]; then
+            git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+          fi
+          git -C "${repo}" fetch origin codex/executable-fidelity-v2
+          git -C "${repo}" checkout --detach 30d981363eaaf8e176353ddfe0cb9dd9bfb6cda8
+          upstream="${repo}/external/MultiUAV-Plat"
+          if [[ ! -d "${upstream}/.git" ]]; then
+            git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
+          fi
+          git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+          python -m pip install --no-cache-dir -e "${repo}[inference]"
+          python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+          output=/workspace/results/train-model-loop-v2/91130026/attempt-14
+          mkdir -p "${output}"
+          python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+            --case-id 91130026:canonical_execute \
+            --max-commands 12 \
+            --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+            --cache-dir /workspace/hf-cache \
+            --raw-output "${output}/raw.json" \
+            --summary-output "${output}/preflight_summary.json" \
+            --preflight-only
+          python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+            --case-id 91130026:canonical_execute \
+            --max-commands 12 \
+            --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+            --cache-dir /workspace/hf-cache \
+            --raw-output "${output}/raw.json" \
+            --summary-output "${output}/run_summary.json"
+        command:
+        - /bin/bash
+        - -lc
+        env:
+        - name: HF_HOME
+          value: /workspace/hf-cache
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: SDL_VIDEODRIVER
+          value: dummy
+        image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+        imagePullPolicy: IfNotPresent
+        name: train-model-loop
+        resources:
+          limits:
+            cpu: "2"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+          requests:
+            cpu: "2"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /workspace
+          name: workspace
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: shepherd-ai-539948
+  ttlSecondsAfterFinished: 86400
+status:
+  completionTime: "2026-10-02T11:41:06Z"
+  conditions:
+  - lastProbeTime: "2026-10-02T11:41:06Z"
+    lastTransitionTime: "2026-10-02T11:41:06Z"
+    message: Reached expected number of succeeded pods
+    reason: CompletionsReached
+    status: "True"
+    type: SuccessCriteriaMet
+  - lastProbeTime: "2026-10-02T11:41:06Z"
+    lastTransitionTime: "2026-10-02T11:41:06Z"
+    message: Reached expected number of succeeded pods
+    reason: CompletionsReached
+    status: "True"
+    type: Complete
+  ready: 0
+  startTime: "2026-10-02T11:31:17Z"
+  succeeded: 1
+  terminating: 0
+  uncountedTerminatedPods: {}

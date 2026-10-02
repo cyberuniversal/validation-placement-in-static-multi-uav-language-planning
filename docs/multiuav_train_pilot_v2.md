@@ -392,3 +392,18 @@ there is no model result from that attempt. Attempt `a14` keeps the same
 reviewed training case, pinned model, code revision, and v4 option menu,
 but switches Ubuntu package sources to HTTPS during startup. It uses a new
 output directory so setup attempts and model results cannot be conflated.
+
+Attempt `a14` ran v4 on a Tesla V100-SXM2-16GB. Preflight passed and the
+3B model completed nine calls, with eight accepted commands. Official task
+progress stayed at 0% and the task check was false. The last move conflicted
+with an obstacle. Circle Target 2 was visible to an idle drone, but the model
+took off other drones and chose generic search moves; no circle sweep was
+offered because its observing drone never took off. The local ignored raw
+files match the summary hashes; job/pod YAML and logs are preserved under
+`attempt14_complete/`. This is a negative training result, not a paper result.
+
+The v5 menu prioritizes an explicitly named target only when it appears in
+the current AGENT-visible nearby-target observations. While such a target is
+visible, it offers takeoff or target actions only for drones that observed it;
+it does not infer unseen targets or bypass official movement checks. The
+model still selects an option, and mission success remains untested for v5.

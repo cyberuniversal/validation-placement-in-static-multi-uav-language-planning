@@ -187,6 +187,17 @@ class ModelLoopTests(unittest.TestCase):
         self.assertFalse(any("Sweep" in item["description"]
                              for item in self.menu(targets=[invalid])))
 
+    def test_named_observed_target_focuses_its_grounded_observer(self) -> None:
+        idle = {**DRONE, "id": "observer", "name": "Observer",
+                "position": {"x": 10, "y": 10, "z": 0}}
+        unrelated = {**DRONE, "id": "other", "name": "Other"}
+        target = {**TARGET, "name": "Circle Target 2"}
+        menu = available_actions(
+            [idle, unrelated], {"observer": [target], "other": []},
+            (20, 20), set(), "Cover Circle Target 2",
+        )
+        self.assertEqual([item["description"] for item in menu], ["Take off Observer"])
+
     def test_model_failure_is_preserved_without_action(self) -> None:
         backend = FakeBackend("not json")
         selector = ModelActionSelector(backend)

@@ -308,3 +308,11 @@ job events, and empty remaining-pod listing are preserved under
 No model selection or server task check is available from `a6`. The option-menu
 interface therefore has unit-test evidence only, not a demonstrated reduction
 in false refusal or an improvement to the paper's executable-case result.
+
+Attempt `a7` also remained Pending with no assigned node, no restarts, and no
+model output. The scheduler reported insufficient GPUs and other placement
+constraints; its job/pod YAML and pod description are preserved under
+`outputs/evaluations/multiuav_train_model_loop_v2/attempt7_pending/`.
+It was removed while still Pending before submitting `a8`, which adds compatible
+RTX 4090 and V100 GPU types to the existing pool. These are scheduling retries
+of the same train-only option-menu experiment, not additional model results.

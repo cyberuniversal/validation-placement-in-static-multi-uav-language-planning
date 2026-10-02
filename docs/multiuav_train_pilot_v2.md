@@ -299,3 +299,12 @@ preserved under `outputs/evaluations/multiuav_train_model_loop_v2/attempt5_pendi
 The pending job was removed before an otherwise identical `a6` request widened
 the compatible GPU allowlist to L40, L40S, and RTX A6000. This is an
 infrastructure retry, not a second model observation or performance result.
+
+Attempt `a6` never obtained a pod on an eligible GPU. Kubernetes marked the
+job `Failed` with `DeadlineExceeded` after its 5,400-second active deadline;
+the pod had been removed by the time of inspection. The final job YAML/JSON,
+job events, and empty remaining-pod listing are preserved under
+`outputs/evaluations/multiuav_train_model_loop_v2/attempt6_deadline_exceeded/`.
+No model selection or server task check is available from `a6`. The option-menu
+interface therefore has unit-test evidence only, not a demonstrated reduction
+in false refusal or an improvement to the paper's executable-case result.

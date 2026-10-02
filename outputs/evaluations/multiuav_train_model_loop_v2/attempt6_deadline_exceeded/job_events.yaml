@@ -1,0 +1,57 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-02T09:11:59Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: validation-placement-train-model-loop-3b-v2-a6
+    namespace: aiea-interns
+    resourceVersion: "15005293816"
+    uid: 00d8b87c-66cc-4e10-9c3e-883a130dac36
+  kind: Event
+  lastTimestamp: "2026-10-02T09:11:59Z"
+  message: 'Deleted pod: validation-placement-train-model-loop-3b-v2-a6-5ptpq'
+  metadata:
+    creationTimestamp: "2026-10-02T09:11:59Z"
+    name: validation-placement-train-model-loop-3b-v2-a6.18daab74946ebfe9
+    namespace: aiea-interns
+    resourceVersion: "140576445"
+    uid: 539bd63b-b8d0-4973-ac96-5c453d180b46
+  reason: SuccessfulDelete
+  reportingComponent: job-controller
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-02T09:12:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: validation-placement-train-model-loop-3b-v2-a6
+    namespace: aiea-interns
+    resourceVersion: "15006130122"
+    uid: 00d8b87c-66cc-4e10-9c3e-883a130dac36
+  kind: Event
+  lastTimestamp: "2026-10-02T09:12:00Z"
+  message: Job was active longer than specified deadline
+  metadata:
+    creationTimestamp: "2026-10-02T09:12:00Z"
+    name: validation-placement-train-model-loop-3b-v2-a6.18daab74d68bb953
+    namespace: aiea-interns
+    resourceVersion: "140576457"
+    uid: 9c74ec24-3424-4abc-8ae4-e3db78e76c0e
+  reason: DeadlineExceeded
+  reportingComponent: job-controller
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Warning
+kind: List
+metadata:
+  resourceVersion: ""

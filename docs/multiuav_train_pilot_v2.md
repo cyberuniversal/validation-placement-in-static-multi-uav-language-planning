@@ -350,3 +350,10 @@ completion. The raw generation and command journal remain in the ignored PVC
 and local `outputs/multiuav/train-model-loop-v2/14fd1139/attempt-9/` paths;
 both copied files match the SHA-256 values in `run_summary.json`. Job/pod YAML
 and the log are preserved separately under `attempt9_complete/`.
+
+The next train-only probe uses reviewed case `91130026:canonical_execute`,
+whose initial local observations include targets. Attempt `a10` remained Pending
+with no node or model output and was retired; its placement evidence is under
+`attempt10_pending/`. Attempt `a11` widens the hardware allowlist to additional
+compatible CUDA GPUs without changing the pinned model, option-menu policy,
+decoding, or per-run output directory. No `a11` outcome is claimed here.

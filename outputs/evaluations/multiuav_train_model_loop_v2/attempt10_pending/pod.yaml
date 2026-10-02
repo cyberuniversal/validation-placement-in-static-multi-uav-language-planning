@@ -1,0 +1,194 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubernetes.io/limit-ranger: 'LimitRanger plugin set: ephemeral-storage request
+      for container train-model-loop; ephemeral-storage limit for container train-model-loop'
+    nrp.ai/username: http://cilogon.org/serverE/users/539948
+  creationTimestamp: "2026-10-02T10:51:58Z"
+  finalizers:
+  - batch.kubernetes.io/job-tracking
+  generateName: validation-placement-train-model-loop-3b-v2-a10-
+  generation: 1
+  labels:
+    app.kubernetes.io/name: validation-placement
+    batch.kubernetes.io/controller-uid: 05c57d96-3df4-4107-a532-b0f546ff142e
+    batch.kubernetes.io/job-name: validation-placement-train-model-loop-3b-v2-a10
+    controller-uid: 05c57d96-3df4-4107-a532-b0f546ff142e
+    job-name: validation-placement-train-model-loop-3b-v2-a10
+    validation-placement/stage: train-model-loop-3b-v2-a10
+  name: validation-placement-train-model-loop-3b-v2-a10-w2krc
+  namespace: aiea-interns
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: validation-placement-train-model-loop-3b-v2-a10
+    uid: 05c57d96-3df4-4107-a532-b0f546ff142e
+  resourceVersion: "15007058914"
+  uid: 1a0ca98e-ada5-43a6-8815-6ed0977ac84e
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - ry-gpu-03.sdsc.optiputer.net
+        weight: 100
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+            - NVIDIA-GeForce-RTX-4090
+            - NVIDIA-GeForce-RTX-2080-Ti
+            - NVIDIA-A10
+            - Tesla-T4
+            - NVIDIA-L4
+            - NVIDIA-L40
+            - NVIDIA-L40S
+            - NVIDIA-RTX-A6000
+            - Tesla-V100-SXM2-16GB
+            - Tesla-V100-SXM2-32GB
+            - Tesla-V100-PCIE-16GB
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - hcc-nrp-shor-c5817.unl.edu
+  containers:
+  - args:
+    - |
+      set -euo pipefail
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      repo=/workspace/repo-validation-placement-model-loop-0b6c762
+      if [[ ! -d "${repo}/.git" ]]; then
+        git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+      fi
+      git -C "${repo}" fetch origin codex/executable-fidelity-v2
+      git -C "${repo}" checkout --detach 0f68a5efce8aff66be8cc711f85680a16cb51c08
+      upstream="${repo}/external/MultiUAV-Plat"
+      if [[ ! -d "${upstream}/.git" ]]; then
+        git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
+      fi
+      git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+      output=/workspace/results/train-model-loop-v2/91130026/attempt-10
+      mkdir -p "${output}"
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 12 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/preflight_summary.json" \
+        --preflight-only
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 12 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/run_summary.json"
+    command:
+    - /bin/bash
+    - -lc
+    env:
+    - name: HF_HOME
+      value: /workspace/hf-cache
+    - name: HF_HUB_OFFLINE
+      value: "1"
+    - name: TRANSFORMERS_OFFLINE
+      value: "1"
+    - name: SDL_VIDEODRIVER
+      value: dummy
+    image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imagePullPolicy: IfNotPresent
+    name: train-model-loop
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-q72sk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 120
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: PreferNoSchedule
+    key: nvidia.com/gpu
+    operator: Exists
+  volumes:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: shepherd-ai-539948
+  - name: kube-api-access-q72sk
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-02T10:51:58Z"
+    message: '0/533 nodes are available: 13 Insufficient memory, 19 node(s) were unschedulable,
+      199 node(s) didn''t match Pod''s node affinity/selector, 222 node(s) had untolerated
+      taint(s), 9 Insufficient cpu, 93 Insufficient nvidia.com/gpu. no new claims
+      to deallocate, preemption: 0/533 nodes are available: 35 Insufficient nvidia.com/gpu,
+      446 Preemption is not helpful for scheduling, 52 No preemption victims found
+      for incoming pod.'
+    observedGeneration: 1
+    reason: Unschedulable
+    status: "False"
+    type: PodScheduled
+  phase: Pending
+  qosClass: Guaranteed

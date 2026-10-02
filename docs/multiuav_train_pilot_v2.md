@@ -357,3 +357,9 @@ with no node or model output and was retired; its placement evidence is under
 `attempt10_pending/`. Attempt `a11` widens the hardware allowlist to additional
 compatible CUDA GPUs without changing the pinned model, option-menu policy,
 decoding, or per-run output directory. No `a11` outcome is claimed here.
+Attempt `a11` also remained Pending without model output; its job/pod evidence
+is retained under `attempt11_pending/`. The `a12` request replaces GPU product
+names with Nautilus's numeric hardware labels: more than 10,240 MiB VRAM and
+CUDA compute major version 7 through 10, while keeping the known-bad host
+excluded. This is a scheduling change only, and runtime compatibility remains
+subject to actual model-load evidence.

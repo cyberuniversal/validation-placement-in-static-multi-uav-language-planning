@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: validation-placement-train-model-loop-3b-v2-a11
+  name: validation-placement-train-model-loop-3b-v2-a12
   namespace: aiea-interns
   labels:
     app.kubernetes.io/name: validation-placement
-    validation-placement/stage: train-model-loop-3b-v2-a11
+    validation-placement/stage: train-model-loop-3b-v2-a12
 spec:
   activeDeadlineSeconds: 5400
   backoffLimit: 0
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: validation-placement
-        validation-placement/stage: train-model-loop-3b-v2-a11
+        validation-placement/stage: train-model-loop-3b-v2-a12
     spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 120
@@ -22,31 +22,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: nvidia.com/gpu.product
-                    operator: In
-                    values:
-                      - NVIDIA-GeForce-RTX-3090
-                      - NVIDIA-GeForce-RTX-4090
-                      - NVIDIA-GeForce-RTX-2080-Ti
-                      - NVIDIA-A10
-                      - Tesla-T4
-                      - NVIDIA-L4
-                      - NVIDIA-L40
-                      - NVIDIA-L40S
-                      - NVIDIA-RTX-A6000
-                      - NVIDIA-RTX-A5000
-                      - NVIDIA-A40
-                      - NVIDIA-A100-PCIE-40GB
-                      - NVIDIA-A100-SXM4-80GB
-                      - NVIDIA-A100-80GB-PCIe
-                      - NVIDIA-H100-80GB-HBM3
-                      - NVIDIA-TITAN-RTX
-                      - NVIDIA-RTX-5000-Ada-Generation
-                      - Quadro-RTX-6000
-                      - Quadro-RTX-8000
-                      - Tesla-V100-SXM2-16GB
-                      - Tesla-V100-SXM2-32GB
-                      - Tesla-V100-PCIE-16GB
+                  - key: nvidia.com/gpu.memory
+                    operator: Gt
+                    values: ["10240"]
+                  - key: nvidia.com/gpu.compute.major
+                    operator: Gt
+                    values: ["6"]
+                  - key: nvidia.com/gpu.compute.major
+                    operator: Lt
+                    values: ["11"]
                   - key: kubernetes.io/hostname
                     operator: NotIn
                     values:
@@ -82,7 +66,7 @@ spec:
               git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
               python -m pip install --no-cache-dir -e "${repo}[inference]"
               python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
-              output=/workspace/results/train-model-loop-v2/91130026/attempt-11
+              output=/workspace/results/train-model-loop-v2/91130026/attempt-12
               mkdir -p "${output}"
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 91130026:canonical_execute \

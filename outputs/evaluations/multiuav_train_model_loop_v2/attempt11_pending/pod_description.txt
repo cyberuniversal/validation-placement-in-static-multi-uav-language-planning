@@ -1,0 +1,104 @@
+Name:             validation-placement-train-model-loop-3b-v2-a11-j6pz2
+Namespace:        aiea-interns
+Priority:         0
+Service Account:  default
+Node:             <none>
+Labels:           app.kubernetes.io/name=validation-placement
+                  batch.kubernetes.io/controller-uid=340f0bc3-c51c-42ac-83e5-d30b4f150e9a
+                  batch.kubernetes.io/job-name=validation-placement-train-model-loop-3b-v2-a11
+                  controller-uid=340f0bc3-c51c-42ac-83e5-d30b4f150e9a
+                  job-name=validation-placement-train-model-loop-3b-v2-a11
+                  validation-placement/stage=train-model-loop-3b-v2-a11
+Annotations:      kubernetes.io/limit-ranger:
+                    LimitRanger plugin set: ephemeral-storage request for container train-model-loop; ephemeral-storage limit for container train-model-loop
+                  nrp.ai/username: http://cilogon.org/serverE/users/539948
+Status:           Pending
+IP:               
+IPs:              <none>
+Controlled By:    Job/validation-placement-train-model-loop-3b-v2-a11
+Containers:
+  train-model-loop:
+    Image:      pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -lc
+    Args:
+      set -euo pipefail
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      repo=/workspace/repo-validation-placement-model-loop-0b6c762
+      if [[ ! -d "${repo}/.git" ]]; then
+        git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
+      fi
+      git -C "${repo}" fetch origin codex/executable-fidelity-v2
+      git -C "${repo}" checkout --detach 0f68a5efce8aff66be8cc711f85680a16cb51c08
+      upstream="${repo}/external/MultiUAV-Plat"
+      if [[ ! -d "${upstream}/.git" ]]; then
+        git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
+      fi
+      git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+      output=/workspace/results/train-model-loop-v2/91130026/attempt-11
+      mkdir -p "${output}"
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 12 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/preflight_summary.json" \
+        --preflight-only
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id 91130026:canonical_execute \
+        --max-commands 12 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/run_summary.json"
+      
+    Limits:
+      cpu:                2
+      ephemeral-storage:  50Gi
+      memory:             16Gi
+      nvidia.com/gpu:     1
+    Requests:
+      cpu:                2
+      ephemeral-storage:  0
+      memory:             16Gi
+      nvidia.com/gpu:     1
+    Environment:
+      HF_HOME:               /workspace/hf-cache
+      HF_HUB_OFFLINE:        1
+      TRANSFORMERS_OFFLINE:  1
+      SDL_VIDEODRIVER:       dummy
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-64h4s (ro)
+      /workspace from workspace (rw)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  workspace:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  shepherd-ai-539948
+    ReadOnly:   false
+  kube-api-access-64h4s:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Guaranteed
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+                             nvidia.com/gpu:PreferNoSchedule op=Exists
+Events:
+  Type     Reason            Age                     From               Message
+  ----     ------            ----                    ----               -------
+  Warning  FailedScheduling  3m42s (x24 over 4m50s)  default-scheduler  0/533 nodes are available: 13 Insufficient cpu, 131 Insufficient nvidia.com/gpu, 15 Insufficient memory, 161 node(s) didn't match Pod's node affinity/selector, 19 node(s) were unschedulable, 222 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/533 nodes are available: 37 Insufficient nvidia.com/gpu, 439 Preemption is not helpful for scheduling, 57 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  3m41s                   default-scheduler  0/533 nodes are available: 13 Insufficient cpu, 131 Insufficient nvidia.com/gpu, 15 Insufficient memory, 161 node(s) didn't match Pod's node affinity/selector, 19 node(s) were unschedulable, 222 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/533 nodes are available: 38 Insufficient nvidia.com/gpu, 439 Preemption is not helpful for scheduling, 56 No preemption victims found for incoming pod.

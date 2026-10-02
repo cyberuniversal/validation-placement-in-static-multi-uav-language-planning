@@ -336,3 +336,17 @@ or model load: the GPU `a9` pod obtained a V100 node, and the PVC could not be
 mounted by both pods on different nodes. The CPU output directory was empty.
 Its job/pod YAML and log are preserved under `cpu_smoke_preempted_by_gpu/`.
 This is an infrastructure interruption, not a CPU inference result.
+
+GPU attempt `a9` completed on a Tesla V100-SXM2-32GB using the pinned 3B
+checkpoint and option-menu code commit `0f68a5efce8aff66be8cc711f85680a16cb51c08`.
+On reviewed training case `14fd1139:canonical_execute`, the model made 12
+choices; all 12 resolved to offered options and all 12 commands were accepted
+by the official server (four takeoffs and eight bounded search moves). There
+was no deterministic prelude. The AGENT's privileged-data request returned
+403 as intended. Local target observations remained empty, task progress stayed
+at 0%, and the official task check was false when the 12-command budget ended.
+This shows model-driven command execution, not instruction fidelity or mission
+completion. The raw generation and command journal remain in the ignored PVC
+and local `outputs/multiuav/train-model-loop-v2/14fd1139/attempt-9/` paths;
+both copied files match the SHA-256 values in `run_summary.json`. Job/pod YAML
+and the log are preserved separately under `attempt9_complete/`.

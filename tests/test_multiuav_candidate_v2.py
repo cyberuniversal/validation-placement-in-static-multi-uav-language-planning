@@ -14,9 +14,11 @@ sys.path.insert(0, str(ROOT / "src"))
 from shepherd_ai.multiuav_context import project_agent_visible_context  # noqa: E402
 from shepherd_ai.multiuav_candidate_v2 import (  # noqa: E402
     evaluate_candidate,
+    run_candidate,
     screen_visible_request,
 )
 from shepherd_ai.multiuav_plan_contract import parse_strict_model_output  # noqa: E402
+from shepherd_ai.multiuav_runner import GenerationResult  # noqa: E402
 
 
 def _context(instruction: str) -> dict:
@@ -53,6 +55,87 @@ def _output(endpoint: str = "/drones/drone-1/command/take_off"):
 
 
 class CandidateTests(unittest.TestCase):
+    def test_runnable_candidate_releases_grounded_model_plan(self) -> None:
+        class Backend:
+            requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                return GenerationResult(raw_output=json.dumps(_output().to_dict()))
+
+        backend = Backend()
+        result = run_candidate(
+            _context("Have Drone 1 take off to 20 meters."), backend,
+        )
+        self.assertTrue(result.report.release_authorized)
+        self.assertEqual(result.report.reason_code, "grounded_plan")
+        self.assertEqual(result.parse_status, "PARSED")
+        self.assertEqual(len(backend.requests), 1)
+        self.assertEqual(result.generation.raw_output, json.dumps(_output().to_dict()))
+
+    def test_runnable_candidate_does_not_call_model_on_visible_conflict(self) -> None:
+        class Backend:
+            def generate(self, request):
+                raise AssertionError("no model call should be made")
+
+        result = run_candidate(
+            _context("Have Drone 2 take off to 20 meters."), Backend(),
+        )
+        self.assertEqual(result.report.reason_code, "visible_fleet_conflict")
+        self.assertFalse(result.report.release_authorized)
+        self.assertIsNone(result.request)
+
+    def test_runnable_candidate_preserves_invalid_generation(self) -> None:
+        class Backend:
+            def generate(self, request):
+                return GenerationResult(raw_output="not json")
+
+        result = run_candidate(
+            _context("Have Drone 1 take off to 20 meters."), Backend(),
+        )
+        self.assertEqual(result.report.reason_code, "model_output_parse_error")
+        self.assertEqual(result.parse_error_code, "invalid_json")
+        self.assertEqual(result.generation.raw_output, "not json")
+
+    def test_runnable_candidate_fails_closed_on_backend_error(self) -> None:
+        class Backend:
+            def generate(self, request):
+                raise RuntimeError("model unavailable")
+
+        result = run_candidate(
+            _context("Have Drone 1 take off to 20 meters."), Backend(),
+        )
+        self.assertEqual(result.report.reason_code, "generation_failed")
+        self.assertEqual(result.generation.error_type, "RuntimeError")
+        self.assertFalse(result.report.release_authorized)
+
+    def test_runnable_candidate_fails_closed_on_backend_protocol_error(self) -> None:
+        class Backend:
+            def generate(self, request):
+                return {"raw_output": "{}"}
+
+        result = run_candidate(
+            _context("Have Drone 1 take off to 20 meters."), Backend(),
+        )
+        self.assertEqual(result.report.reason_code, "generation_failed")
+        self.assertEqual(result.generation.generation_status, "BACKEND_PROTOCOL_ERROR")
+        self.assertFalse(result.report.release_authorized)
+
+    def test_runnable_candidate_does_not_release_unsafe_plan(self) -> None:
+        class Backend:
+            def generate(self, request):
+                return GenerationResult(
+                    raw_output=json.dumps(
+                        _output("/drones/drone-1/command/teleport").to_dict()
+                    )
+                )
+
+        result = run_candidate(
+            _context("Have Drone 1 take off to 20 meters."), Backend(),
+        )
+        self.assertEqual(result.report.reason_code, "postplan_rejected")
+        self.assertFalse(result.report.release_authorized)
+
     def test_grounded_concrete_endpoint_can_release(self) -> None:
         report = evaluate_candidate(
             _output(), _context("Have Drone 1 take off to 20 meters."),

@@ -19,6 +19,21 @@ or source-task IDs. However, its ambiguity patterns are recognizable products
 of the intervention generator. Perfect agreement with generated labels is not
 an independent safety result and may not transfer to natural operator language.
 
+`run_candidate(context, backend)` is the provider-independent, single-attempt
+entry point for this exploratory candidate. It screens the agent-visible request
+before calling the backend, uses the existing M1 first-call prompt for a plan,
+retains the prompt and raw generation in its return value, parses strict JSON,
+then applies endpoint resolution and the frozen grounding validator. It never
+executes a command. An absent drone, malformed generation, backend failure,
+model refusal, or rejected plan cannot be released. This is not an M3 repair:
+the published M1--M4 outputs and scores are unchanged.
+
+Run the synthetic interface tests with
+`python -m pytest -q tests/test_multiuav_candidate_v2.py`. They demonstrate
+code behavior only. No new model inference or prospective mission outcome has
+been obtained from this entry point, and the retrospective replay below cannot
+establish that the system now distinguishes executable requests in operation.
+
 ## Development audit
 
 Run `python scripts/audit_multiuav_candidate_v2.py --split train` from the

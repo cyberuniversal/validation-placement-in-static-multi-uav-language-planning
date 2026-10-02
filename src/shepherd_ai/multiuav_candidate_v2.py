@@ -10,6 +10,9 @@ from shepherd_ai.multiuav_context import validate_agent_visible_context
 from shepherd_ai.multiuav_endpoint_resolution_v2 import resolve_concrete_endpoints
 from shepherd_ai.multiuav_grounding_validator import validate_grounded_plan
 from shepherd_ai.multiuav_plan_contract import StrictModelOutput
+from shepherd_ai.multiuav_plan_contract import parse_strict_model_output
+from shepherd_ai.multiuav_prompts import PromptRequest, build_first_call_request
+from shepherd_ai.multiuav_runner import GenerationResult, ModelBackend
 from shepherd_ai.multiuav_recoverability import (
     assess_resource_conflict,
     extract_explicit_drone_references,
@@ -41,6 +44,65 @@ class CandidateReport:
     release_authorized: bool
     resolved_calls: int
     postplan_stage: str | None
+
+
+@dataclass(frozen=True)
+class CandidateRun:
+    """One exploratory model attempt, retaining the raw generation for audit."""
+
+    report: CandidateReport
+    request: PromptRequest | None
+    generation: GenerationResult | None
+    parse_status: str | None
+    parse_error_code: str | None
+
+
+def run_candidate(
+    context: Mapping[str, Any], backend: ModelBackend,
+) -> CandidateRun:
+    """Screen visible evidence, then try one plan without changing M1--M4."""
+
+    decision, reason = screen_visible_request(context)
+    if decision != "EXECUTE":
+        return CandidateRun(
+            CandidateReport(decision, reason, False, 0, None),
+            None, None, None, None,
+        )
+
+    request = build_first_call_request("M1_monolithic", context)
+    try:
+        generation = backend.generate(request)
+    except Exception as error:
+        generation = GenerationResult(
+            raw_output="", generation_status="BACKEND_ERROR",
+            error_type=type(error).__name__, error_message=str(error),
+        )
+    if not isinstance(generation, GenerationResult):
+        generation = GenerationResult(
+            raw_output="", generation_status="BACKEND_PROTOCOL_ERROR",
+            error_type="TypeError",
+            error_message="backend.generate must return GenerationResult",
+        )
+    if not isinstance(generation.raw_output, str):
+        generation = GenerationResult(
+            raw_output="", generation_status="BACKEND_PROTOCOL_ERROR",
+            error_type="TypeError",
+            error_message="generation raw_output must be text",
+        )
+    if generation.generation_status != "GENERATED":
+        return CandidateRun(
+            CandidateReport("BLOCK", "generation_failed", False, 0, None),
+            request, generation, None, None,
+        )
+
+    parsed = parse_strict_model_output(generation.raw_output)
+    if parsed.parsed is None:
+        report = CandidateReport("BLOCK", "model_output_parse_error", False, 0, None)
+    else:
+        report = evaluate_candidate(parsed.parsed, context)
+    return CandidateRun(
+        report, request, generation, parsed.parse_status, parsed.error_code,
+    )
 
 
 def screen_visible_request(context: Mapping[str, Any]) -> tuple[str, str]:

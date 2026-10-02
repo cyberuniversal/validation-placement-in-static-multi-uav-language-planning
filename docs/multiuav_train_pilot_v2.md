@@ -290,3 +290,12 @@ evaluated** until a new immutable run records its model selection, command
 journal, task check, and failed attempts. Repeated tuning on reviewed training
 cases is development, not independent evaluation; the frozen paper result
 remains unchanged.
+
+The first option-menu Kubernetes attempt (`a5`) remained Pending for about ten
+minutes. Its pod had no assigned node, no restarts, and no model or command
+output. The scheduler reported insufficient GPU plus node affinity, taint,
+CPU, and memory constraints. Job/pod YAML, pod description, and empty log are
+preserved under `outputs/evaluations/multiuav_train_model_loop_v2/attempt5_pending/`.
+The pending job was removed before an otherwise identical `a6` request widened
+the compatible GPU allowlist to L40, L40S, and RTX A6000. This is an
+infrastructure retry, not a second model observation or performance result.

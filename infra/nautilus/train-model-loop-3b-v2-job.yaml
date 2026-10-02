@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: validation-placement-train-model-loop-3b-v2-a4
+  name: validation-placement-train-model-loop-3b-v2-a5
   namespace: aiea-interns
   labels:
     app.kubernetes.io/name: validation-placement
-    validation-placement/stage: train-model-loop-3b-v2-a4
+    validation-placement/stage: train-model-loop-3b-v2-a5
 spec:
   activeDeadlineSeconds: 5400
   backoffLimit: 0
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: validation-placement
-        validation-placement/stage: train-model-loop-3b-v2-a4
+        validation-placement/stage: train-model-loop-3b-v2-a5
     spec:
       restartPolicy: Never
       terminationGracePeriodSeconds: 120
@@ -55,7 +55,7 @@ spec:
                 git clone https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git "${repo}"
               fi
               git -C "${repo}" fetch origin codex/executable-fidelity-v2
-              git -C "${repo}" checkout --detach e40de0084b20d0c0866d2d661ba256a53e6abb2f
+              git -C "${repo}" checkout --detach 9af991c7e0fa8ed47299a6534b4ce25e46cb9174
               upstream="${repo}/external/MultiUAV-Plat"
               if [[ ! -d "${upstream}/.git" ]]; then
                 git clone --filter=blob:none https://github.com/zhangsheng93/MultiUAV-Plat.git "${upstream}"
@@ -63,11 +63,11 @@ spec:
               git -C "${upstream}" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
               python -m pip install --no-cache-dir -e "${repo}[inference]"
               python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
-              output=/workspace/results/train-model-loop-v2/14fd1139/attempt-4
+              output=/workspace/results/train-model-loop-v2/14fd1139/attempt-5
               mkdir -p "${output}"
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 14fd1139:canonical_execute \
-                --max-commands 4 \
+                --max-commands 12 \
                 --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
                 --cache-dir /workspace/hf-cache \
                 --raw-output "${output}/raw.json" \
@@ -75,7 +75,7 @@ spec:
                 --preflight-only
               python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
                 --case-id 14fd1139:canonical_execute \
-                --max-commands 4 \
+                --max-commands 12 \
                 --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
                 --cache-dir /workspace/hf-cache \
                 --raw-output "${output}/raw.json" \

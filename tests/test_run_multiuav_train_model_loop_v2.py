@@ -167,14 +167,15 @@ class ModelLoopTests(unittest.TestCase):
         sweep = next(item for item in menu if "Sweep" in item["description"])
         action, status = resolve_model_action(choice(sweep["option_id"]), menu)
         self.assertEqual(status, "resolved")
-        self.assertEqual(action["command"], "move_along_path")
-        self.assertEqual(action["source"], "agent_visible_circle_geometry")
-        self.assertGreaterEqual(len(action["waypoints"]), 2)
-        self.assertLessEqual(len(action["waypoints"]), 24)
-        self.assertTrue(all(0 <= point["x"] <= 20 and 0 <= point["y"] <= 20
-                            for point in action["waypoints"]))
+        self.assertEqual(action["command"], "move_to")
+        self.assertEqual(action["source"], "agent_visible_circle_geometry_step")
+        self.assertTrue(0 <= action["x"] <= 20 and 0 <= action["y"] <= 20)
         response = issue_action(FakeClient(), {"X-API-Key": "agent"}, action)
         self.assertEqual(response["body"]["status"], "success")
+        next_menu = available_actions([drone], {"drone-1": [circle]},
+                                      (20, 20), {(action["x"], action["y"])})
+        next_sweep = next(item for item in next_menu if "Sweep" in item["description"])
+        self.assertNotEqual(next_sweep["action"]["x"], action["x"])
 
     def test_circle_sweep_requires_visible_valid_geometry(self) -> None:
         drone = {**DRONE, "task_radius": 2}

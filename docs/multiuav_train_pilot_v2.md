@@ -424,3 +424,18 @@ stopped without a task-check result. A diagnostic-only follow-up writes
 durable phase events before and after model selection, official command
 execution, and AGENT re-observation. These events contain no model text or
 hidden labels and do not alter the action policy.
+
+Attempt `a17` reproduced the stall. Its event journal shows the first
+takeoff, subsequent AGENT observation, and second model selection all
+completed; the selected action was an observed-circle `move_along_path`.
+No `after_command` event appeared. This localizes the stall to that official
+path command in this simulator/session, not to model generation. The partial
+journals and job/pod evidence were retained under `attempt-17/` and
+`attempt17_path_endpoint_hung/` before stopping the job. No task-check
+result exists.
+
+The v6 train-only policy offers one circle-sweep waypoint at a time via the
+official `move_to` route, retaining the same AGENT-visible geometry checks,
+model-selected option ID, and bounded command budget. Earlier pilots showed
+`move_to` can return in this session; whether v6 completes coverage or the
+mission remains not evaluated until a separate run finishes.

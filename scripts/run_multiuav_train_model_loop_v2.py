@@ -178,12 +178,17 @@ def _circle_sweep_action(
         for index, offset in enumerate(offsets)
         for side in ((-1, 1) if index % 2 == 0 else (1, -1))
     ]
-    if all((point["x"], point["y"]) in previous_destinations
-           for point in waypoints):
+    next_waypoint = next(
+        (point for point in waypoints
+         if (point["x"], point["y"]) not in previous_destinations),
+        None,
+    )
+    if next_waypoint is None:
         return None
     return {
-        "command": "move_along_path", "drone_id": str(drone["id"]),
-        "waypoints": waypoints, "source": "agent_visible_circle_geometry",
+        "command": "move_to", "drone_id": str(drone["id"]),
+        "x": next_waypoint["x"], "y": next_waypoint["y"],
+        "source": "agent_visible_circle_geometry_step",
     }
 
 
@@ -239,14 +244,14 @@ def build_request(
                 "A target absent from nearby_targets_by_drone may be found by a listed "
                 "bounded search step; absence from this local observation alone is not "
                 "a reason to STOP. For area coverage, prefer an offered observed-area "
-                "sweep to a target-center move. Never invent an option ID or coordinates."
+                "sweep step to a target-center move. Never invent an option ID or coordinates."
             ),
         ),
         PromptMessage(role="user", content=_canonical(visible)),
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v5",
+        prompt_contract_version="train_closed_loop_option_menu_v6",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -351,7 +356,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v5_named_target_focus",
+        "policy": "agent_visible_option_menu_v6_single_sweep_step",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

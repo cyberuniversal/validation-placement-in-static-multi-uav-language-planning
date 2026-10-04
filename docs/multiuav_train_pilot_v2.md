@@ -505,3 +505,19 @@ check, command acceptance, AGENT-visible progress, and any failure or stall.
 Only an official true task check counts as task completion; aggregate session
 progress is descriptive. This train-only probe will not alter the frozen
 paper results or be treated as independent held-out validation.
+
+Attempt `a21` completed on an NVIDIA RTX A4000 with the registered v8
+configuration. The official task check returned false. Of 19 model-selected
+commands, 18 succeeded (two takeoffs and 16 `move_to` searches); the final
+search move was rejected for a circle-obstacle conflict. All 20 AGENT
+snapshots had no nearby target observations, and aggregate session progress
+remained 0%. The model used one drone for a northward step followed by 16
+eastward steps at one latitude; the other launched drone was not used after
+takeoff. The stop reason was `command_rejected_or_failed`. This shows that
+the v8 bounded local-search menu can permit ineffective, repetitive
+exploration. It does not diagnose the later sweep policy, because neither
+named target was discovered. The local ignored raw, command, event, and
+preflight files are in `outputs/multiuav/train-model-loop-v2/519784ca/attempt-21/`;
+the copied journals match the SHA-256 values in `run_summary.json`.
+Job/pod YAML and logs are preserved under `attempt21_complete/`. No hidden
+checker or target coordinate was used to alter this run.

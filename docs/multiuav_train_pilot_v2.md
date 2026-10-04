@@ -470,3 +470,27 @@ four vertices and the observing drone's task radius. It rejects rotated,
 out-of-canvas, malformed, or too-large geometry rather than guessing. The
 24-command budget remains unchanged. General polygon coverage is not
 implemented, and no v8 mission outcome is claimed before evaluation.
+
+Attempt `a20` completed on node `ry-gpu-15.sdsc.optiputer.net` with the
+pinned Qwen2.5-3B-Instruct revision and v8 code commit
+`a405b5d16577cd0703ae83fa9c967c413000ce0a`.
+All 24 model-selected official commands succeeded: two takeoffs, six
+observed-circle sweep steps, eight observed-rectangle sweep steps, six
+bounded searches, and two observed-target moves. The AGENT-visible aggregate
+session progress ended at 41%; this is not the task-specific success metric.
+The official task check returned true. A post-run audit of the reviewed
+training task's source checker confirmed a four-leaf AND: each of Polygon
+Target 3 and Circle Target 2 must be reached and searched to at least 95%.
+The AGENT response masks this checker as null, so its masked field must not
+be interpreted as an absent check. None of the 24 model user messages
+contained `execution_check_apis`, `coverage_threshold`, or `related_apis`.
+The raw generation, command, event, and preflight files are retained in the
+ignored `outputs/multiuav/train-model-loop-v2/91130026/attempt-20/`
+directory and on the PVC; the copied raw, command, and event files match the
+SHA-256 hashes in `run_summary.json`. Job/pod YAML and logs are preserved
+under `attempt20_complete/`.
+
+This confirms one model-driven mission completion on a repeatedly inspected
+training task. It is not independent evidence of generalization, does not
+revise the frozen 0/852 static-fidelity result, and does not establish
+reliability on unseen tasks or nonrectangular polygons.

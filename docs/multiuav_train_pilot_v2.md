@@ -494,3 +494,14 @@ This confirms one model-driven mission completion on a repeatedly inspected
 training task. It is not independent evidence of generalization, does not
 revise the frozen 0/852 static-fidelity result, and does not establish
 reliability on unseen tasks or nonrectangular polygons.
+
+The next v8 robustness probe is registered as attempt `a21` before execution:
+reviewed training case `519784ca:canonical_execute`, the protocol-selected
+intermediate area-search case from session `0f23ff1e`. It requires 95% search
+coverage of Circle Target 2 and Circle Target 1. The run uses the same pinned
+model, upstream simulator revision, v8 code commit, and 24-command limit as
+`a20`, with a separate output directory. We will record the official task
+check, command acceptance, AGENT-visible progress, and any failure or stall.
+Only an official true task check counts as task completion; aggregate session
+progress is descriptive. This train-only probe will not alter the frozen
+paper results or be treated as independent held-out validation.

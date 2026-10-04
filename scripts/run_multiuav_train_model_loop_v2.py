@@ -106,7 +106,8 @@ def available_actions(
         for target in sorted(nearby_targets.get(drone_id, []), key=lambda item: str(item["id"])):
             if focused_drones and str(target["id"]) not in named_target_ids:
                 continue
-            sweep = _circle_sweep_action(drone, target, canvas, previous_destinations)
+            sweep = (_circle_sweep_action(drone, target, canvas, previous_destinations)
+                     or _rectangle_sweep_action(drone, target, canvas, previous_destinations))
             if sweep is not None:
                 choices.append({
                     "description": f"Sweep observed {target['name']} area with {drone['name']}",
@@ -195,6 +196,54 @@ def _circle_sweep_action(
     }
 
 
+def _rectangle_sweep_action(
+    drone: Mapping[str, Any], target: Mapping[str, Any],
+    canvas: tuple[float, float], previous_destinations: set[tuple[float, float]],
+) -> dict[str, Any] | None:
+    if target.get("type") != "polygon":
+        return None
+    try:
+        vertices = [(float(point["x"]), float(point["y"]))
+                    for point in target["vertices"]]
+        task_radius = float(drone["task_radius"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if len(vertices) != 4 or not math.isfinite(task_radius) or task_radius <= 0:
+        return None
+    xs, ys = sorted({point[0] for point in vertices}), sorted({point[1] for point in vertices})
+    if (len(xs) != 2 or len(ys) != 2
+            or not all(math.isfinite(value) for point in vertices for value in point)
+            or set(vertices) != {(x, y) for x in xs for y in ys}
+            or xs[0] < 0 or ys[0] < 0 or xs[1] > canvas[0] or ys[1] > canvas[1]):
+        return None
+    margin_x = min(task_radius, (xs[1] - xs[0]) / 2)
+    margin_y = min(task_radius, (ys[1] - ys[0]) / 2)
+    left, right = xs[0] + margin_x, xs[1] - margin_x
+    low, high = ys[0] + margin_y, ys[1] - margin_y
+    rows = max(1, math.ceil((high - low) / (2 * task_radius)) + 1)
+    if rows > 12:
+        return None
+    offsets = [low] if rows == 1 else [
+        low + (high - low) * index / (rows - 1) for index in range(rows)
+    ]
+    waypoints = [
+        (x, y)
+        for index, y in enumerate(offsets)
+        for x in ((left, right) if index % 2 == 0 else (right, left))
+    ]
+    next_waypoint = next(
+        ((x, y) for x, y in waypoints if (x, y) not in previous_destinations),
+        None,
+    )
+    if next_waypoint is None:
+        return None
+    return {
+        "command": "move_to", "drone_id": str(drone["id"]),
+        "x": next_waypoint[0], "y": next_waypoint[1],
+        "source": "agent_visible_rectangle_geometry_step",
+    }
+
+
 def build_request(
     instruction: str,
     drones: list[dict[str, Any]],
@@ -223,7 +272,7 @@ def build_request(
         ],
         "nearby_targets_by_drone": {
             drone_id: [
-                {key: target[key] for key in ("id", "name", "position", "type", "radius")
+                {key: target[key] for key in ("id", "name", "position", "type", "radius", "vertices")
                  if key in target}
                 for target in targets
             ]
@@ -254,7 +303,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v7",
+        prompt_contract_version="train_closed_loop_option_menu_v8",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -359,7 +408,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v7_search_after_observed_sweep",
+        "policy": "agent_visible_option_menu_v8_observed_rectangle_sweep",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

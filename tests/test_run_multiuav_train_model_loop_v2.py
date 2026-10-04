@@ -188,6 +188,40 @@ class ModelLoopTests(unittest.TestCase):
         self.assertFalse(any("Sweep" in item["description"]
                              for item in self.menu(targets=[invalid])))
 
+    def test_observed_rectangle_offers_bounded_sweep_steps(self) -> None:
+        drone = {**DRONE, "task_radius": 2}
+        rectangle = {
+            "id": "area-2", "name": "Polygon Target 3", "type": "polygon",
+            "position": {"x": 10, "y": 10}, "radius": 1,
+            "vertices": [
+                {"x": 6, "y": 6}, {"x": 14, "y": 6},
+                {"x": 14, "y": 14}, {"x": 6, "y": 14},
+            ],
+        }
+        menu = self.menu(drone=drone, targets=[rectangle])
+        sweep = next(item for item in menu if "Sweep" in item["description"])
+        action = sweep["action"]
+        self.assertEqual(action["command"], "move_to")
+        self.assertEqual(action["source"], "agent_visible_rectangle_geometry_step")
+        self.assertEqual((action["x"], action["y"]), (8, 8))
+        next_menu = available_actions(
+            [drone], {"drone-1": [rectangle]}, (20, 20), {(8, 8)},
+            "Cover Polygon Target 3",
+        )
+        next_sweep = next(item for item in next_menu if "Sweep" in item["description"])
+        self.assertEqual((next_sweep["action"]["x"], next_sweep["action"]["y"]),
+                         (12, 8))
+        request = build_request("Cover Polygon Target 3", [drone],
+                                {"drone-1": [rectangle]}, (20, 20), set(), 0)
+        payload = json.loads(request.messages[1].content)
+        self.assertEqual(len(payload["nearby_targets_by_drone"]["drone-1"][0]["vertices"]), 4)
+        rotated = {**rectangle, "vertices": [
+            {"x": 10, "y": 5}, {"x": 15, "y": 10},
+            {"x": 10, "y": 15}, {"x": 5, "y": 10},
+        ]}
+        self.assertFalse(any("Sweep" in item["description"]
+                             for item in self.menu(drone=drone, targets=[rotated])))
+
     def test_named_observed_target_focuses_its_grounded_observer(self) -> None:
         idle = {**DRONE, "id": "observer", "name": "Observer",
                 "position": {"x": 10, "y": 10, "z": 0}}

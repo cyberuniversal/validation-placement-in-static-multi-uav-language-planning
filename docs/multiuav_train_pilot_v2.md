@@ -455,3 +455,18 @@ for a visible named target are exhausted. It raises the per-case budget from
 12 to 24 commands so discovery and coverage of a second area can be tested;
 therefore any v7 outcome is not a like-for-like policy-only comparison with
 v6. No hidden target position is used.
+
+Attempt `a19` completed on an RTX 2080 Ti with v7. Twenty of 21 official
+commands succeeded, AGENT-visible task progress rose from 0% to 30%, and
+Polygon Target 3 became locally visible at step 12. The model moved to that
+target's center but had no offered polygon-coverage action; later generic
+search ended in an obstacle rejection. The official task check was false.
+Raw and event journals in ignored `attempt-19/` match their summary hashes;
+job/pod YAML and log are under `attempt19_complete/`.
+
+The v8 train-only follow-up offers bounded individual `move_to` sweep steps
+for an AGENT-observed axis-aligned rectangular polygon, using only its visible
+four vertices and the observing drone's task radius. It rejects rotated,
+out-of-canvas, malformed, or too-large geometry rather than guessing. The
+24-command budget remains unchanged. General polygon coverage is not
+implemented, and no v8 mission outcome is claimed before evaluation.

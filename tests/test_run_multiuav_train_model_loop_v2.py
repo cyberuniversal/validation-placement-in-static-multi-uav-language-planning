@@ -199,6 +199,14 @@ class ModelLoopTests(unittest.TestCase):
         )
         self.assertEqual([item["description"] for item in menu], ["Take off Observer"])
 
+    def test_exhausted_named_target_returns_to_bounded_search(self) -> None:
+        menu = available_actions(
+            [DRONE], {"drone-1": [TARGET]}, (20, 20), {(12.0, 11.0)},
+            "Find Fixed Target 1 and then search for another target",
+        )
+        self.assertTrue(any("Search" in item["description"] for item in menu))
+        self.assertFalse(any("Move" in item["description"] for item in menu))
+
     def test_model_failure_is_preserved_without_action(self) -> None:
         backend = FakeBackend("not json")
         selector = ModelActionSelector(backend)

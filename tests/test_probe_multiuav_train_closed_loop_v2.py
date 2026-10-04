@@ -123,7 +123,7 @@ class ClosedLoopProbeTests(unittest.TestCase):
 
     def test_command_budget_and_unknown_command_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "budget"):
-            run_case(FakeClient(), {"X-API-Key": "agent"}, {}, max_commands=13)
+            run_case(FakeClient(), {"X-API-Key": "agent"}, {}, max_commands=25)
         with self.assertRaisesRegex(ValueError, "unsupported"):
             issue_action(FakeClient(), {"X-API-Key": "agent"}, {
                 "command": "delete", "drone_id": "drone-1",

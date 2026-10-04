@@ -143,6 +143,9 @@ def available_actions(
                 })
     for index, choice in enumerate(choices, start=1):
         choice["option_id"] = f"O{index}"
+    if not choices and focused_drones:
+        return available_actions(drones, nearby_targets, canvas,
+                                 previous_destinations)
     return choices
 
 
@@ -251,7 +254,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v6",
+        prompt_contract_version="train_closed_loop_option_menu_v7",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -330,8 +333,8 @@ def main() -> None:
     parser.add_argument("--summary-output", required=True, type=Path)
     parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
-    if args.max_commands < 1 or args.max_commands > 12:
-        raise ValueError("pilot command budget must be between 1 and 12")
+    if args.max_commands < 1 or args.max_commands > 24:
+        raise ValueError("pilot command budget must be between 1 and 24")
     selected = {case["case_id"]: case for case in select_cases()}
     if args.case_id not in selected:
         raise ValueError("case must be a reviewed canonical training pilot case")
@@ -356,7 +359,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v6_single_sweep_step",
+        "policy": "agent_visible_option_menu_v7_search_after_observed_sweep",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

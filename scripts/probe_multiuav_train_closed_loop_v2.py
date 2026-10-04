@@ -143,8 +143,8 @@ def run_case(
     on_command: Callable[[dict[str, Any]], None] | None = None,
     on_event: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
-    if max_commands < 1 or max_commands > 12:
-        raise ValueError("pilot command budget must be between 1 and 12")
+    if max_commands < 1 or max_commands > 24:
+        raise ValueError("pilot command budget must be between 1 and 24")
     denied = client.get("/sessions/current/data", headers=headers)
     if denied.status_code != 403:
         raise RuntimeError("AGENT unexpectedly accessed privileged session data")

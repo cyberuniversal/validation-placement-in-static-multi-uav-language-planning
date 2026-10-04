@@ -439,3 +439,19 @@ official `move_to` route, retaining the same AGENT-visible geometry checks,
 model-selected option ID, and bounded command budget. Earlier pilots showed
 `move_to` can return in this session; whether v6 completes coverage or the
 mission remains not evaluated until a separate run finishes.
+
+Attempt `a18` completed on an RTX A4000 with v6: eight accepted official
+commands (one takeoff, six observed-circle sweep steps, one target-center
+move), no path-endpoint stall, and AGENT-visible task progress from 0% to
+20%. The official task check was false, and the loop stopped with
+`no_bounded_action`. The second named area was still not observed. Raw and
+event journals were copied to the ignored `attempt-18/` directory and match
+the summary SHA-256 hashes; job/pod YAML and log are in `attempt18_complete/`.
+This is partial training progress, not a valid executable plan or a revised
+paper result.
+
+The v7 train-only follow-up returns to bounded search options after actions
+for a visible named target are exhausted. It raises the per-case budget from
+12 to 24 commands so discovery and coverage of a second area can be tested;
+therefore any v7 outcome is not a like-for-like policy-only comparison with
+v6. No hidden target position is used.

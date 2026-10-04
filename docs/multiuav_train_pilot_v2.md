@@ -521,3 +521,20 @@ preflight files are in `outputs/multiuav/train-model-loop-v2/519784ca/attempt-21
 the copied journals match the SHA-256 values in `run_summary.json`.
 Job/pod YAML and logs are preserved under `attempt21_complete/`. No hidden
 checker or target coordinate was used to alter this run.
+
+The v9 train-only option menu addresses the observed straight-line search
+failure by offering bounded search moves only for airborne drones with the
+fewest previously selected search moves. Takeoff choices remain available,
+and a named locally observed target still takes priority. The model selects
+every offered action; the official server retains movement and obstacle
+checks. This is a changed policy, not a controlled measurement of a single
+causal factor, and it does not modify M1-M4.
+
+Attempt `a22` is registered before execution on reviewed training case
+`4cea97cd:canonical_execute`, the protocol-selected easy area-search case
+from session `bad1e9e5`. It uses the same 3B checkpoint and upstream simulator
+revision as `a21`, v9 code, and a 24-command budget. We will preserve the
+official task check, command acceptance, aggregate session progress, and
+count of distinct AGENT-observed target IDs. An official true task check is
+required for task completion. The result is a train-only development probe,
+not held-out evidence or an update to the frozen paper.

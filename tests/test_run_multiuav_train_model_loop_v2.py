@@ -241,6 +241,43 @@ class ModelLoopTests(unittest.TestCase):
         self.assertTrue(any("Search" in item["description"] for item in menu))
         self.assertFalse(any("Move" in item["description"] for item in menu))
 
+    def test_search_menu_balances_airborne_drones_without_affecting_takeoff(self) -> None:
+        other = {**DRONE, "id": "drone-2", "name": "Drone 2"}
+        grounded = {**DRONE, "id": "drone-3", "name": "Drone 3",
+                    "position": {"x": 10, "y": 10, "z": 0}}
+        menu = available_actions(
+            [DRONE, other, grounded],
+            {"drone-1": [], "drone-2": [], "drone-3": []},
+            (20, 20), set(), "Search", {"drone-1": 2, "drone-2": 0},
+        )
+        self.assertTrue(any(item["action"]["command"] == "take_off" for item in menu))
+        search_drones = {
+            item["action"]["drone_id"] for item in menu
+            if item["action"].get("source") == "bounded_local_search"
+        }
+        self.assertEqual(search_drones, {"drone-2"})
+
+    def test_named_observation_overrides_search_balance(self) -> None:
+        other = {**DRONE, "id": "drone-2", "name": "Drone 2"}
+        target = {**TARGET, "name": "Circle Target 2"}
+        menu = available_actions(
+            [DRONE, other], {"drone-1": [target], "drone-2": []},
+            (20, 20), set(), "Inspect Circle Target 2",
+            {"drone-1": 5, "drone-2": 0},
+        )
+        self.assertTrue(menu)
+        self.assertEqual({item["action"]["drone_id"] for item in menu}, {"drone-1"})
+
+    def test_selector_balances_its_selected_search_history(self) -> None:
+        other = {**DRONE, "id": "drone-2", "name": "Drone 2"}
+        selector = ModelActionSelector(SequenceBackend([choice("O1"), choice("O1")]))
+        targets = {"drone-1": [], "drone-2": []}
+        first = selector("Search", [DRONE, other], targets, (20, 20), set())
+        second = selector("Search", [DRONE, other], targets, (20, 20), set())
+        self.assertNotEqual(first["drone_id"], second["drone_id"])
+        self.assertEqual(selector.trace[0]["selected_action"], first)
+        self.assertEqual(selector.trace[1]["selected_action"], second)
+
     def test_model_failure_is_preserved_without_action(self) -> None:
         backend = FakeBackend("not json")
         selector = ModelActionSelector(backend)

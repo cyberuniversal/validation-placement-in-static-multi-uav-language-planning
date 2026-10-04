@@ -67,6 +67,7 @@ def available_actions(
     canvas: tuple[float, float],
     previous_destinations: set[tuple[float, float]],
     instruction: str | None = None,
+    search_counts: Mapping[str, int] | None = None,
 ) -> list[dict[str, Any]]:
     """Construct bounded commands only from the current AGENT observation."""
 
@@ -142,11 +143,24 @@ def available_actions(
                         "x": x, "y": y, "source": "bounded_local_search",
                     },
                 })
-    for index, choice in enumerate(choices, start=1):
-        choice["option_id"] = f"O{index}"
     if not choices and focused_drones:
         return available_actions(drones, nearby_targets, canvas,
-                                 previous_destinations)
+                                 previous_destinations, search_counts=search_counts)
+    if not focused_drones and search_counts is not None:
+        search_choices = [
+            choice for choice in choices
+            if choice["action"].get("source") == "bounded_local_search"
+        ]
+        if search_choices:
+            fewest = min(search_counts.get(choice["action"]["drone_id"], 0)
+                         for choice in search_choices)
+            choices = [
+                choice for choice in choices
+                if choice["action"].get("source") != "bounded_local_search"
+                or search_counts.get(choice["action"]["drone_id"], 0) == fewest
+            ]
+    for index, choice in enumerate(choices, start=1):
+        choice["option_id"] = f"O{index}"
     return choices
 
 
@@ -303,7 +317,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v8",
+        prompt_contract_version="train_closed_loop_option_menu_v9",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -348,8 +362,14 @@ class ModelActionSelector:
         canvas: tuple[float, float],
         previous_destinations: set[tuple[float, float]],
     ) -> dict[str, Any] | None:
+        search_counts: dict[str, int] = {}
+        for item in self.trace:
+            selected = item.get("selected_action")
+            if selected is not None and selected.get("source") == "bounded_local_search":
+                drone_id = str(selected["drone_id"])
+                search_counts[drone_id] = search_counts.get(drone_id, 0) + 1
         choices = available_actions(drones, nearby_targets, canvas, previous_destinations,
-                                    instruction)
+                                    instruction, search_counts)
         if not choices:
             return None
         request = build_request(
@@ -368,6 +388,7 @@ class ModelActionSelector:
             "generation": generation.to_dict(),
             "offered_actions": choices,
             "resolution": resolution,
+            "selected_action": action,
         })
         return action
 
@@ -408,7 +429,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v8_observed_rectangle_sweep",
+        "policy": "agent_visible_option_menu_v9_balanced_search",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

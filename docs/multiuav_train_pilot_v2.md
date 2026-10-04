@@ -407,3 +407,11 @@ the current AGENT-visible nearby-target observations. While such a target is
 visible, it offers takeoff or target actions only for drones that observed it;
 it does not infer unseen targets or bypass official movement checks. The
 model still selects an option, and mission success remains untested for v5.
+
+Attempt `a15` reached model execution with v5 and wrote one accepted takeoff
+for the drone observing Circle Target 2. The Kubernetes job and pod were gone
+when checked later, and the durable summary still says `running`; no final
+raw trace or official task check was written. Its partial preflight, summary,
+and command journal remain under the ignored `attempt-15/` directory. This
+is an interrupted attempt, not evidence of task success. Attempt `a16`
+repeats the same pinned model and v5 code in a distinct output directory.

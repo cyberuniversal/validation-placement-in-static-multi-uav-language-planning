@@ -415,3 +415,12 @@ raw trace or official task check was written. Its partial preflight, summary,
 and command journal remain under the ignored `attempt-15/` directory. This
 is an interrupted attempt, not evidence of task success. Attempt `a16`
 repeats the same pinned model and v5 code in a distinct output directory.
+
+Attempt `a16` reproduced a stall after one accepted takeoff on an RTX A4000.
+Its durable summary remained `running`, the command journal had one row,
+and the process showed no CPU or GPU work for over five minutes. Job/pod YAML
+and logs were preserved under `attempt16_hung_after_first/`; the job was
+stopped without a task-check result. A diagnostic-only follow-up writes
+durable phase events before and after model selection, official command
+execution, and AGENT re-observation. These events contain no model text or
+hidden labels and do not alter the action policy.

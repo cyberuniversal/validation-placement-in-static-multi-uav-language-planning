@@ -213,6 +213,7 @@ class ModelLoopTests(unittest.TestCase):
             choice("STOP"),
         ])
         selector = ModelActionSelector(backend)
+        events: list[dict] = []
         case = {
             "source_task_id": "task-1",
             "context": {
@@ -222,7 +223,7 @@ class ModelLoopTests(unittest.TestCase):
         }
         result = run_case(
             FakeClient(), {"X-API-Key": "agent"}, case,
-            max_commands=3, choose_action=selector,
+            max_commands=3, choose_action=selector, on_event=events.append,
         )
         self.assertEqual([item["action"]["command"] for item in result["commands"]], [
             "take_off", "move_to",
@@ -230,6 +231,12 @@ class ModelLoopTests(unittest.TestCase):
         self.assertEqual(backend.calls, 3)
         self.assertEqual(selector.trace[-1]["resolution"], "model_stop")
         self.assertEqual(result["stop_reason"], "no_bounded_action")
+        self.assertEqual(
+            [event["phase"] for event in events],
+            ["before_selection", "before_command", "after_command",
+             "before_observation", "after_observation"] * 2
+            + ["before_selection"],
+        )
 
     def test_explicit_takeoff_is_model_selected(self) -> None:
         backend = SequenceBackend([choice("O1")])

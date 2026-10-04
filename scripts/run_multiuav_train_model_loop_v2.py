@@ -365,6 +365,7 @@ def main() -> None:
         return
     selector: ModelActionSelector | None = None
     journal_path = args.raw_output.with_suffix(".commands.jsonl")
+    event_path = args.raw_output.with_suffix(".events.jsonl")
     try:
         import torch  # noqa: PLC0415
 
@@ -380,12 +381,19 @@ def main() -> None:
         from api.server import ROLE_SECRETS, UserRole, app, session_controller  # noqa: PLC0415
 
         headers = {"X-API-Key": ROLE_SECRETS[UserRole.AGENT]}
-        if journal_path.exists():
-            raise ValueError("command journal already exists; use a new attempt directory")
+        if journal_path.exists() or event_path.exists():
+            raise ValueError("attempt journal already exists; use a new attempt directory")
         journal_path.parent.mkdir(parents=True, exist_ok=True)
 
         def journal(record: dict[str, Any]) -> None:
             with journal_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(record, sort_keys=True) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+
+        def event(record: dict[str, Any]) -> None:
+            record = {**record, "at_utc": datetime.now(timezone.utc).isoformat()}
+            with event_path.open("a", encoding="utf-8") as stream:
                 stream.write(json.dumps(record, sort_keys=True) + "\n")
                 stream.flush()
                 os.fsync(stream.fileno())
@@ -399,7 +407,7 @@ def main() -> None:
                 raise RuntimeError("official session controller did not activate training session")
             run = run_case(
                 client, headers, case, max_commands=args.max_commands,
-                choose_action=selector, on_command=journal,
+                choose_action=selector, on_command=journal, on_event=event,
             )
         raw = {
             "configuration": config, "run": run,
@@ -426,6 +434,8 @@ def main() -> None:
         })
         if journal_path.exists():
             summary["command_journal_sha256"] = sha256(journal_path)
+        if event_path.exists():
+            summary["event_journal_sha256"] = sha256(event_path)
     except BaseException as error:
         summary.update({
             "status": "failed_preserved", "error_type": type(error).__name__,
@@ -444,6 +454,8 @@ def main() -> None:
             summary["raw_sha256"] = sha256(args.raw_output)
         if journal_path.exists():
             summary["command_journal_sha256"] = sha256(journal_path)
+        if event_path.exists():
+            summary["event_journal_sha256"] = sha256(event_path)
         raise
     finally:
         args.summary_output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

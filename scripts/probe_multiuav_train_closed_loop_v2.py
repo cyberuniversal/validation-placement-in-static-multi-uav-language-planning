@@ -141,6 +141,7 @@ def run_case(
          tuple[float, float], set[tuple[float, float]]], dict[str, Any] | None,
     ] = select_action,
     on_command: Callable[[dict[str, Any]], None] | None = None,
+    on_event: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     if max_commands < 1 or max_commands > 12:
         raise ValueError("pilot command budget must be between 1 and 12")
@@ -157,6 +158,8 @@ def run_case(
     stop_reason = "command_budget_exhausted"
     for _ in range(max_commands):
         state = snapshots[-1]
+        if on_event is not None:
+            on_event({"phase": "before_selection", "step": len(commands)})
         action = choose_action(
             case["context"]["instruction"], state["drones"],
             state["nearby_targets_by_drone"], canvas, destinations,
@@ -164,17 +167,28 @@ def run_case(
         if action is None:
             stop_reason = "no_bounded_action"
             break
+        if on_event is not None:
+            on_event({"phase": "before_command", "step": len(commands),
+                      "command": action["command"], "source": action.get("source")})
         if action["command"] == "move_to":
             destinations.add((action["x"], action["y"]))
         elif action["command"] == "move_along_path":
             destinations.update((point["x"], point["y"])
                                 for point in action["waypoints"])
         response = issue_action(client, headers, action)
+        if on_event is not None:
+            on_event({"phase": "after_command", "step": len(commands),
+                      "http_status": response["http_status"],
+                      "status": response["body"].get("status")})
         command_record = {"action": action, "response": response}
         commands.append(command_record)
         if on_command is not None:
             on_command(command_record)
+        if on_event is not None:
+            on_event({"phase": "before_observation", "step": len(commands)})
         snapshots.append(agent_snapshot(client, headers))
+        if on_event is not None:
+            on_event({"phase": "after_observation", "step": len(commands)})
         if response["http_status"] != 200 or response["body"].get("status") != "success":
             stop_reason = "command_rejected_or_failed"
             break

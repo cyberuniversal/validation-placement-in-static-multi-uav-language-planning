@@ -715,3 +715,52 @@ pass with the same frozen controller version. This is two development
 regressions, not a generalization rate, a new held-out benchmark result, or a
 replacement for the frozen M1-M4 experiment. Full checks passed again with
 303 tests, 19 subtests, and Ruff.
+
+### Fixed-Controller Development Regression Sweep (a27)
+
+Before execution, register the remaining 13 canonical cases from the existing
+15-case `select_cases()` cohort. The two omitted cases are retained as completed
+v11 runs `a25` and `a26`, not removed from development reporting. Selection
+continues to use the reviewed training dataset and CSV hash checks. No new
+dataset, model, method, or policy is introduced.
+
+The frozen controller is execution commit
+`9ca784efa16faab5cc1c9b261c7c509be6509d11`, with the same pinned upstream,
+Qwen2.5-3B revision, seed 17, float16, greedy decoding, 256 generation-token
+cap, and 512-command ceiling as `a25` and `a26`. The indexed manifest
+`infra/nautilus/train-model-loop-3b-v2-a27-regression-job.yaml` binds the exact
+ordered case list. Three workers use separate immutable Git checkouts and
+per-case result directories. They share only read-only model cache/source
+objects. No concurrent worker can reset another worker's execution checkout.
+No automatic retry, policy tuning, or case-specific budget adjustment is allowed.
+
+Case directories are under
+`/workspace/results/train-model-loop-regression-v11-a27/<source_task_id>/`.
+Every case preserves its raw model trace, command/event journals, runner
+summary, console log, process exit status, hardware identity, and Kubernetes
+job/pod metadata when available. A nonzero runner exit is captured and does
+not suppress the other cases. Kubernetes job completion means the worker
+wrappers finished; it does not imply that any mission completed successfully.
+Infrastructure failures and incomplete cases remain distinct from an official
+false task check. Never convert a missing result into a completed mission.
+
+Completion requires an official true task check. Report attempted/accepted
+commands, model calls, stop reason, model-stop resolutions, observed-target
+counts, and public progress without equating aggregate progress with the task
+predicate. A collision is identified only from an official rejection response;
+generic command failure is not automatically a collision. Token counts and
+call durations may be summarized descriptively from recorded generation data.
+Energy and controlled hardware-comparison effects are not evaluated here.
+
+Keep formation and photography tasks in the cohort despite unsupported actions
+in the current menu. Their failures are informative capability limits, not
+grounds for retrospective exclusion. Do not add those actions mid-sweep.
+Unnecessary actions require inspection against the visible instruction; they
+must not be inferred from command count alone. No hidden task-check predicates
+or unobserved target coordinates may enter planning or prompt construction.
+
+Reporting may combine the 13 new outcomes with the two prior v11 outcomes in a
+15-row descriptive development table, with the prior tuning/inspection history
+explicit. This is not an independent generalization rate, not an M1-M4 ablation,
+and not a substitute for the frozen manuscript results. New independent,
+adjudicated missions remain necessary before a claim-bearing final evaluation.

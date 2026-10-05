@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
+import heapq
 import json
 import math
 import os
@@ -261,6 +262,126 @@ def _rectangle_sweep_action(
     }
 
 
+def _obstacle_shapes(obstacles: list[dict[str, Any]], altitude: float) -> list[Any]:
+    from shapely.affinity import scale  # noqa: PLC0415
+    from shapely.geometry import Point, Polygon  # noqa: PLC0415
+
+    shapes = []
+    for obstacle in obstacles:
+        height = float(obstacle["height"])
+        if not math.isfinite(height) or height < 0:
+            raise ValueError("invalid observed obstacle height")
+        if height > 0 and altitude > height:
+            continue
+        if obstacle["type"] in {"circle", "point"}:
+            radius = float(obstacle["radius"])
+            x, y = (float(obstacle["position"][axis]) for axis in ("x", "y"))
+            if not all(math.isfinite(v) for v in (x, y, radius)) or radius <= 0:
+                raise ValueError("invalid observed circle")
+            shape = Point(x, y).buffer(radius * 1.001 + 2)
+        elif obstacle["type"] == "ellipse":
+            x, y = (float(obstacle["position"][axis]) for axis in ("x", "y"))
+            width, length = float(obstacle["width"]), float(obstacle["length"])
+            if not all(math.isfinite(v) for v in (x, y, width, length)) or min(width, length) <= 0:
+                raise ValueError("invalid observed ellipse")
+            # Official width/length are semi-axes, not full diameters.
+            shape = scale(Point(x, y).buffer(1), xfact=width * 1.001,
+                          yfact=length * 1.001).buffer(2)
+        elif obstacle["type"] == "polygon":
+            vertices = [(float(p["x"]), float(p["y"])) for p in obstacle["vertices"]]
+            if not all(math.isfinite(v) for p in vertices for v in p):
+                raise ValueError("invalid observed polygon")
+            shape = Polygon(vertices)
+            if not shape.is_valid or shape.is_empty or shape.area <= 0:
+                raise ValueError("invalid observed polygon")
+            shape = shape.buffer(2)
+        else:
+            raise ValueError("unsupported observed obstacle geometry")
+        shapes.append(shape)
+    return shapes
+
+
+def safe_step(
+    drone: Mapping[str, Any], destination: tuple[float, float],
+    canvas: tuple[float, float], obstacles: list[dict[str, Any]],
+) -> tuple[float, float] | None:
+    """Route around observed geometry; stop short enough to re-observe unseen space."""
+    from shapely.geometry import LineString, Point  # noqa: PLC0415
+
+    start = tuple(float(drone["position"][axis]) for axis in ("x", "y"))
+    radius = float(drone["perceived_radius"])
+    if not all(math.isfinite(v) for v in (*start, *destination, radius)) or radius <= 0:
+        return None
+    if not (0 <= destination[0] <= canvas[0] and 0 <= destination[1] <= canvas[1]):
+        return None
+    try:
+        shapes = _obstacle_shapes(obstacles, float(drone["position"]["z"]))
+    except (KeyError, TypeError, ValueError):
+        return None
+    if any(shape.intersects(Point(destination)) or shape.intersects(Point(start))
+           for shape in shapes):
+        return None
+    nodes = [start, destination]
+    for shape in shapes:
+        left, low, right, high = shape.bounds
+        nodes.extend((x, y) for x in (left - 1, right + 1) for y in (low - 1, high + 1)
+                     if 0 <= x <= canvas[0] and 0 <= y <= canvas[1]
+                     and not any(other.intersects(Point(x, y)) for other in shapes))
+    # A visibility graph over conservative bounding-box corners uses only observed obstacles.
+    queue = [(0.0, 0)]
+    distances = {0: 0.0}
+    parents: dict[int, int] = {}
+    while queue:
+        distance, index = heapq.heappop(queue)
+        if distance != distances[index]:
+            continue
+        if index == 1:
+            break
+        for other, point in enumerate(nodes):
+            if other == index or any(shape.intersects(LineString([nodes[index], point]))
+                                     for shape in shapes):
+                continue
+            candidate = distance + math.dist(nodes[index], point)
+            if candidate < distances.get(other, math.inf):
+                distances[other], parents[other] = candidate, index
+                heapq.heappush(queue, (candidate, other))
+    if 1 not in parents:
+        return None
+    index = 1
+    while parents[index] != 0:
+        index = parents[index]
+    waypoint = nodes[index]
+    distance = math.dist(start, waypoint)
+    if distance < 1e-6:
+        return None
+    fraction = min(1.0, radius * 0.8 / distance)
+    return tuple(start[i] + fraction * (waypoint[i] - start[i]) for i in (0, 1))
+
+
+def coverage_destination(
+    drone: Mapping[str, Any], canvas: tuple[float, float],
+    observed_positions: list[tuple[float, float, float]], obstacles: list[dict[str, Any]],
+) -> tuple[float, float] | None:
+    """Choose the nearest unobserved public-canvas grid cell, not a hidden target."""
+    radius = float(drone["perceived_radius"])
+    if not math.isfinite(radius) or radius <= 0:
+        return None
+    nx, ny = (max(1, math.ceil(bound / radius)) for bound in canvas)
+    if nx * ny > 10000:
+        return None
+    cells = [((ix + 0.5) * canvas[0] / nx, (iy + 0.5) * canvas[1] / ny)
+             for iy in range(ny) for ix in range(nx)]
+    start = tuple(float(drone["position"][axis]) for axis in ("x", "y"))
+    unseen = [point for point in cells
+              if not any(math.dist(point, (x, y)) <= r * 0.7
+                         for x, y, r in observed_positions)]
+    for point in sorted(unseen, key=lambda p: (math.dist(start, p), p)):
+        step = safe_step(drone, point, canvas, obstacles)
+        if step is not None:
+            return step
+    return None
+
+
 def build_request(
     instruction: str,
     drones: list[dict[str, Any]],
@@ -269,6 +390,8 @@ def build_request(
     previous_destinations: set[tuple[float, float]],
     call_index: int,
     choices: list[dict[str, Any]] | None = None,
+    observed_obstacles: list[dict[str, Any]] | None = None,
+    task_progress: Mapping[str, Any] | None = None,
 ) -> PromptRequest:
     """Expose current AGENT observations and admissible one-step options."""
 
@@ -301,6 +424,8 @@ def build_request(
             for choice in choices
         ],
         "stop_option_id": "STOP",
+        "observed_obstacles": observed_obstacles or [],
+        "task_progress": dict(task_progress or {}),
     }
     messages = (
         PromptMessage(
@@ -320,7 +445,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v10",
+        prompt_contract_version="train_closed_loop_option_menu_v11",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -356,6 +481,21 @@ class ModelActionSelector:
     def __init__(self, backend: ModelBackend) -> None:
         self.backend = backend
         self.trace: list[dict[str, Any]] = []
+        self.obstacles: dict[str, dict[str, Any]] = {}
+        self.targets: dict[str, dict[str, dict[str, Any]]] = {}
+        self.observed_positions: list[tuple[float, float, float]] = []
+        self.progress: dict[str, Any] = {}
+
+    def observe(self, snapshot: dict[str, Any]) -> None:
+        for entries in snapshot["nearby_obstacles_by_drone"].values():
+            self.obstacles.update({str(item["id"]): item for item in entries})
+        for drone_id, entries in snapshot["nearby_targets_by_drone"].items():
+            self.targets.setdefault(drone_id, {}).update({str(item["id"]): item for item in entries})
+        for drone in snapshot["drones"]:
+            self.observed_positions.append((float(drone["position"]["x"]),
+                                            float(drone["position"]["y"]),
+                                            float(drone["perceived_radius"])))
+        self.progress = snapshot["task_progress"]
 
     def __call__(
         self,
@@ -373,11 +513,40 @@ class ModelActionSelector:
                 search_counts[drone_id] = search_counts.get(drone_id, 0) + 1
         choices = available_actions(drones, nearby_targets, canvas, previous_destinations,
                                     instruction, search_counts)
+        if self.observed_positions:
+            remembered = {key: list(value.values()) for key, value in self.targets.items()}
+            choices = available_actions(drones, remembered, canvas, previous_destinations,
+                                        instruction, search_counts)
+            routed = []
+            by_id = {str(drone["id"]): drone for drone in drones}
+            for item in choices:
+                action = item["action"]
+                if action["command"] == "take_off":
+                    routed.append(item)
+                elif action.get("source") != "bounded_local_search":
+                    step = safe_step(by_id[action["drone_id"]], (action["x"], action["y"]),
+                                     canvas, list(self.obstacles.values()))
+                    if step is not None:
+                        routed.append({**item, "action": {**action, "x": step[0], "y": step[1]}})
+            if not routed:
+                for drone in sorted(drones, key=lambda d: str(d["id"])):
+                    if str(drone.get("status", "")).casefold() not in {"hovering", "flying", "moving"}:
+                        continue
+                    step = coverage_destination(drone, canvas, self.observed_positions,
+                                                list(self.obstacles.values()))
+                    if step is not None:
+                        routed.append({"description": f"Search unobserved canvas with {drone['name']}",
+                                       "action": {"command": "move_to", "drone_id": str(drone["id"]),
+                                                  "x": step[0], "y": step[1],
+                                                  "source": "observed_canvas_coverage"}})
+            choices = [{**item, "option_id": f"O{index}"}
+                       for index, item in enumerate(routed, start=1)]
         if not choices:
             return None
         request = build_request(
             instruction, drones, nearby_targets, canvas,
             previous_destinations, len(self.trace), choices,
+            list(self.obstacles.values()), self.progress,
         )
         generation = self.backend.generate(request)
         if generation.generation_status != "GENERATED":
@@ -432,7 +601,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v10_status_checked_balanced_search",
+        "policy": "agent_visible_option_menu_v11_obstacle_memory_canvas_coverage",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",
@@ -489,6 +658,7 @@ def main() -> None:
             run = run_case(
                 client, headers, case, max_commands=args.max_commands,
                 choose_action=selector, on_command=journal, on_event=event,
+                on_observation=selector.observe,
             )
         raw = {
             "configuration": config, "run": run,

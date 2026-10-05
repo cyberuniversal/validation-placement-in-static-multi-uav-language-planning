@@ -41,6 +41,8 @@ class FakeClient:
         if path.endswith("/nearby/targets"):
             targets = [{"id": "target", "name": "Fixed Target 1", "position": {"x": 15, "y": 10}}]
             return FakeResponse(200, targets if self.drone["position"]["x"] >= 15 else [])
+        if path.endswith("/nearby/obstacles"):
+            return FakeResponse(200, [])
         if path == "/sessions/current/task-progress":
             return FakeResponse(200, {"progress_percentage": 0})
         if path == "/sessions/current/tasks/task-1/check":
@@ -122,7 +124,7 @@ class ClosedLoopProbeTests(unittest.TestCase):
             run_case(FakeClient(privileged_status=200), {"X-API-Key": "agent"}, case, max_commands=1)
 
     def test_command_budget_and_unknown_command_rejected(self) -> None:
-        for budget in (0, 65):
+        for budget in (0, 513):
             with self.subTest(budget=budget), self.assertRaisesRegex(ValueError, "budget"):
                 run_case(FakeClient(), {"X-API-Key": "agent"}, {}, max_commands=budget)
         with self.assertRaisesRegex(ValueError, "unsupported"):
@@ -136,12 +138,28 @@ class ClosedLoopProbeTests(unittest.TestCase):
             "context": {"instruction": "Find", "session": {"canvas_width": 20, "canvas_height": 20}},
         }
         result = run_case(
-            FakeClient(), {"X-API-Key": "agent"}, case, max_commands=64,
+            FakeClient(), {"X-API-Key": "agent"}, case, max_commands=512,
             choose_action=lambda *args: None,
         )
         self.assertEqual(result["commands"], [])
         self.assertEqual(result["stop_reason"], "no_bounded_action")
         self.assertIs(result["task_check"]["result"], False)
+
+    def test_official_completion_stops_without_another_command(self) -> None:
+        class CompletedClient(FakeClient):
+            def get(self, path: str, *, headers: dict[str, str]) -> FakeResponse:
+                if path.endswith("/task-1/check"):
+                    return FakeResponse(200, {"result": True})
+                return super().get(path, headers=headers)
+
+        observed = []
+        case = {"source_task_id": "task-1", "context": {"instruction": "Find",
+                "session": {"canvas_width": 20, "canvas_height": 20}}}
+        run = run_case(CompletedClient(), {}, case, max_commands=512,
+                       on_observation=observed.append)
+        self.assertEqual(len(run["commands"]), 1)
+        self.assertEqual(run["stop_reason"], "official_task_completed")
+        self.assertIn("nearby_obstacles_by_drone", observed[0])
 
 
 if __name__ == "__main__":

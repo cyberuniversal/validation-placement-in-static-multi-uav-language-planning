@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import unittest
 
 from scripts.run_multiuav_train_model_loop_v2 import (
@@ -10,6 +11,8 @@ from scripts.run_multiuav_train_model_loop_v2 import (
     available_actions,
     build_request,
     resolve_model_action,
+    safe_step,
+    coverage_destination,
 )
 from shepherd_ai.multiuav_runner import GenerationResult
 from scripts.probe_multiuav_train_closed_loop_v2 import issue_action, run_case
@@ -69,6 +72,8 @@ class FakeClient:
             return FakeResponse(200, [self.drone])
         if path.endswith("/nearby/targets"):
             return FakeResponse(200, [])
+        if path.endswith("/nearby/obstacles"):
+            return FakeResponse(200, [])
         if path == "/sessions/current/task-progress":
             return FakeResponse(200, {"progress_percentage": 0})
         if path == "/sessions/current/tasks/task-1/check":
@@ -91,6 +96,58 @@ class FakeClient:
 
 
 class ModelLoopTests(unittest.TestCase):
+    def test_visible_circle_detour_avoids_obstacle(self) -> None:
+        from shapely.geometry import LineString, Point
+
+        obstacle = {"id": "obs", "type": "circle", "height": 0,
+                    "position": {"x": 15, "y": 10}, "radius": 2}
+        step = safe_step(DRONE, (20, 10), (30, 30), [obstacle])
+        self.assertIsNotNone(step)
+        self.assertLessEqual(math.dist((10, 10), step), 4.000001)
+        self.assertFalse(LineString([(10, 10), step]).intersects(Point(15, 10).buffer(2)))
+        self.assertNotEqual(step[1], 10)
+
+    def test_visible_polygon_detour_and_invalid_obstacle_fail_closed(self) -> None:
+        obstacle = {"id": "obs", "type": "polygon", "height": 0,
+                    "vertices": [{"x": 14, "y": 8}, {"x": 16, "y": 8},
+                                 {"x": 16, "y": 12}, {"x": 14, "y": 12}]}
+        step = safe_step(DRONE, (20, 10), (30, 30), [obstacle])
+        self.assertIsNotNone(step)
+        self.assertNotEqual(step[1], 10)
+        self.assertIsNone(safe_step(DRONE, (20, 10), (30, 30), [{"height": 0}]))
+        self.assertIsNone(safe_step(DRONE, (40, 10), (30, 30), []))
+        self.assertIsNone(safe_step(DRONE, (15, 10), (30, 30), [obstacle]))
+
+    def test_canvas_search_uses_observation_history(self) -> None:
+        first = coverage_destination(DRONE, (20, 20), [(10, 10, 5)], [])
+        self.assertIsNotNone(first)
+        history = [(x, y, 5) for x in (2.5, 7.5, 12.5, 17.5)
+                   for y in (2.5, 7.5, 12.5, 17.5)]
+        self.assertIsNone(coverage_destination(DRONE, (20, 20), history, []))
+
+    def test_ellipse_semi_axes_and_finite_height_match_official_rules(self) -> None:
+        obstacle = {"id": "obs", "type": "ellipse", "height": 0,
+                    "position": {"x": 16, "y": 10}, "width": 3, "length": 1}
+        self.assertIsNone(safe_step(DRONE, (18, 10), (30, 30), [obstacle]))
+        step = safe_step(DRONE, (25, 10), (30, 30), [obstacle])
+        self.assertIsNotNone(step)
+        self.assertNotEqual(step[1], 10)
+        over = safe_step(DRONE, (25, 10), (30, 30), [{**obstacle, "height": 5}])
+        self.assertEqual(over, (14, 10))
+
+    def test_selector_remembers_only_observed_obstacles_and_targets(self) -> None:
+        selector = ModelActionSelector(FakeBackend(choice("O1")))
+        obstacle = {"id": "obs", "type": "circle", "height": 0,
+                    "position": {"x": 18, "y": 10}, "radius": 2}
+        selector.observe({"drones": [DRONE], "nearby_obstacles_by_drone": {"drone-1": [obstacle]},
+                          "nearby_targets_by_drone": {"drone-1": [TARGET]}, "task_progress": {}})
+        selector.observe({"drones": [DRONE], "nearby_obstacles_by_drone": {"drone-1": []},
+                          "nearby_targets_by_drone": {"drone-1": []}, "task_progress": {}})
+        self.assertEqual(list(selector.obstacles), ["obs"])
+        action = selector("Find Fixed Target 1", [DRONE], {"drone-1": []}, (20, 20), set())
+        self.assertIsNotNone(action)
+        self.assertIn("Fixed Target 1", selector.trace[-1]["offered_actions"][0]["description"])
+
     def menu(self, *, drone: dict | None = None,
              targets: list[dict] | None = None) -> list[dict]:
         return available_actions(

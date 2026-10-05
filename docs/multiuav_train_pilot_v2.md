@@ -619,3 +619,43 @@ but not local obstacle observations. The menu consequently cannot exclude a
 path using observed obstacle geometry. Local search also offers cardinal
 steps without a complete canvas-coverage schedule. These are remaining
 development limitations; increasing the budget did not complete this task.
+
+### Observed-Geometry Navigation Correction (v11)
+
+The existing model-loop controller now requests the AGENT-local obstacle
+endpoint after each command, retains only previously observed obstacle and
+target geometry, and constructs collision-avoiding steps with Shapely.
+Circle, point, polygon, and ellipse obstacles are supported. Ellipse width
+and length follow the official semi-axis convention; height zero remains
+impassable. Unsupported or malformed observed geometry fails closed.
+The public canvas supplies a finite exploration grid. Previously observed
+positions suppress redundant discovery cells; no undiscovered target
+coordinates or hidden checker predicates enter the policy. Navigation steps
+are capped at 0.8 times the acting drone's perception radius so the controller
+can re-observe before continuing. Official collision and battery checks remain
+unchanged. The AGENT task-check endpoint is queried after accepted commands,
+and an official true result terminates execution immediately.
+
+Two scripted first-option navigation diagnostics were run without loading an
+LLM. The first stopped after 149 accepted commands at 65% aggregate progress
+because an observed ellipse was unsupported. Its raw trace remains in ignored
+`navigation-smoke-v11/raw.json`. After implementing the documented ellipse
+geometry, the second diagnostic completed the official task in 286 accepted
+commands with a true task check. Its public aggregate progress was 95%, while
+the separate public `is_completed` field remained false; these distinct
+responses are preserved, not reconciled by editing the output. Raw evidence
+is in ignored `navigation-smoke-v11b/raw.json`. This is a scripted controller
+integration check on an inspected training mission, not a model result.
+
+Attempt `a25` is registered before GPU execution on the same reviewed training
+case `4cea97cd:canonical_execute`, session `bad1e9e5`. It uses v11, the pinned
+Qwen2.5-3B checkpoint/revision, upstream revision, seed 17, and unchanged greedy
+decoding. The command ceiling is 512 rather than 64 because bounded movement
+and systematic discovery require more than 64 steps in the preceding diagnostic.
+Every issued command remains model-selected from a grounded option menu.
+The GPU may be any supported CUDA device in the existing manifest allowlist;
+its exact identity is recorded at runtime. Completion requires the official
+task check to be true. Command acceptance, progress, observed-target count,
+stop reason, and all raw output are preserved regardless of outcome. This is
+a tuned development run, not independent evaluation, a placement ablation,
+or evidence replacing any frozen M1-M4 publication result.

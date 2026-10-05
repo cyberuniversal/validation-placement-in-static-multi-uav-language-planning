@@ -24,7 +24,7 @@ from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
 )
 from scripts.run_multiuav_train_pilot_v2 import select_cases  # noqa: E402
 
-MAX_PILOT_COMMANDS = 64
+MAX_PILOT_COMMANDS = 512
 
 
 def select_action(
@@ -108,7 +108,14 @@ def agent_snapshot(client: Any, headers: dict[str, str]) -> dict[str, Any]:
     progress = require_agent_response(
         client.get("/sessions/current/task-progress", headers=headers)
     )
-    return {"drones": drones, "nearby_targets_by_drone": targets, "task_progress": progress}
+    obstacles = {
+        str(drone["id"]): require_agent_response(
+            client.get(f"/drones/{drone['id']}/nearby/obstacles", headers=headers)
+        )
+        for drone in drones
+    }
+    return {"drones": drones, "nearby_targets_by_drone": targets,
+            "nearby_obstacles_by_drone": obstacles, "task_progress": progress}
 
 
 def issue_action(client: Any, headers: dict[str, str], action: Mapping[str, Any]) -> dict[str, Any]:
@@ -144,6 +151,7 @@ def run_case(
     ] = select_action,
     on_command: Callable[[dict[str, Any]], None] | None = None,
     on_event: Callable[[dict[str, Any]], None] | None = None,
+    on_observation: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     if max_commands < 1 or max_commands > MAX_PILOT_COMMANDS:
         raise ValueError(f"pilot command budget must be between 1 and {MAX_PILOT_COMMANDS}")
@@ -160,6 +168,8 @@ def run_case(
     stop_reason = "command_budget_exhausted"
     for _ in range(max_commands):
         state = snapshots[-1]
+        if on_observation is not None:
+            on_observation(state)
         if on_event is not None:
             on_event({"phase": "before_selection", "step": len(commands)})
         action = choose_action(
@@ -193,6 +203,12 @@ def run_case(
             on_event({"phase": "after_observation", "step": len(commands)})
         if response["http_status"] != 200 or response["body"].get("status") != "success":
             stop_reason = "command_rejected_or_failed"
+            break
+        check = require_agent_response(client.get(
+            f"/sessions/current/tasks/{case['source_task_id']}/check", headers=headers,
+        ))
+        if check.get("result") is True:
+            stop_reason = "official_task_completed"
             break
     task_id = case["source_task_id"]
     task_check = client.get(f"/sessions/current/tasks/{task_id}/check", headers=headers)

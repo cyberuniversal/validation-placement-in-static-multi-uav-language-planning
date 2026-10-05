@@ -1,0 +1,226 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    batch.kubernetes.io/job-completion-index: "0"
+    kubernetes.io/limit-ranger: 'LimitRanger plugin set: ephemeral-storage request
+      for container regression; ephemeral-storage limit for container regression'
+    nrp.ai/username: http://cilogon.org/serverE/users/539948
+  creationTimestamp: "2026-10-05T18:06:29Z"
+  finalizers:
+  - batch.kubernetes.io/job-tracking
+  generateName: validation-placement-train-regression-v11-a28-0-
+  generation: 1
+  labels:
+    app.kubernetes.io/name: validation-placement
+    batch.kubernetes.io/controller-uid: 53ffccba-1877-4ce1-87d2-88377d4b411a
+    batch.kubernetes.io/job-completion-index: "0"
+    batch.kubernetes.io/job-name: validation-placement-train-regression-v11-a28
+    controller-uid: 53ffccba-1877-4ce1-87d2-88377d4b411a
+    job-name: validation-placement-train-regression-v11-a28
+    validation-placement/stage: train-regression-v11-a28
+  name: validation-placement-train-regression-v11-a28-0-4jvlw
+  namespace: aiea-interns
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: validation-placement-train-regression-v11-a28
+    uid: 53ffccba-1877-4ce1-87d2-88377d4b411a
+  resourceVersion: "15045429978"
+  uid: 4ead26e6-e274-4231-98e5-905aec3e109e
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.memory
+            operator: Gt
+            values:
+            - "10240"
+          - key: nvidia.com/gpu.compute.major
+            operator: Gt
+            values:
+            - "6"
+          - key: nvidia.com/gpu.compute.major
+            operator: Lt
+            values:
+            - "11"
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - hcc-nrp-shor-c5817.unl.edu
+  containers:
+  - args:
+    - |
+      set -euo pipefail
+      cases=(
+        1036bedf a45a0c87 ac5f85f8 6c4a6010
+        cf6f176c 9b355a03 91130026 14fd1139 c96a0146
+        67cbff58 05e12d8e 1905e0ad
+      )
+      case_id="${cases[${JOB_COMPLETION_INDEX}]}"
+      output="/workspace/results/train-model-loop-regression-v11-a28/${case_id}"
+      mkdir -p "${output}"
+      if [[ -e "${output}/pod.log" ]]; then
+        echo "Existing attempt; refusing to overwrite evidence." >&2
+        exit 1
+      fi
+      exec > >(tee "${output}/pod.log") 2>&1
+      printf 'index=%s case=%s pod=%s node=%s\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${RUN_POD_NAME}" "${RUN_NODE_NAME}"
+      nvidia-smi --query-gpu=name,uuid,memory.total,driver_version --format=csv,noheader
+      sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      seed=/workspace/repo-validation-placement-model-loop-0b6c762
+      repo="/workspace/train-regression-v11-a28-checkout-${JOB_COMPLETION_INDEX}"
+      git clone --shared "${seed}" "${repo}"
+      git -C "${repo}" checkout --detach 9ca784efa16faab5cc1c9b261c7c509be6509d11
+      mkdir -p "${repo}/external"
+      git clone --shared "${seed}/external/MultiUAV-Plat" "${repo}/external/MultiUAV-Plat"
+      git -C "${repo}/external/MultiUAV-Plat" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+      if [[ ! -f "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip" ]]; then
+        mkdir -p "${repo}/external/MultiUAV-Plat/benchmark"
+        cp "${seed}/external/MultiUAV-Plat/benchmark/benchmark.zip" "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip"
+      fi
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+      set +e
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id "${case_id}:canonical_execute" \
+        --max-commands 512 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/run_summary.json"
+      result=$?
+      set -e
+      printf '{"index":%s,"case_id":"%s:canonical_execute","runner_exit_code":%s}\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${result}" > "${output}/execution_exit.json"
+      echo "worker_finished index=${JOB_COMPLETION_INDEX} runner_exit_code=${result}"
+      exit 0
+    command:
+    - /bin/bash
+    - -lc
+    env:
+    - name: JOB_COMPLETION_INDEX
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+    - name: RUN_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: RUN_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: HF_HOME
+      value: /workspace/hf-cache
+    - name: HF_HUB_OFFLINE
+      value: "1"
+    - name: TRANSFORMERS_OFFLINE
+      value: "1"
+    - name: SDL_VIDEODRIVER
+      value: dummy
+    image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imagePullPolicy: IfNotPresent
+    name: regression
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /workspace/hf-cache
+      name: workspace
+      readOnly: true
+      subPath: hf-cache
+    - mountPath: /workspace/artifacts
+      name: workspace
+      readOnly: true
+      subPath: artifacts
+    - mountPath: /workspace/repo-validation-placement-model-loop-0b6c762
+      name: workspace
+      readOnly: true
+      subPath: repo-validation-placement-model-loop-0b6c762
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-srgwq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: validation-placement-train-regression-v11-a28-0
+  nodeSelector:
+    kubernetes.io/hostname: hcc-nrp-shor-c5226.unl.edu
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 120
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: PreferNoSchedule
+    key: nvidia.com/gpu
+    operator: Exists
+  volumes:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: shepherd-ai-539948
+  - name: kube-api-access-srgwq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-05T18:06:29Z"
+    message: '0/533 nodes are available: 1 Insufficient nvidia.com/gpu, 207 node(s)
+      had untolerated taint(s), 291 node(s) didn''t match Pod''s node affinity/selector,
+      34 node(s) were unschedulable. no new claims to deallocate, preemption: 0/533
+      nodes are available: 1 Insufficient nvidia.com/gpu, 532 Preemption is not helpful
+      for scheduling.'
+    observedGeneration: 1
+    reason: Unschedulable
+    status: "False"
+    type: PodScheduled
+  phase: Pending
+  qosClass: Guaranteed

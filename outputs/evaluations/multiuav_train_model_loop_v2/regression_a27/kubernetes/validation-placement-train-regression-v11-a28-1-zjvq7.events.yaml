@@ -1,0 +1,35 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 25
+  eventTime: null
+  firstTimestamp: "2026-10-05T18:06:29Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a28-1-zjvq7
+    namespace: aiea-interns
+    resourceVersion: "15045430022"
+    uid: 8ad8cc9a-4efa-4056-920e-7bffae8bf235
+  kind: Event
+  lastTimestamp: "2026-10-05T18:07:25Z"
+  message: '0/533 nodes are available: 1 Insufficient nvidia.com/gpu, 207 node(s)
+    had untolerated taint(s), 291 node(s) didn''t match Pod''s node affinity/selector,
+    34 node(s) were unschedulable. no new claims to deallocate, preemption: 0/533
+    nodes are available: 1 Insufficient nvidia.com/gpu, 532 Preemption is not helpful
+    for scheduling.'
+  metadata:
+    creationTimestamp: "2026-10-05T18:06:29Z"
+    name: validation-placement-train-regression-v11-a28-1-zjvq7.18dbb45d5d1f9d82
+    namespace: aiea-interns
+    resourceVersion: "144213512"
+    uid: ee2bbc18-cca2-46c7-8464-897d5b2a696b
+  reason: FailedScheduling
+  reportingComponent: default-scheduler
+  reportingInstance: ""
+  source:
+    component: default-scheduler
+  type: Warning
+kind: List
+metadata:
+  resourceVersion: ""

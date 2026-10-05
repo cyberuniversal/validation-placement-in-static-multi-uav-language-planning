@@ -1,0 +1,59 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:44Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-2-48dhv
+    namespace: aiea-interns
+    resourceVersion: "15045370493"
+    uid: 3d7e1e16-cc29-49b7-876e-64885b0b2f36
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:44Z"
+  message: Successfully assigned aiea-interns/validation-placement-train-regression-v11-a27-2-48dhv
+    to suncave-17
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:45Z"
+    name: validation-placement-train-regression-v11-a27-2-48dhv.18dbb3ff004544b4
+    namespace: aiea-interns
+    resourceVersion: "144206287"
+    uid: 06a87768-9d3b-4bfd-90ba-7c889d01d975
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: ""
+  source:
+    component: default-scheduler
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:45Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-2-48dhv
+    namespace: aiea-interns
+    resourceVersion: "15045370537"
+    uid: 3d7e1e16-cc29-49b7-876e-64885b0b2f36
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:45Z"
+  message: Multi-Attach error for volume "pvc-245732b3-eebc-489d-a191-c461f2c42a23"
+    Volume is already used by pod(s) validation-placement-train-regression-v11-a27-0-gbddl
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:45Z"
+    name: validation-placement-train-regression-v11-a27-2-48dhv.18dbb3ff2581eb3c
+    namespace: aiea-interns
+    resourceVersion: "144206298"
+    uid: cf981a87-4253-4e44-b2b7-f1c049c19fd2
+  reason: FailedAttachVolume
+  reportingComponent: attachdetach-controller
+  reportingInstance: ""
+  source:
+    component: attachdetach-controller
+  type: Warning
+kind: List
+metadata:
+  resourceVersion: ""

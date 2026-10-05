@@ -1,0 +1,59 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:44Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-1-m8vsv
+    namespace: aiea-interns
+    resourceVersion: "15045370515"
+    uid: ee0c154c-079b-40fd-b0b6-d0a1358468e1
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:44Z"
+  message: Successfully assigned aiea-interns/validation-placement-train-regression-v11-a27-1-m8vsv
+    to ry-gpu-02.sdsc.optiputer.net
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:45Z"
+    name: validation-placement-train-regression-v11-a27-1-m8vsv.18dbb3ff0590b5c9
+    namespace: aiea-interns
+    resourceVersion: "144206288"
+    uid: 8947012c-6424-43b4-a248-4d9128e030eb
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: ""
+  source:
+    component: default-scheduler
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:45Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-1-m8vsv
+    namespace: aiea-interns
+    resourceVersion: "15045370560"
+    uid: ee0c154c-079b-40fd-b0b6-d0a1358468e1
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:45Z"
+  message: Multi-Attach error for volume "pvc-245732b3-eebc-489d-a191-c461f2c42a23"
+    Volume is already used by pod(s) validation-placement-train-regression-v11-a27-0-gbddl
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:45Z"
+    name: validation-placement-train-regression-v11-a27-1-m8vsv.18dbb3ff256c6c70
+    namespace: aiea-interns
+    resourceVersion: "144206296"
+    uid: 50b975e6-4559-4c3e-b52d-fde6e0589cb9
+  reason: FailedAttachVolume
+  reportingComponent: attachdetach-controller
+  reportingInstance: ""
+  source:
+    component: attachdetach-controller
+  type: Warning
+kind: List
+metadata:
+  resourceVersion: ""

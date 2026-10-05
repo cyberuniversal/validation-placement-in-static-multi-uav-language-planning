@@ -1,0 +1,171 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:44Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370469"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:44Z"
+  message: Successfully assigned aiea-interns/validation-placement-train-regression-v11-a27-0-gbddl
+    to hcc-nrp-shor-c5226.unl.edu
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:44Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb3fef4b3c508
+    namespace: aiea-interns
+    resourceVersion: "144206286"
+    uid: 5e9db46c-a2b8-4f5e-b128-358825cf43f1
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: ""
+  source:
+    component: default-scheduler
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T17:59:45Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370496"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T17:59:45Z"
+  message: 'AttachVolume.Attach succeeded for volume "pvc-245732b3-eebc-489d-a191-c461f2c42a23" '
+  metadata:
+    creationTimestamp: "2026-10-05T17:59:45Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb3ff1fc9beba
+    namespace: aiea-interns
+    resourceVersion: "144206290"
+    uid: df79733f-1198-437a-a1b3-4757315768ae
+  reason: SuccessfulAttachVolume
+  reportingComponent: attachdetach-controller
+  reportingInstance: ""
+  source:
+    component: attachdetach-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T18:00:30Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{regression}
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370496"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T18:00:30Z"
+  message: Pulling image "pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime"
+  metadata:
+    creationTimestamp: "2026-10-05T18:00:30Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb4099c356b6b
+    namespace: aiea-interns
+    resourceVersion: "144207674"
+    uid: 7d0ebb32-eca3-4f81-9e69-99e3fa8a77f3
+  reason: Pulling
+  reportingComponent: kubelet
+  reportingInstance: hcc-nrp-shor-c5226.unl.edu
+  source:
+    component: kubelet
+    host: hcc-nrp-shor-c5226.unl.edu
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T18:01:54Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{regression}
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370496"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T18:01:54Z"
+  message: 'Successfully pulled image "pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime"
+    in 1m24.492s (1m24.492s including waiting). Image size: 3257531320 bytes.'
+  metadata:
+    creationTimestamp: "2026-10-05T18:01:54Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb41d485dbe6e
+    namespace: aiea-interns
+    resourceVersion: "144209510"
+    uid: 3bc87337-7894-4130-9556-629a037e1ac6
+  reason: Pulled
+  reportingComponent: kubelet
+  reportingInstance: hcc-nrp-shor-c5226.unl.edu
+  source:
+    component: kubelet
+    host: hcc-nrp-shor-c5226.unl.edu
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T18:01:55Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{regression}
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370496"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T18:01:55Z"
+  message: 'Created container: regression'
+  metadata:
+    creationTimestamp: "2026-10-05T18:01:55Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb41d7d3a3c15
+    namespace: aiea-interns
+    resourceVersion: "144209527"
+    uid: 2bf4bbc6-e1a8-4d4d-b801-6a7152f43bd9
+  reason: Created
+  reportingComponent: kubelet
+  reportingInstance: hcc-nrp-shor-c5226.unl.edu
+  source:
+    component: kubelet
+    host: hcc-nrp-shor-c5226.unl.edu
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2026-10-05T18:01:56Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{regression}
+    kind: Pod
+    name: validation-placement-train-regression-v11-a27-0-gbddl
+    namespace: aiea-interns
+    resourceVersion: "15045370496"
+    uid: ee9bdea2-cd94-4c7d-add8-a3fe9d134145
+  kind: Event
+  lastTimestamp: "2026-10-05T18:01:56Z"
+  message: Started container regression
+  metadata:
+    creationTimestamp: "2026-10-05T18:01:56Z"
+    name: validation-placement-train-regression-v11-a27-0-gbddl.18dbb41d9d7f3ac5
+    namespace: aiea-interns
+    resourceVersion: "144209536"
+    uid: 133b9145-e05b-443b-9a08-3caf0753bf52
+  reason: Started
+  reportingComponent: kubelet
+  reportingInstance: hcc-nrp-shor-c5226.unl.edu
+  source:
+    component: kubelet
+    host: hcc-nrp-shor-c5226.unl.edu
+  type: Normal
+kind: List
+metadata:
+  resourceVersion: ""

@@ -764,3 +764,25 @@ Reporting may combine the 13 new outcomes with the two prior v11 outcomes in a
 explicit. This is not an independent generalization rate, not an M1-M4 ablation,
 and not a substitute for the frozen manuscript results. New independent,
 adjudicated missions remain necessary before a claim-bearing final evaluation.
+
+#### Storage-Placement Correction Before Remaining Inference
+
+The initial `a27` launch exposed an orchestration error: PVC
+`shepherd-ai-539948` is `ReadWriteOnce`. Index 0 mounted it on
+`hcc-nrp-shor-c5226.unl.edu`; indices 1 and 2, scheduled to different nodes,
+remained in `ContainerCreating` with `FailedAttachVolume`/`Multi-Attach`.
+Their YAML and events are retained. This is a storage failure, not a model or
+mission result. Node inventory access was forbidden by cluster RBAC; it was
+not circumvented. The running worker directly reported an RTX 4090.
+
+The API accepted an elastic-indexed-job correction setting `a27` completions
+and parallelism to one, retaining running index 0 (`4c8040f9`) without restart.
+The other 12 frozen cases move to the separately registered `a28` manifest,
+with two workers pinned to the same node as `a27`. This permits a maximum
+of three workers on one node without cross-node PVC attachment. GPU availability
+may reduce actual concurrency. The initial manifest is retained unmodified;
+the patched live YAML and a separate correction manifest record the deviation.
+No new case is selected, no model run is retried, and the controller, seed,
+decoding, ceiling, and task-completion criterion are unchanged. The union of
+`a27` index 0 and the 12 `a28` cases must equal the original 13-case manifest.
+Output and isolated-checkout paths distinguish `a28` from `a27`.

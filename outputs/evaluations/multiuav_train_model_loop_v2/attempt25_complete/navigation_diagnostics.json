@@ -1,0 +1,31 @@
+{
+  "scope": "inspected_training_mission_navigation_smoke_not_model_or_paper_evaluation",
+  "diagnostics": [
+    {
+      "diagnostic": "navigation-smoke-v11",
+      "backend": "scripted_first_option_not_llm",
+      "raw_path": "outputs/multiuav/train-model-loop-v2/4cea97cd/navigation-smoke-v11/raw.json",
+      "raw_sha256": "fba9fe6c738689d714fdde12ff3e54bf11f541bafcb5eb8a38c6b9e4f976b1f9",
+      "commands": 149,
+      "accepted_commands": 149,
+      "official_task_check_result": false,
+      "stop_reason": "no_bounded_action",
+      "initial_progress": 0,
+      "final_progress": 65,
+      "distinct_observed_targets": 2
+    },
+    {
+      "diagnostic": "navigation-smoke-v11b",
+      "backend": "scripted_first_option_not_llm",
+      "raw_path": "outputs/multiuav/train-model-loop-v2/4cea97cd/navigation-smoke-v11b/raw.json",
+      "raw_sha256": "14e3070900a385ed3a5322bfcb7bf93416220e34bec355c1291a5e9eb6a1c30a",
+      "commands": 286,
+      "accepted_commands": 286,
+      "official_task_check_result": true,
+      "stop_reason": "official_task_completed",
+      "initial_progress": 0,
+      "final_progress": 95,
+      "distinct_observed_targets": 3
+    }
+  ]
+}

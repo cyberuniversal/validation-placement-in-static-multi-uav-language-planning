@@ -1,0 +1,72 @@
+{
+  "scope": "tuned_reviewed_training_mission_not_held_out_or_frozen_publication_result",
+  "configuration": {
+    "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+    "cache_audit_sha256": "10d37e85af2df8a0fcaf6bb5bf4cbd08864afe25bfcb2f75a135b7061e3f5dbf",
+    "case_id": "4cea97cd:canonical_execute",
+    "code_commit": "9ca784efa16faab5cc1c9b261c7c509be6509d11",
+    "decoding": {
+      "do_sample": false,
+      "max_new_tokens": 256,
+      "num_beams": 1
+    },
+    "max_commands": 512,
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "policy": "agent_visible_option_menu_v11_obstacle_memory_canvas_coverage",
+    "seed": 17,
+    "session_id": "bad1e9e5",
+    "source_task_id": "4cea97cd",
+    "study": "train_only_closed_loop_model_pilot_v2_not_frozen_M1_to_M4",
+    "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+  },
+  "official_task_check_result": true,
+  "model_call_count": 193,
+  "attempted_commands": 193,
+  "accepted_commands": 193,
+  "initial_progress": {
+    "details": {
+      "total_targets": 3
+    },
+    "is_completed": false,
+    "progress_percentage": 0,
+    "status_message": "Task to be Done",
+    "task_type": "area_search"
+  },
+  "final_progress": {
+    "details": {
+      "total_targets": 3
+    },
+    "is_completed": false,
+    "progress_percentage": 95,
+    "status_message": "Task to be Done",
+    "task_type": "area_search"
+  },
+  "distinct_observed_targets": 3,
+  "distinct_observed_obstacles": 2,
+  "action_sources": {
+    "takeoff": 3,
+    "agent_visible_rectangle_geometry_step": 112,
+    "agent_local_target_observation": 11,
+    "observed_canvas_coverage": 8,
+    "agent_visible_circle_geometry_step": 59
+  },
+  "stop_reason": "official_task_completed",
+  "hash_verification": {
+    "raw.json": {
+      "actual_sha256": "cf95f9a8a4c0a8d833f266e58ba2987591a91733163c504867fe0d6fc584d90d",
+      "expected_sha256": "cf95f9a8a4c0a8d833f266e58ba2987591a91733163c504867fe0d6fc584d90d",
+      "matches": true
+    },
+    "raw.commands.jsonl": {
+      "actual_sha256": "533be62b121fea2add0a68253a0c66a7efdb01c76239637379ace6bd2427037b",
+      "expected_sha256": "533be62b121fea2add0a68253a0c66a7efdb01c76239637379ace6bd2427037b",
+      "matches": true
+    },
+    "raw.events.jsonl": {
+      "actual_sha256": "fba3e29a7b43a2ecdeee80442d870835908421a22fa96373bec68a9ab4727bf4",
+      "expected_sha256": "fba3e29a7b43a2ecdeee80442d870835908421a22fa96373bec68a9ab4727bf4",
+      "matches": true
+    }
+  }
+}

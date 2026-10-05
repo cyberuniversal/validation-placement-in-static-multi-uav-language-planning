@@ -659,3 +659,34 @@ task check to be true. Command acceptance, progress, observed-target count,
 stop reason, and all raw output are preserved regardless of outcome. This is
 a tuned development run, not independent evaluation, a placement ablation,
 or evidence replacing any frozen M1-M4 publication result.
+
+Attempt `a25` completed on an NVIDIA RTX A4000 with execution commit
+`9ca784efa16faab5cc1c9b261c7c509be6509d11`. All 193 Qwen-selected commands
+were accepted, and the official task check returned true. The controller
+stopped with `official_task_completed`. All three target IDs were discovered
+through AGENT observations; two obstacle IDs were observed. Actions comprised
+three takeoffs, 112 rectangle-sweep movement steps, 59 circle-sweep steps,
+11 observed-target movement steps, and eight canvas-discovery steps. Aggregate
+progress changed from 0% to the displayed 95%, with the public `is_completed`
+field remaining false. Task-check truth, not that aggregate field, is the
+registered completion criterion. Pod restarts were zero. Copied raw and
+command/event journals match all three SHA-256 values in the durable summary.
+Initial/final Kubernetes YAML, console logs, preflight/summary, reproduction
+commands, and separate derived metrics are archived under `attempt25_complete/`.
+Raw output remains in ignored `4cea97cd/attempt-25/` and on the PVC.
+
+This verifies that the revised model-controlled development loop can complete
+the previously failing inspected mission. It does not establish held-out
+planning accuracy or revise the frozen zero-static-fidelity result. No model
+weights were trained or changed. Full checks passed: 303 tests, 19 subtests,
+and Ruff. Shapely 2.1.2 is now declared in the development extra so a clean
+test installation includes the geometry dependency already used by the simulator.
+
+Attempt `a26` is registered before execution as a regression check on the
+previously failing reviewed training case `519784ca:canonical_execute`,
+session `0f23ff1e` (the `a21` straight-line discovery failure). The v11 code,
+checkpoint, upstream revision, decoding, seed and 512-command ceiling are held
+fixed to `a25`; only the mission changes. No further policy changes are made
+after inspecting `a25`. Completion still requires the official task check.
+This is another inspected train-case regression, not independent evaluation
+or a matched validation-placement experiment. All outcomes will be retained.

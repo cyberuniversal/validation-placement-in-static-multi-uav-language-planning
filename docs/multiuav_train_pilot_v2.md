@@ -594,3 +594,28 @@ finite ceiling. The official task check, observed-target count, aggregate
 progress, and accepted/rejected commands will determine the outcome. This
 is a development comparison with a changed budget, not an independent test
 or a policy-efficiency comparison. No completion result is claimed in advance.
+
+Attempt `a24` completed on an NVIDIA RTX A4000 with code
+`28d16932c4fa7aff7f6d64785423533f8799a63a`. Its first 24 selected actions
+exactly match `a23`. The longer allowance permitted 52 calls: 51 official
+commands succeeded before a bounded-search path was rejected for intersecting
+Circle Obstacle 2. Aggregate session progress ended at 65%; two distinct
+polygon targets were observed, while the public progress response reported
+three targets in the session. The official task check was false. Commands
+comprised three takeoffs, 28 rectangle sweep steps, one observed-target move,
+and 20 bounded-search attempts. Those search attempts were distributed 7, 7,
+and 6 across the three drones, showing the menu's balancing behavior on this
+case. This does not establish successful discovery of the remaining target.
+
+The command/event/raw hashes match the durable summary. The `attempt24_complete/`
+archive contains initial/final Kubernetes YAML, console logs, summaries, and
+derived metrics binding both raw traces for the 24-action prefix comparison.
+The raw traces remain separately under ignored `attempt-23/` and `attempt-24/`
+directories and on the PVC. The budget-boundary checks passed with the full
+suite: 297 tests, 19 subtests, and Ruff.
+
+The current snapshot collects drone state, local targets, and public progress,
+but not local obstacle observations. The menu consequently cannot exclude a
+path using observed obstacle geometry. Local search also offers cardinal
+steps without a complete canvas-coverage schedule. These are remaining
+development limitations; increasing the budget did not complete this task.

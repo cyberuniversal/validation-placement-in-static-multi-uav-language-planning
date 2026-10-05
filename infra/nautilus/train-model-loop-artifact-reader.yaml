@@ -9,7 +9,7 @@ metadata:
 spec:
   restartPolicy: Never
   nodeSelector:
-    kubernetes.io/hostname: chi-dgx-node04.csuchico.edu
+    kubernetes.io/hostname: ry-gpu-15.sdsc.optiputer.net
   containers:
     - name: reader
       image: busybox:1.36

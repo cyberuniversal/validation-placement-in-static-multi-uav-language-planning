@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "case_id": "4cea97cd:canonical_execute",
+  "raw_sha256": "2675ea440d3a5c5162bb1af757c135796eeb3672a0ad3e5fbdc0113534e21221",
+  "reference_raw_sha256": "b0862684cd5fb49e880c2f7f5fc3ed01abed6f3d9bc6f81fcb6eb3f406d62a41",
+  "matching_action_prefix": 24,
+  "distinct_agent_observed_target_count": 2,
+  "initial_aggregate_session_progress": 0,
+  "final_aggregate_session_progress": 65,
+  "attempted_commands": 52,
+  "action_counts": [
+    {
+      "command_and_source": "move_to|agent_local_target_observation",
+      "count": 1
+    },
+    {
+      "command_and_source": "move_to|agent_visible_rectangle_geometry_step",
+      "count": 28
+    },
+    {
+      "command_and_source": "move_to|bounded_local_search",
+      "count": 20
+    },
+    {
+      "command_and_source": "take_off|",
+      "count": 3
+    }
+  ],
+  "search_commands_by_drone": [
+    {
+      "drone_id": "612145fe",
+      "selected_search_commands": 7
+    },
+    {
+      "drone_id": "8d30d501",
+      "selected_search_commands": 7
+    },
+    {
+      "drone_id": "f1790e11",
+      "selected_search_commands": 6
+    }
+  ],
+  "official_task_check_result": false
+}

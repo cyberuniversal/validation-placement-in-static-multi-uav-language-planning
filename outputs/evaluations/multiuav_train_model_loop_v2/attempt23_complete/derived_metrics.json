@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "case_id": "4cea97cd:canonical_execute",
+  "raw_sha256": "b0862684cd5fb49e880c2f7f5fc3ed01abed6f3d9bc6f81fcb6eb3f406d62a41",
+  "distinct_agent_observed_target_count": 2,
+  "initial_aggregate_session_progress": 0,
+  "final_aggregate_session_progress": 47,
+  "attempted_commands": 24,
+  "action_counts": [
+    {
+      "command_and_source": "move_to|agent_visible_rectangle_geometry_step",
+      "count": 21
+    },
+    {
+      "command_and_source": "take_off|",
+      "count": 3
+    }
+  ],
+  "official_task_check_result": false
+}

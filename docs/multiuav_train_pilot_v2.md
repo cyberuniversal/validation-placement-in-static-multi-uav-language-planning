@@ -565,3 +565,23 @@ training case `4cea97cd:canonical_execute` after the status correction. Its
 completion criterion and process metrics remain those registered for `a22`.
 It is not a fresh independent evaluation because the `a22` failure has been
 inspected. Both attempts will be retained regardless of outcome.
+
+Attempt `a23` completed on a Tesla V100-SXM2-16GB with v10 code
+`067c229fccdbffb96d0e7d60da0b868160361266`. All 24 model-selected official
+commands succeeded: three takeoffs and 21 observed-rectangle sweep steps.
+Aggregate session progress rose from 0% to 47%, and two distinct polygon
+targets appeared in AGENT observations. The official task check was false
+when the 24-command budget ended. The positive-altitude idle drone could
+take off and subsequently move, confirming the status correction on this
+inspected training case. Search balancing was not exercised because no
+bounded-search move was selected. Mission completion remains unestablished
+on this case; a larger budget or more complete discovery policy has not been
+evaluated here.
+
+Raw output, command/event journals, preflight, summary, and durable console
+log remain in ignored `outputs/multiuav/train-model-loop-v2/4cea97cd/attempt-23/`
+and on the PVC. The three journal hashes match `run_summary.json`. The
+`attempt23_complete/` archive preserves initial and final job/pod YAML,
+console logs, summaries, and separately derived metrics with reproduction
+commands. The full documented checks passed: 296 pytest tests, 17 subtests,
+and Ruff. Frozen publication results remain unchanged.

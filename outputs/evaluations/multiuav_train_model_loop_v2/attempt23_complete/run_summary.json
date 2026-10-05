@@ -1,0 +1,37 @@
+{
+  "agent_privileged_data_http_status": 403,
+  "attempted_commands": 24,
+  "command_journal_sha256": "7ead0a8eeca4b1b82cc1bd5958ef74c1ae733518736cd45932b1ec37d91b537a",
+  "completed_at_utc": "2026-10-05T14:14:05.390131+00:00",
+  "configuration": {
+    "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+    "cache_audit_sha256": "10d37e85af2df8a0fcaf6bb5bf4cbd08864afe25bfcb2f75a135b7061e3f5dbf",
+    "case_id": "4cea97cd:canonical_execute",
+    "code_commit": "067c229fccdbffb96d0e7d60da0b868160361266",
+    "decoding": {
+      "do_sample": false,
+      "max_new_tokens": 256,
+      "num_beams": 1
+    },
+    "max_commands": 24,
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "policy": "agent_visible_option_menu_v10_status_checked_balanced_search",
+    "seed": 17,
+    "session_id": "bad1e9e5",
+    "source_task_id": "4cea97cd",
+    "study": "train_only_closed_loop_model_pilot_v2_not_frozen_M1_to_M4",
+    "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+  },
+  "deterministic_prelude_action_count": 0,
+  "event_journal_sha256": "0730cef808d472510a70cbe53cba080591fe9fd8a42ad2b6548ad69ff2afade1",
+  "last_model_action_resolution": "resolved",
+  "model_call_count": 24,
+  "model_loaded": true,
+  "raw_sha256": "b0862684cd5fb49e880c2f7f5fc3ed01abed6f3d9bc6f81fcb6eb3f406d62a41",
+  "started_at_utc": "2026-10-05T14:13:13.461557+00:00",
+  "status": "complete_train_only_unscored",
+  "stop_reason": "command_budget_exhausted",
+  "successful_commands": 24,
+  "task_check_result": false
+}

@@ -690,3 +690,28 @@ fixed to `a25`; only the mission changes. No further policy changes are made
 after inspecting `a25`. Completion still requires the official task check.
 This is another inspected train-case regression, not independent evaluation
 or a matched validation-placement experiment. All outcomes will be retained.
+
+Attempt `a26` completed on an NVIDIA RTX A4000 with the same v11 execution
+commit `9ca784efa16faab5cc1c9b261c7c509be6509d11`. All 241 model-selected
+commands were accepted, and the official task check returned true with stop
+reason `official_task_completed`. Five target IDs and nine obstacle IDs
+were discovered through AGENT observations. Actions comprised five takeoffs,
+107 canvas-discovery steps, 89 circle-sweep steps, 20 observed-target movement
+steps, and 20 rectangle-sweep steps. The task requests coverage of Circle
+Target 2 and Circle Target 1; the rectangle steps show that the fallback menu
+can still offer unnecessary work on other observed areas. Official task
+completion therefore does not establish action minimality or perfect intent
+fidelity. Aggregate session progress ended at 87%, which covers additional
+session targets and is not the named-target task predicate. The separate
+public `is_completed` field remained false. These responses are preserved as
+returned; no hidden checker parameters were used by the policy.
+
+The pod completed with zero restarts. All three raw/command/event hashes match
+the durable summary. Raw output remains separately in ignored
+`519784ca/attempt-26/` and on the PVC. Initial/final job/pod YAML, console logs,
+preflight/summary, exact reproduction commands, and derived metrics are in
+`attempt26_complete/`. Both previously failing reviewed training missions now
+pass with the same frozen controller version. This is two development
+regressions, not a generalization rate, a new held-out benchmark result, or a
+replacement for the frozen M1-M4 experiment. Full checks passed again with
+303 tests, 19 subtests, and Ruff.

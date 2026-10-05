@@ -585,3 +585,12 @@ and on the PVC. The three journal hashes match `run_summary.json`. The
 console logs, summaries, and separately derived metrics with reproduction
 commands. The full documented checks passed: 296 pytest tests, 17 subtests,
 and Ruff. Frozen publication results remain unchanged.
+
+Attempt `a24` is registered before execution as a budget diagnostic on the
+same inspected case `4cea97cd:canonical_execute`. The v10 menu, prompt,
+checkpoint, decoding, seed, and official movement checks stay fixed; the
+command allowance increases from 24 to 64. Both runner guards share the same
+finite ceiling. The official task check, observed-target count, aggregate
+progress, and accepted/rejected commands will determine the outcome. This
+is a development comparison with a changed budget, not an independent test
+or a policy-efficiency comparison. No completion result is claimed in advance.

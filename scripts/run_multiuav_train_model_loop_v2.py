@@ -22,7 +22,7 @@ from shepherd_ai.multiuav_model_cache import verify_cached_snapshot  # noqa: E40
 from shepherd_ai.multiuav_prompts import PromptMessage, PromptRequest  # noqa: E402
 from shepherd_ai.multiuav_qwen_backend import LocalQwenBackend, QwenBackendConfig  # noqa: E402
 from shepherd_ai.multiuav_runner import ModelBackend  # noqa: E402
-from scripts.probe_multiuav_train_closed_loop_v2 import run_case  # noqa: E402
+from scripts.probe_multiuav_train_closed_loop_v2 import MAX_PILOT_COMMANDS, run_case  # noqa: E402
 from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
     EXPECTED_BENCHMARK_SHA256,
     EXPECTED_UPSTREAM_COMMIT,
@@ -406,8 +406,8 @@ def main() -> None:
     parser.add_argument("--summary-output", required=True, type=Path)
     parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
-    if args.max_commands < 1 or args.max_commands > 24:
-        raise ValueError("pilot command budget must be between 1 and 24")
+    if args.max_commands < 1 or args.max_commands > MAX_PILOT_COMMANDS:
+        raise ValueError(f"pilot command budget must be between 1 and {MAX_PILOT_COMMANDS}")
     selected = {case["case_id"]: case for case in select_cases()}
     if args.case_id not in selected:
         raise ValueError("case must be a reviewed canonical training pilot case")

@@ -122,12 +122,26 @@ class ClosedLoopProbeTests(unittest.TestCase):
             run_case(FakeClient(privileged_status=200), {"X-API-Key": "agent"}, case, max_commands=1)
 
     def test_command_budget_and_unknown_command_rejected(self) -> None:
-        with self.assertRaisesRegex(ValueError, "budget"):
-            run_case(FakeClient(), {"X-API-Key": "agent"}, {}, max_commands=25)
+        for budget in (0, 65):
+            with self.subTest(budget=budget), self.assertRaisesRegex(ValueError, "budget"):
+                run_case(FakeClient(), {"X-API-Key": "agent"}, {}, max_commands=budget)
         with self.assertRaisesRegex(ValueError, "unsupported"):
             issue_action(FakeClient(), {"X-API-Key": "agent"}, {
                 "command": "delete", "drone_id": "drone-1",
             })
+
+    def test_extended_budget_keeps_model_stop_and_official_check(self) -> None:
+        case = {
+            "source_task_id": "task-1",
+            "context": {"instruction": "Find", "session": {"canvas_width": 20, "canvas_height": 20}},
+        }
+        result = run_case(
+            FakeClient(), {"X-API-Key": "agent"}, case, max_commands=64,
+            choose_action=lambda *args: None,
+        )
+        self.assertEqual(result["commands"], [])
+        self.assertEqual(result["stop_reason"], "no_bounded_action")
+        self.assertIs(result["task_check"]["result"], False)
 
 
 if __name__ == "__main__":

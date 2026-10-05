@@ -24,6 +24,8 @@ from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
 )
 from scripts.run_multiuav_train_pilot_v2 import select_cases  # noqa: E402
 
+MAX_PILOT_COMMANDS = 64
+
 
 def select_action(
     instruction: str,
@@ -143,8 +145,8 @@ def run_case(
     on_command: Callable[[dict[str, Any]], None] | None = None,
     on_event: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
-    if max_commands < 1 or max_commands > 24:
-        raise ValueError("pilot command budget must be between 1 and 24")
+    if max_commands < 1 or max_commands > MAX_PILOT_COMMANDS:
+        raise ValueError(f"pilot command budget must be between 1 and {MAX_PILOT_COMMANDS}")
     denied = client.get("/sessions/current/data", headers=headers)
     if denied.status_code != 403:
         raise RuntimeError("AGENT unexpectedly accessed privileged session data")

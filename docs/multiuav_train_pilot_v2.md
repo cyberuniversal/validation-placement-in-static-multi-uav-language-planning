@@ -538,3 +538,30 @@ official task check, command acceptance, aggregate session progress, and
 count of distinct AGENT-observed target IDs. An official true task check is
 required for task completion. The result is a train-only development probe,
 not held-out evidence or an update to the frozen paper.
+
+Attempt `a22` completed on an NVIDIA GeForce RTX 2080 Ti with v9 code
+`a9aba854843e2f74fd1e27b329a612c81db5cc69`. Its only model-selected command
+was rejected: the menu offered an observed-target move for Drone 3 because
+its reported altitude was 76, although its AGENT-visible status was `idle`.
+The official controller accepts movement only from `hovering`, `flying`, or
+`moving`. Polygon Target 1 was already locally observed. Zero commands
+succeeded and the official task check was false, so this attempt does not
+measure search balancing. The copied raw and command/event journals match
+their summary hashes and remain under ignored `attempt-22/`. The job and pod
+were observed as succeeded with zero restarts on October 4, but were absent
+when archival capture resumed on October 5; live YAML and full logs are
+unavailable. The submitted manifest and durable summaries remain preserved.
+
+The v10 correction makes command eligibility follow the official controller's
+status rules: `idle` and `ready` offer takeoff; `hovering`, `flying`, and
+`moving` offer movement; other or missing statuses offer no command. Altitude
+still must be finite. The v9 search balance, geometry checks, decoding,
+checkpoint, and 24-command limit remain unchanged. Regression tests cover
+idle/ready with positive altitude, supported movement states at zero altitude,
+unsupported statuses, and the takeoff-to-hovering observation transition.
+
+Attempt `a23` is registered as a development retry of the same reviewed
+training case `4cea97cd:canonical_execute` after the status correction. Its
+completion criterion and process metrics remain those registered for `a22`.
+It is not a fresh independent evaluation because the `a22` failure has been
+inspected. Both attempts will be retained regardless of outcome.

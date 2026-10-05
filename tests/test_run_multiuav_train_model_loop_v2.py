@@ -59,7 +59,8 @@ class FakeResponse:
 
 class FakeClient:
     def __init__(self) -> None:
-        self.drone = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        self.drone = {**DRONE, "status": "idle",
+                      "position": {"x": 10, "y": 10, "z": 0}}
 
     def get(self, path: str, *, headers: dict[str, str]) -> FakeResponse:
         if path == "/sessions/current/data":
@@ -78,6 +79,7 @@ class FakeClient:
              json: dict | None = None, headers: dict[str, str]) -> FakeResponse:
         if path.endswith("/take_off"):
             self.drone["position"]["z"] = params["altitude"]
+            self.drone["status"] = "hovering"
         elif path.endswith("/move_to"):
             self.drone["position"]["x"] = params["x"]
             self.drone["position"]["y"] = params["y"]
@@ -109,7 +111,8 @@ class ModelLoopTests(unittest.TestCase):
             self.assertNotIn(forbidden, request.messages[1].content)
 
     def test_grounded_drone_prompt_requires_takeoff(self) -> None:
-        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        grounded = {**DRONE, "status": "idle",
+                    "position": {"x": 10, "y": 10, "z": 0}}
         request = build_request("Search", [grounded], {"drone-1": []},
                                 (20, 20), set(), 0)
         payload = json.loads(request.messages[1].content)
@@ -148,8 +151,31 @@ class ModelLoopTests(unittest.TestCase):
 
     def test_takeoff_only_offered_when_grounded(self) -> None:
         self.assertFalse(any(item["action"]["command"] == "take_off" for item in self.menu()))
-        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        grounded = {**DRONE, "status": "idle",
+                    "position": {"x": 10, "y": 10, "z": 0}}
         self.assertEqual(self.menu(drone=grounded)[0]["action"]["command"], "take_off")
+
+    def test_idle_or_ready_with_positive_altitude_requires_takeoff(self) -> None:
+        for status in ("idle", "ready"):
+            with self.subTest(status=status):
+                drone = {**DRONE, "status": status,
+                         "position": {"x": 10, "y": 10, "z": 15}}
+                menu = self.menu(drone=drone)
+                self.assertEqual([item["action"]["command"] for item in menu], ["take_off"])
+
+    def test_movement_status_is_authoritative_even_at_zero_altitude(self) -> None:
+        for status in ("hovering", "flying", "moving"):
+            with self.subTest(status=status):
+                drone = {**DRONE, "status": status,
+                         "position": {"x": 10, "y": 10, "z": 0}}
+                menu = self.menu(drone=drone)
+                self.assertTrue(menu)
+                self.assertTrue(all(item["action"]["command"] == "move_to" for item in menu))
+
+    def test_unsupported_drone_status_offers_no_command(self) -> None:
+        for status in ("offline", "emergency", "taking_off", "landing", "unknown", None):
+            with self.subTest(status=status):
+                self.assertEqual(self.menu(drone={**DRONE, "status": status}), [])
 
     def test_previous_destination_removes_target_and_search_option(self) -> None:
         menu = available_actions([DRONE], {"drone-1": [TARGET]},
@@ -223,7 +249,7 @@ class ModelLoopTests(unittest.TestCase):
                              for item in self.menu(drone=drone, targets=[rotated])))
 
     def test_named_observed_target_focuses_its_grounded_observer(self) -> None:
-        idle = {**DRONE, "id": "observer", "name": "Observer",
+        idle = {**DRONE, "id": "observer", "name": "Observer", "status": "idle",
                 "position": {"x": 10, "y": 10, "z": 0}}
         unrelated = {**DRONE, "id": "other", "name": "Other"}
         target = {**TARGET, "name": "Circle Target 2"}
@@ -243,7 +269,7 @@ class ModelLoopTests(unittest.TestCase):
 
     def test_search_menu_balances_airborne_drones_without_affecting_takeoff(self) -> None:
         other = {**DRONE, "id": "drone-2", "name": "Drone 2"}
-        grounded = {**DRONE, "id": "drone-3", "name": "Drone 3",
+        grounded = {**DRONE, "id": "drone-3", "name": "Drone 3", "status": "idle",
                     "position": {"x": 10, "y": 10, "z": 0}}
         menu = available_actions(
             [DRONE, other, grounded],
@@ -321,7 +347,8 @@ class ModelLoopTests(unittest.TestCase):
     def test_explicit_takeoff_is_model_selected(self) -> None:
         backend = SequenceBackend([choice("O1")])
         selector = ModelActionSelector(backend)
-        grounded = {**DRONE, "position": {"x": 10, "y": 10, "z": 0}}
+        grounded = {**DRONE, "status": "idle",
+                    "position": {"x": 10, "y": 10, "z": 0}}
         first = selector("Take off and search", [grounded], {"drone-1": []},
                          (20, 20), set())
         self.assertEqual(first["command"], "take_off")

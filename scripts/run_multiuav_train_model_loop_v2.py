@@ -93,7 +93,8 @@ def available_actions(
         altitude = float(position["z"])
         if not math.isfinite(altitude):
             continue
-        if altitude <= 0:
+        status = str(drone.get("status", "")).casefold()
+        if status in {"idle", "ready"}:
             takeoff_altitude = min(10.0, float(drone["max_altitude"]))
             if math.isfinite(takeoff_altitude) and takeoff_altitude > 0:
                 choices.append({
@@ -103,6 +104,8 @@ def available_actions(
                         "altitude": takeoff_altitude,
                     },
                 })
+            continue
+        if status not in {"hovering", "flying", "moving"}:
             continue
         for target in sorted(nearby_targets.get(drone_id, []), key=lambda item: str(item["id"])):
             if focused_drones and str(target["id"]) not in named_target_ids:
@@ -317,7 +320,7 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v9",
+        prompt_contract_version="train_closed_loop_option_menu_v10",
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -429,7 +432,7 @@ def main() -> None:
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
         "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v9_balanced_search",
+        "policy": "agent_visible_option_menu_v10_status_checked_balanced_search",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",

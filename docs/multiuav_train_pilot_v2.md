@@ -786,3 +786,30 @@ No new case is selected, no model run is retried, and the controller, seed,
 decoding, ceiling, and task-completion criterion are unchanged. The union of
 `a27` index 0 and the 12 `a28` cases must equal the original 13-case manifest.
 Output and isolated-checkout paths distinguish `a28` from `a27`.
+
+#### Deadline Recovery (a29)
+
+On 2026-10-06, a27 was Complete with 47 accepted commands, 47 model calls,
+and an official true task check for `4c8040f9`. Its three durable hashes are
+verified after local copying. This remains development evidence only.
+
+a28 failed with Kubernetes `DeadlineExceeded` at its registered six-hour
+deadline. One case, `1036bedf`, had started and retained 411 command-journal
+rows but no final raw trace, execution-exit record, or terminal summary.
+The durable summary still says `running`; this is stale after termination,
+not evidence of an active process. Classify the case as infrastructure-
+interrupted and incomplete, not official false or true. Preserve its journals,
+startup summary, and console log without rewriting them. No automatic model
+retry is performed. Final pod YAML/logs are unavailable for a28 because its
+pods have already been removed; earlier pending metadata and durable logs
+remain available.
+
+Register a29 before execution for only the other 11 cases, in their original
+relative order. Confirm their a28 output directories are absent. The separate
+manifest uses one worker, no fixed hostname, and a 24-hour job deadline to
+avoid the previous node-local queue restriction and cross-node concurrent
+ReadWriteOnce attachment. The controller commit, checkpoint, seed, decoding,
+512-command ceiling, and completion criterion remain unchanged. New paths
+retain the a29 attempt identity. Do not rerun the interrupted case, exclude
+unsupported tasks, or alter policy during the remaining sweep. All 15 cohort
+members stay in reporting, including the incomplete case.

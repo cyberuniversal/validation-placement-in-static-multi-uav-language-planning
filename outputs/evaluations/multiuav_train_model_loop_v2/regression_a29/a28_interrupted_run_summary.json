@@ -1,0 +1,25 @@
+{
+  "configuration": {
+    "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+    "cache_audit_sha256": "10d37e85af2df8a0fcaf6bb5bf4cbd08864afe25bfcb2f75a135b7061e3f5dbf",
+    "case_id": "1036bedf:canonical_execute",
+    "code_commit": "9ca784efa16faab5cc1c9b261c7c509be6509d11",
+    "decoding": {
+      "do_sample": false,
+      "max_new_tokens": 256,
+      "num_beams": 1
+    },
+    "max_commands": 512,
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "policy": "agent_visible_option_menu_v11_obstacle_memory_canvas_coverage",
+    "seed": 17,
+    "session_id": "3ec31656",
+    "source_task_id": "1036bedf",
+    "study": "train_only_closed_loop_model_pilot_v2_not_frozen_M1_to_M4",
+    "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+  },
+  "model_loaded": true,
+  "started_at_utc": "2026-10-05T18:32:52.768766+00:00",
+  "status": "running"
+}

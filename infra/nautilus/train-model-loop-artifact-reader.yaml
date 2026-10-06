@@ -9,7 +9,7 @@ metadata:
 spec:
   restartPolicy: Never
   nodeSelector:
-    kubernetes.io/hostname: ry-gpu-16.sdsc.optiputer.net
+    kubernetes.io/hostname: hcc-nrp-shor-c5226.unl.edu
   containers:
     - name: reader
       image: busybox:1.36

@@ -1,0 +1,105 @@
+{
+  "registered_at_utc": "2026-10-06T11:57:21.9698319Z",
+  "execution_commit": "9ca784efa16faab5cc1c9b261c7c509be6509d11",
+  "policy_unchanged": true,
+  "prior_job": "validation-placement-train-regression-v11-a28",
+  "prior_job_status": "Failed:DeadlineExceeded",
+  "interrupted_case_not_retried": "1036bedf:canonical_execute",
+  "interrupted_command_rows": 411,
+  "interrupted_result": "infrastructure_interrupted_incomplete",
+  "case_directory_absence_verified": true,
+  "job_manifest": "infra/nautilus/train-model-loop-3b-v2-a29-regression-job.yaml",
+  "job_manifest_lf_sha256": "cba87362a225bc41d29679060503a8ae7d2ff60cdd467e571989c80a14a0883e",
+  "parallelism": 1,
+  "active_deadline_seconds": 86400,
+  "cases": [
+    {
+      "case_id": "a45a0c87:canonical_execute",
+      "source_task_id": "a45a0c87",
+      "session_id": "cc05a425",
+      "scenario": "area_assignment_and_patrol",
+      "difficulty": "hard",
+      "completion_index": 0
+    },
+    {
+      "case_id": "ac5f85f8:canonical_execute",
+      "source_task_id": "ac5f85f8",
+      "session_id": "72ccacd0",
+      "scenario": "area_assignment_and_patrol",
+      "difficulty": "intermediate",
+      "completion_index": 1
+    },
+    {
+      "case_id": "6c4a6010:canonical_execute",
+      "source_task_id": "6c4a6010",
+      "session_id": "0567e470",
+      "scenario": "area_assignment_and_patrol",
+      "difficulty": "moderate",
+      "completion_index": 2
+    },
+    {
+      "case_id": "cf6f176c:canonical_execute",
+      "source_task_id": "cf6f176c",
+      "session_id": "793e7745",
+      "scenario": "area_search",
+      "difficulty": "extreme",
+      "completion_index": 3
+    },
+    {
+      "case_id": "9b355a03:canonical_execute",
+      "source_task_id": "9b355a03",
+      "session_id": "139a4109",
+      "scenario": "area_search",
+      "difficulty": "hard",
+      "completion_index": 4
+    },
+    {
+      "case_id": "91130026:canonical_execute",
+      "source_task_id": "91130026",
+      "session_id": "13b94391",
+      "scenario": "area_search",
+      "difficulty": "moderate",
+      "completion_index": 5
+    },
+    {
+      "case_id": "14fd1139:canonical_execute",
+      "source_task_id": "14fd1139",
+      "session_id": "3973d0d6",
+      "scenario": "target_assignment",
+      "difficulty": "easy",
+      "completion_index": 6
+    },
+    {
+      "case_id": "c96a0146:canonical_execute",
+      "source_task_id": "c96a0146",
+      "session_id": "550aa487",
+      "scenario": "target_assignment",
+      "difficulty": "extreme",
+      "completion_index": 7
+    },
+    {
+      "case_id": "67cbff58:canonical_execute",
+      "source_task_id": "67cbff58",
+      "session_id": "b3c8ded2",
+      "scenario": "target_assignment",
+      "difficulty": "hard",
+      "completion_index": 8
+    },
+    {
+      "case_id": "05e12d8e:canonical_execute",
+      "source_task_id": "05e12d8e",
+      "session_id": "e76728cc",
+      "scenario": "target_assignment",
+      "difficulty": "intermediate",
+      "completion_index": 9
+    },
+    {
+      "case_id": "1905e0ad:canonical_execute",
+      "source_task_id": "1905e0ad",
+      "session_id": "35ce64d8",
+      "scenario": "target_assignment",
+      "difficulty": "moderate",
+      "completion_index": 10
+    }
+  ]
+}

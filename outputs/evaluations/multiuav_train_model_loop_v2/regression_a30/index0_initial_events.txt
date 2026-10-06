@@ -1,0 +1,2 @@
+LAST SEEN   TYPE     REASON                   OBJECT                                                      MESSAGE
+9s          Normal   SuccessfulAttachVolume   pod/validation-placement-train-regression-v11-a30-0-l7sqb   AttachVolume.Attach succeeded for volume "pvc-245732b3-eebc-489d-a191-c461f2c42a23"

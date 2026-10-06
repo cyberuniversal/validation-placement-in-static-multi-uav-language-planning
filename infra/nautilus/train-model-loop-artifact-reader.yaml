@@ -9,7 +9,7 @@ metadata:
 spec:
   restartPolicy: Never
   nodeSelector:
-    kubernetes.io/hostname: hcc-nrp-shor-c5226.unl.edu
+    kubernetes.io/hostname: fiona-prg1.cesnet.cz
   containers:
     - name: reader
       image: busybox:1.36

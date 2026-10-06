@@ -813,3 +813,28 @@ ReadWriteOnce attachment. The controller commit, checkpoint, seed, decoding,
 retain the a29 attempt identity. Do not rerun the interrupted case, exclude
 unsupported tasks, or alter policy during the remaining sweep. All 15 cohort
 members stay in reporting, including the incomplete case.
+
+#### GPU Memory Admission Correction (a30)
+
+a29 indices 0-2 (`a45a0c87`, `ac5f85f8`, `6c4a6010`) returned
+`failed_preserved` with CUDA `OutOfMemoryError` on an RTX 2080 Ti. The
+original greater-than-10240-MiB scheduling threshold was insufficient for
+the observed prompt/generation workload. Completed model-call counts were
+5, 118, and 123 respectively; none has a verified mission outcome. Preserve
+these as resource failures, not task-check failures or successes. All three
+raw traces and both journals are copied and hash-checked.
+
+Suspend a29 after preserving job/pod metadata and console logs, before
+index 3 (`cf6f176c`) loads the model. Its last captured log is still in
+checkout preparation. Preserve its startup evidence and confirm no model
+summary or command journal exists before relaunch. Do not retry indices
+0-2 or silently replace their results. All original cohort members remain
+in reporting.
+
+Register a30 for the remaining eight unattempted cases in original order,
+with one worker and GPU memory label greater than 23000 MiB. No hostname
+is required. This is a documented infrastructure admission correction,
+not a new method: model, policy commit, decoding, seed, and command ceiling
+remain fixed. The stricter memory threshold does not guarantee every prompt
+will fit; retain any further resource failures. New output and checkout paths
+keep attempts separate. No manuscript claim or frozen result is revised.

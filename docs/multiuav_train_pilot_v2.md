@@ -838,3 +838,40 @@ not a new method: model, policy commit, decoding, seed, and command ceiling
 remain fixed. The stricter memory threshold does not guarantee every prompt
 will fit; retain any further resource failures. New output and checkout paths
 keep attempts separate. No manuscript claim or frozen result is revised.
+
+### v12 Compact-Context Memory Repair (2026-10-07)
+
+This is a new inspected-training development policy, not a repair of v11
+results or an M1-M4 comparison. Preserved v11 OOM logs identify failures in
+Qwen SDPA attention. Completed calls before failure reached 10,762 input
+tokens for `05e12d8e` and 10,595 for `1905e0ad` on the memory-admitted a30
+run. The a29 cases `6c4a6010` and `a45a0c87` reached 5,258 and 5,244 tokens
+on the smaller GPU. These are measured token counts, not proof of a memory
+leak. The completed false case `cf6f176c` reached 24,725 input tokens.
+
+v12 retains the complete observed obstacle geometry, target memory and
+visited destinations in deterministic routing/coverage selection. The model
+receives current drone state, local target identity/name/position/type/radius,
+instruction, public progress, admissible option IDs/descriptions and STOP.
+Full obstacle geometry and visited coordinates are replaced by their counts;
+local target vertices are omitted from the model view only. No hidden
+checker predicates or unobserved coordinates are added. Prompt identity is
+`train_closed_loop_option_menu_v12_compact_context`. v11 direct prompt
+construction remains available for regression tests; M1-M4 defaults are unchanged.
+
+The development runner explicitly sets `max_input_tokens=4096`. Tokenization
+checks this limit before device transfer or generation. Oversized prompts are
+rejected without truncation, fallback or a UAV command. The rejected request,
+menu and exception are retained in the failed raw trace. Such failures remain
+resource/configuration failures, not official mission refusals or false checks.
+The limit is an engineering guard, not evidence that every admitted GPU fits.
+Model revision, float16 dtype, seed 17, greedy decoding, 256 output tokens,
+512-command ceiling, API role restrictions and task-check criterion remain fixed.
+
+Attempt a31 will rerun only the previously inspected `05e12d8e` canonical
+training case, on a GPU with memory label greater than 23000 MiB, using new
+v12 paths and the immutable implementation commit recorded in its job manifest.
+This is a targeted resource regression, not an independent success estimate.
+Preserve the old a30 failure and the new logs, journals, raw trace, summary,
+job/pod metadata and hashes regardless of outcome. Do not amend the manuscript
+or count this as an improvement in results before a verified GPU execution.

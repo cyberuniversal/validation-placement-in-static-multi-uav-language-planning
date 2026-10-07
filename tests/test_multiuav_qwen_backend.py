@@ -27,6 +27,7 @@ from shepherd_ai.multiuav_qwen_backend import (  # noqa: E402
     QwenBackendConfig,
 )
 from shepherd_ai.multiuav_runner import run_method_case  # noqa: E402
+from scripts.run_multiuav_train_model_loop_v2 import BoundedLocalQwenBackend  # noqa: E402
 
 
 class _FakeTensor:
@@ -51,7 +52,8 @@ class _FakeTokenizer:
     def apply_chat_template(self, messages, **kwargs):
         self.messages = messages
         self.template_kwargs = kwargs
-        return {"input_ids": _FakeTensor([10, 11, 12])}
+        self.input_ids = _FakeTensor([10, 11, 12])
+        return {"input_ids": self.input_ids}
 
     def decode(self, tokens, **kwargs):
         self.decoded_tokens = list(tokens)
@@ -179,6 +181,48 @@ def _request():
 
 
 class MultiUavQwenBackendTests(unittest.TestCase):
+    def test_input_budget_rejects_before_device_transfer_or_generation(self) -> None:
+        registered = REGISTERED_MODEL_REVISIONS[0]
+        tokenizer, model = _FakeTokenizer(), _FakeModel()
+        backend = BoundedLocalQwenBackend(
+            config=QwenBackendConfig(model_id=registered.model_id,
+                                    revision=registered.revision, max_new_tokens=16,
+                                    dtype="float16"),
+            tokenizer=tokenizer, model=model,
+            transformers_module=_FakeTransformers(tokenizer, model),
+            torch_module=_FakeTorch(), max_input_tokens=2,
+        )
+        with self.assertRaisesRegex(ValueError, "input token budget"):
+            backend.generate(_request())
+        self.assertIsNone(model.generate_kwargs)
+        self.assertIsNone(backend._tokenizer.input_ids.device)
+
+    def test_input_budget_allows_boundary_and_records_limit(self) -> None:
+        registered = REGISTERED_MODEL_REVISIONS[0]
+        backend = BoundedLocalQwenBackend(
+            config=QwenBackendConfig(model_id=registered.model_id,
+                                    revision=registered.revision, max_new_tokens=16,
+                                    dtype="float16"),
+            tokenizer=_FakeTokenizer(), model=_FakeModel(), max_input_tokens=3,
+            transformers_module=_FakeTransformers(_FakeTokenizer(), _FakeModel()),
+            torch_module=_FakeTorch(),
+        )
+        self.assertEqual(backend.generate(_request()).metadata["max_input_tokens"], 3)
+        self.assertNotIn("max_input_tokens", backend._model.generate_kwargs)
+
+    def test_input_budget_rejects_invalid_limits(self) -> None:
+        registered = REGISTERED_MODEL_REVISIONS[0]
+        for limit in (0, -1, True, 2.5):
+            with self.subTest(limit=limit), self.assertRaises(ValueError):
+                BoundedLocalQwenBackend(
+                    config=QwenBackendConfig(model_id=registered.model_id,
+                                            revision=registered.revision, max_new_tokens=16,
+                                            dtype="float16"),
+                    tokenizer=_FakeTokenizer(), model=_FakeModel(),
+                    transformers_module=_FakeTransformers(_FakeTokenizer(), _FakeModel()),
+                    torch_module=_FakeTorch(), max_input_tokens=limit,
+                )
+
     def test_cached_loader_can_use_verified_local_snapshot_path(self) -> None:
         model_revision = REGISTERED_MODEL_REVISIONS[0]
         with tempfile.TemporaryDirectory() as temp_dir:

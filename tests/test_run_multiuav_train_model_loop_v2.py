@@ -96,6 +96,49 @@ class FakeClient:
 
 
 class ModelLoopTests(unittest.TestCase):
+    def test_generation_exception_preserves_request_without_action(self) -> None:
+        class FailingBackend:
+            def generate(self, request: object) -> GenerationResult:
+                raise ValueError("input token budget exceeded")
+
+        selector = ModelActionSelector(FailingBackend())
+        with self.assertRaisesRegex(ValueError, "input token budget"):
+            selector("Find", [DRONE], {"drone-1": []}, (20, 20), set())
+        self.assertEqual(selector.trace[0]["resolution"], "generation_exception")
+        self.assertIsNone(selector.trace[0]["selected_action"])
+        self.assertEqual(selector.trace[0]["error_type"], "ValueError")
+        self.assertEqual(selector.trace[0]["request"]["prompt_contract_version"],
+                         "train_closed_loop_option_menu_v12_compact_context")
+
+    def test_compact_prompt_omits_unbounded_geometry_and_visit_history(self) -> None:
+        visited = {(float(i), float(i)) for i in range(512)}
+        obstacle = {"id": "o1", "type": "polygon", "height": 20,
+                    "vertices": [{"x": i, "y": i} for i in range(1000)]}
+        choices = [{"option_id": "O1", "description": "Move to observed target",
+                    "action": {"command": "move_to", "x": 12, "y": 11}}]
+        request = build_request("Find Fixed Target 1", [DRONE],
+                                {"drone-1": [TARGET]}, (100, 100), visited, 1,
+                                choices, [obstacle], {"progress_percentage": 10},
+                                compact_context=True)
+        visible = json.loads(request.messages[-1].content)
+        self.assertNotIn("previous_destinations", visible)
+        self.assertNotIn("observed_obstacles", visible)
+        self.assertEqual(visible["visited_destination_count"], 512)
+        self.assertEqual(visible["observed_obstacle_count"], 1)
+        self.assertEqual(visible["nearby_targets_by_drone"]["drone-1"][0]["name"],
+                         TARGET["name"])
+        self.assertEqual(visible["options"][0]["option_id"], "O1")
+        self.assertEqual(visible["task_progress"], {"progress_percentage": 10})
+        self.assertEqual(len(visited), 512)
+        self.assertEqual(len(obstacle["vertices"]), 1000)
+        self.assertEqual(request.prompt_contract_version,
+                         "train_closed_loop_option_menu_v12_compact_context")
+        legacy = build_request("Find Fixed Target 1", [DRONE],
+                               {"drone-1": [TARGET]}, (100, 100), visited, 1,
+                               choices, [obstacle], {"progress_percentage": 10})
+        self.assertLess(len(request.messages[-1].content),
+                        len(legacy.messages[-1].content) // 10)
+
     def test_visible_circle_detour_avoids_obstacle(self) -> None:
         from shapely.geometry import LineString, Point
 

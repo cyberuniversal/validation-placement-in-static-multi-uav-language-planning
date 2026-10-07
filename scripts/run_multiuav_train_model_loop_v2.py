@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
 import heapq
@@ -23,6 +24,8 @@ from shepherd_ai.multiuav_model_cache import verify_cached_snapshot  # noqa: E40
 from shepherd_ai.multiuav_prompts import PromptMessage, PromptRequest  # noqa: E402
 from shepherd_ai.multiuav_qwen_backend import LocalQwenBackend, QwenBackendConfig  # noqa: E402
 from shepherd_ai.multiuav_runner import ModelBackend  # noqa: E402
+from shepherd_ai.multiuav_runner import GenerationResult  # noqa: E402
+from shepherd_ai.multiuav_offline_runtime import offline_inference_guard  # noqa: E402
 from scripts.probe_multiuav_train_closed_loop_v2 import MAX_PILOT_COMMANDS, run_case  # noqa: E402
 from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
     EXPECTED_BENCHMARK_SHA256,
@@ -39,6 +42,39 @@ from scripts.run_multiuav_train_pilot_v2 import (  # noqa: E402
 )
 
 ACTION_SCHEMA = {"fields": ["option_id"], "stop_option_id": "STOP"}
+
+
+class BoundedLocalQwenBackend(LocalQwenBackend):
+    """Development-only admission guard; preserve the frozen backend source."""
+
+    def __init__(self, *, max_input_tokens: int = 4096, **kwargs: Any) -> None:
+        if (not isinstance(max_input_tokens, int) or isinstance(max_input_tokens, bool)
+                or max_input_tokens <= 0):
+            raise ValueError("max_input_tokens must be a positive integer")
+        super().__init__(**kwargs)
+        self.max_input_tokens = max_input_tokens
+
+    def generate(self, request: PromptRequest) -> GenerationResult:
+        if not isinstance(request, PromptRequest):
+            raise TypeError("request must be a PromptRequest")
+        with offline_inference_guard():
+            inputs = self._tokenizer.apply_chat_template(
+                [message.to_dict() for message in request.messages],
+                tokenize=True, add_generation_prompt=True,
+                return_tensors="pt", return_dict=True,
+            )
+        tokens = int(inputs["input_ids"].shape[-1])
+        if tokens > self.max_input_tokens:
+            raise ValueError(
+                f"input token budget exceeded: {tokens} > {self.max_input_tokens}; "
+                "request was not truncated"
+            )
+        del inputs
+        result = super().generate(request)
+        return replace(result, metadata={**result.metadata,
+                                        "max_input_tokens": self.max_input_tokens})
+
+
 _DIRECTION = {
     "NORTH": (0, 1), "EAST": (1, 0),
     "SOUTH": (0, -1), "WEST": (-1, 0),
@@ -392,6 +428,8 @@ def build_request(
     choices: list[dict[str, Any]] | None = None,
     observed_obstacles: list[dict[str, Any]] | None = None,
     task_progress: Mapping[str, Any] | None = None,
+    *,
+    compact_context: bool = False,
 ) -> PromptRequest:
     """Expose current AGENT observations and admissible one-step options."""
 
@@ -427,6 +465,20 @@ def build_request(
         "observed_obstacles": observed_obstacles or [],
         "task_progress": dict(task_progress or {}),
     }
+    if compact_context:
+        # Routing retains the geometry and history; the model selects menu IDs.
+        visible.pop("previous_destinations")
+        visible.pop("observed_obstacles")
+        visible["visited_destination_count"] = len(previous_destinations)
+        visible["observed_obstacle_count"] = len(observed_obstacles or [])
+        visible["nearby_targets_by_drone"] = {
+            drone_id: [
+                {key: target[key] for key in ("id", "name", "position", "type", "radius")
+                 if key in target}
+                for target in targets
+            ]
+            for drone_id, targets in nearby_targets.items()
+        }
     messages = (
         PromptMessage(
             role="system",
@@ -445,7 +497,8 @@ def build_request(
     )
     payload = [message.to_dict() for message in messages]
     return PromptRequest(
-        prompt_contract_version="train_closed_loop_option_menu_v11",
+        prompt_contract_version=("train_closed_loop_option_menu_v12_compact_context"
+                                 if compact_context else "train_closed_loop_option_menu_v11"),
         method_id="train_followup_not_M1_to_M4",
         call_index=call_index,
         purpose="one_agent_visible_action",
@@ -547,8 +600,20 @@ class ModelActionSelector:
             instruction, drones, nearby_targets, canvas,
             previous_destinations, len(self.trace), choices,
             list(self.obstacles.values()), self.progress,
+            compact_context=True,
         )
-        generation = self.backend.generate(request)
+        try:
+            generation = self.backend.generate(request)
+        except Exception as error:
+            self.trace.append({
+                "request": request.to_dict(),
+                "offered_actions": choices,
+                "resolution": "generation_exception",
+                "selected_action": None,
+                "error_type": type(error).__name__,
+                "error": str(error),
+            })
+            raise
         if generation.generation_status != "GENERATED":
             action, resolution = None, "generation_not_completed"
         else:
@@ -600,8 +665,9 @@ def main() -> None:
         "model_id": MODEL_ID, "model_revision": MODEL_REVISION,
         "cache_audit_sha256": sha256(args.cache_audit),
         "max_commands": args.max_commands, "seed": SEED,
-        "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256},
-        "policy": "agent_visible_option_menu_v11_obstacle_memory_canvas_coverage",
+        "decoding": {"do_sample": False, "num_beams": 1, "max_new_tokens": 256,
+                     "max_input_tokens": 4096},
+        "policy": "agent_visible_option_menu_v12_compact_context",
     }
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",
@@ -620,7 +686,7 @@ def main() -> None:
         import torch  # noqa: PLC0415
 
         torch.manual_seed(SEED)
-        backend = LocalQwenBackend.from_cached(QwenBackendConfig(
+        backend = BoundedLocalQwenBackend.from_cached(QwenBackendConfig(
             model_id=MODEL_ID, revision=MODEL_REVISION, max_new_tokens=256,
             dtype="float16", cache_dir=str(args.cache_dir),
         ))

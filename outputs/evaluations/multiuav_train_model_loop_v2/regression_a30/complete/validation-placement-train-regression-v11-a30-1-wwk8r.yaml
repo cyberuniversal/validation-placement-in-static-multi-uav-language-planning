@@ -1,0 +1,308 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    batch.kubernetes.io/job-completion-index: "1"
+    cni.projectcalico.org/containerID: f20bcf089bdd9e66a9558722db92b0b80b4a1c3530947702058f58c42738b3d7
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    kubernetes.io/limit-ranger: 'LimitRanger plugin set: ephemeral-storage request
+      for container regression; ephemeral-storage limit for container regression'
+    nrp.ai/username: http://cilogon.org/serverE/users/539948
+  creationTimestamp: "2026-10-06T19:20:18Z"
+  generateName: validation-placement-train-regression-v11-a30-1-
+  generation: 1
+  labels:
+    app.kubernetes.io/name: validation-placement
+    batch.kubernetes.io/controller-uid: e00d4f00-898e-4512-a533-c0adea07797e
+    batch.kubernetes.io/job-completion-index: "1"
+    batch.kubernetes.io/job-name: validation-placement-train-regression-v11-a30
+    controller-uid: e00d4f00-898e-4512-a533-c0adea07797e
+    job-name: validation-placement-train-regression-v11-a30
+    validation-placement/stage: train-regression-v11-a30
+  name: validation-placement-train-regression-v11-a30-1-wwk8r
+  namespace: aiea-interns
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: validation-placement-train-regression-v11-a30
+    uid: e00d4f00-898e-4512-a533-c0adea07797e
+  resourceVersion: "15059913842"
+  uid: 4b5c6f5f-3d1e-47d4-aa3b-e8f4f57326b7
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.memory
+            operator: Gt
+            values:
+            - "23000"
+          - key: nvidia.com/gpu.compute.major
+            operator: Gt
+            values:
+            - "6"
+          - key: nvidia.com/gpu.compute.major
+            operator: Lt
+            values:
+            - "11"
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - hcc-nrp-shor-c5817.unl.edu
+  containers:
+  - args:
+    - |
+      set -euo pipefail
+      cases=(
+        cf6f176c 9b355a03 91130026 14fd1139 c96a0146
+        67cbff58 05e12d8e 1905e0ad
+      )
+      case_id="${cases[${JOB_COMPLETION_INDEX}]}"
+      output="/workspace/results/train-model-loop-regression-v11-a30/${case_id}"
+      mkdir -p "${output}"
+      if [[ -e "${output}/pod.log" ]]; then
+        echo "Existing attempt; refusing to overwrite evidence." >&2
+        exit 1
+      fi
+      exec > >(tee "${output}/pod.log") 2>&1
+      printf 'index=%s case=%s pod=%s node=%s\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${RUN_POD_NAME}" "${RUN_NODE_NAME}"
+      nvidia-smi --query-gpu=name,uuid,memory.total,driver_version --format=csv,noheader
+      sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+      rm -rf /var/lib/apt/lists/*
+      seed=/workspace/repo-validation-placement-model-loop-0b6c762
+      repo="/workspace/train-regression-v11-a30-checkout-${JOB_COMPLETION_INDEX}"
+      git clone --shared "${seed}" "${repo}"
+      git -C "${repo}" checkout --detach 9ca784efa16faab5cc1c9b261c7c509be6509d11
+      mkdir -p "${repo}/external"
+      git clone --shared "${seed}/external/MultiUAV-Plat" "${repo}/external/MultiUAV-Plat"
+      git -C "${repo}/external/MultiUAV-Plat" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+      if [[ ! -f "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip" ]]; then
+        mkdir -p "${repo}/external/MultiUAV-Plat/benchmark"
+        cp "${seed}/external/MultiUAV-Plat/benchmark/benchmark.zip" "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip"
+      fi
+      python -m pip install --no-cache-dir -e "${repo}[inference]"
+      python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+      set +e
+      python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+        --case-id "${case_id}:canonical_execute" \
+        --max-commands 512 \
+        --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+        --cache-dir /workspace/hf-cache \
+        --raw-output "${output}/raw.json" \
+        --summary-output "${output}/run_summary.json"
+      result=$?
+      set -e
+      printf '{"index":%s,"case_id":"%s:canonical_execute","runner_exit_code":%s}\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${result}" > "${output}/execution_exit.json"
+      echo "worker_finished index=${JOB_COMPLETION_INDEX} runner_exit_code=${result}"
+      exit 0
+    command:
+    - /bin/bash
+    - -lc
+    env:
+    - name: JOB_COMPLETION_INDEX
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+    - name: RUN_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: RUN_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: HF_HOME
+      value: /workspace/hf-cache
+    - name: HF_HUB_OFFLINE
+      value: "1"
+    - name: TRANSFORMERS_OFFLINE
+      value: "1"
+    - name: SDL_VIDEODRIVER
+      value: dummy
+    image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imagePullPolicy: IfNotPresent
+    name: regression
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /workspace/hf-cache
+      name: workspace
+      readOnly: true
+      subPath: hf-cache
+    - mountPath: /workspace/artifacts
+      name: workspace
+      readOnly: true
+      subPath: artifacts
+    - mountPath: /workspace/repo-validation-placement-model-loop-0b6c762
+      name: workspace
+      readOnly: true
+      subPath: repo-validation-placement-model-loop-0b6c762
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wwfhz
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: validation-placement-train-regression-v11-a30-1
+  nodeName: hcc-nrp-shor-c6009.unl.edu
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 120
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: PreferNoSchedule
+    key: nvidia.com/gpu
+    operator: Exists
+  volumes:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: shepherd-ai-539948
+  - name: kube-api-access-wwfhz
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-06T20:12:43Z"
+    observedGeneration: 1
+    status: "False"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-06T19:20:19Z"
+    observedGeneration: 1
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-06T20:12:40Z"
+    observedGeneration: 1
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-06T20:12:40Z"
+    observedGeneration: 1
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2026-10-06T19:20:19Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - allocatedResources:
+      cpu: "2"
+      ephemeral-storage: "0"
+      memory: 16Gi
+      nvidia.com/gpu: "1"
+    containerID: containerd://549d9e6afc5d0242b59beeaeeffc6de5daaed577e7d54e873c18c5539bd5c139
+    image: docker.io/pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+    imageID: docker.io/pytorch/pytorch@sha256:8d409f72f99e5968b5c4c9396a21f4b723982cfdf2c1a5b9cc045c5d0a7345a1
+    lastState: {}
+    name: regression
+    ready: false
+    resources:
+      limits:
+        cpu: "2"
+        ephemeral-storage: 50Gi
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        ephemeral-storage: "0"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: containerd://549d9e6afc5d0242b59beeaeeffc6de5daaed577e7d54e873c18c5539bd5c139
+        exitCode: 0
+        finishedAt: "2026-10-06T20:12:39Z"
+        reason: Completed
+        startedAt: "2026-10-06T19:20:52Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        uid: 0
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /workspace/hf-cache
+      name: workspace
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /workspace/artifacts
+      name: workspace
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /workspace/repo-validation-placement-model-loop-0b6c762
+      name: workspace
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wwfhz
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 129.93.153.130
+  hostIPs:
+  - ip: 129.93.153.130
+  observedGeneration: 1
+  phase: Succeeded
+  podIP: 10.244.45.226
+  podIPs:
+  - ip: 10.244.45.226
+  - ip: fdf0:17b3:c3ec:1f79:10:0:1:5953
+  qosClass: Guaranteed
+  startTime: "2026-10-06T19:20:19Z"

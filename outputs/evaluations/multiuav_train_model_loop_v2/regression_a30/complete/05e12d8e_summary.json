@@ -1,0 +1,31 @@
+{
+  "command_journal_sha256": "e872ba86c1e09f72679a70f6f6885d3e2212d87d80213d11ff7ae5e1709077f6",
+  "configuration": {
+    "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+    "cache_audit_sha256": "10d37e85af2df8a0fcaf6bb5bf4cbd08864afe25bfcb2f75a135b7061e3f5dbf",
+    "case_id": "05e12d8e:canonical_execute",
+    "code_commit": "9ca784efa16faab5cc1c9b261c7c509be6509d11",
+    "decoding": {
+      "do_sample": false,
+      "max_new_tokens": 256,
+      "num_beams": 1
+    },
+    "max_commands": 512,
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "policy": "agent_visible_option_menu_v11_obstacle_memory_canvas_coverage",
+    "seed": 17,
+    "session_id": "e76728cc",
+    "source_task_id": "05e12d8e",
+    "study": "train_only_closed_loop_model_pilot_v2_not_frozen_M1_to_M4",
+    "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+  },
+  "error_message": "CUDA out of memory. Tried to allocate 1.74 GiB. GPU 0 has a total capacity of 23.47 GiB of which 1.72 GiB is free. Including non-PyTorch memory, this process has 21.75 GiB memory in use. Of the allocated memory 20.58 GiB is allocated by PyTorch, and 993.68 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+  "error_type": "OutOfMemoryError",
+  "event_journal_sha256": "5e792fb7cc7314e46f7813398b1f5dfac182b95bba678716c44bb113d85c7030",
+  "model_call_count": 231,
+  "model_loaded": true,
+  "raw_sha256": "a075fcf489765e72145a9dc1de952c1635dcdaea8602356d067c4b7f06af9d2c",
+  "started_at_utc": "2026-10-07T03:11:11.272850+00:00",
+  "status": "failed_preserved"
+}

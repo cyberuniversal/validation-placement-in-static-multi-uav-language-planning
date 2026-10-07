@@ -1,0 +1,641 @@
+index=2 case=91130026 pod=validation-placement-train-regression-v11-a30-2-d27dk node=hcc-chase-shor-c4715.unl.edu
+NVIDIA GeForce RTX 3090, GPU-7b5ba058-31e8-bee1-840f-3d219b47cd1a, 24576 MiB, 615.71.09
+Get:1 https://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:2 https://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [7907 kB]
+Get:3 https://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1321 kB]
+Get:4 https://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [4419 kB]
+Get:5 https://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [84.6 kB]
+Ign:6 https://archive.ubuntu.com/ubuntu jammy InRelease
+Get:7 https://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:8 https://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:6 https://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Get:9 https://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [8212 kB]
+Get:10 https://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 Packages [93.2 kB]
+Get:11 https://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1623 kB]
+Get:12 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [4757 kB]
+Get:13 https://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [35.6 kB]
+Get:14 https://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [82.9 kB]
+Get:15 https://archive.ubuntu.com/ubuntu jammy/restricted amd64 Packages [164 kB]
+Get:16 https://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [17.5 MB]
+Get:17 https://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1792 kB]
+Get:18 https://archive.ubuntu.com/ubuntu jammy/multiverse amd64 Packages [266 kB]
+Fetched 48.9 MB in 34s (1448 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1 libgdbm-compat4
+  libgdbm6 libldap-2.5-0 libnghttp2-14 libperl5.34 libpsl5 librtmp1 libsasl2-2
+  libsasl2-modules-db libssh-4 perl perl-base perl-modules-5.34
+Suggested packages:
+  gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
+  gitk gitweb git-cvs git-mediawiki git-svn gdbm-l10n perl-doc
+  libterm-readline-gnu-perl | libterm-readline-perl-perl make
+  libtap-harness-archive-perl
+Recommended packages:
+  patch less ssh-client libldap-common publicsuffix libsasl2-modules netbase
+The following NEW packages will be installed:
+  git git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1
+  libgdbm-compat4 libgdbm6 libldap-2.5-0 libnghttp2-14 libperl5.34 libpsl5
+  librtmp1 libsasl2-2 libsasl2-modules-db libssh-4 perl perl-modules-5.34
+The following packages will be upgraded:
+  ca-certificates perl-base
+2 upgraded, 18 newly installed, 0 to remove and 51 not upgraded.
+Need to get 15.4 MB of archives.
+After this operation, 72.9 MB of additional disk space will be used.
+Get:1 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 perl-base amd64 5.34.0-3ubuntu1.9 [1762 kB]
+Get:2 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 perl-modules-5.34 all 5.34.0-3ubuntu1.9 [2977 kB]
+Get:3 https://archive.ubuntu.com/ubuntu jammy/main amd64 libgdbm6 amd64 1.23-1 [33.9 kB]
+Get:4 https://archive.ubuntu.com/ubuntu jammy/main amd64 libgdbm-compat4 amd64 1.23-1 [6606 B]
+Get:5 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libperl5.34 amd64 5.34.0-3ubuntu1.9 [4796 kB]
+Get:6 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 perl amd64 5.34.0-3ubuntu1.9 [232 kB]
+Get:7 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 ca-certificates all 20260601~22.04.1 [141 kB]
+Get:8 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libexpat1 amd64 2.4.7-1ubuntu0.9 [96.9 kB]
+Get:9 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libnghttp2-14 amd64 1.43.0-1ubuntu0.4 [76.9 kB]
+Get:10 https://archive.ubuntu.com/ubuntu jammy/main amd64 libpsl5 amd64 0.21.0-1.2build2 [58.4 kB]
+Get:11 https://archive.ubuntu.com/ubuntu jammy/main amd64 libbrotli1 amd64 1.0.9-2build6 [315 kB]
+Get:12 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsasl2-modules-db amd64 2.1.27+dfsg2-3ubuntu1.2 [20.5 kB]
+Get:13 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsasl2-2 amd64 2.1.27+dfsg2-3ubuntu1.2 [53.8 kB]
+Get:14 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libldap-2.5-0 amd64 2.5.20+dfsg-0ubuntu0.22.04.1 [184 kB]
+Get:15 https://archive.ubuntu.com/ubuntu jammy/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2build4 [58.2 kB]
+Get:16 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libssh-4 amd64 0.9.6-2ubuntu0.22.04.8 [189 kB]
+Get:17 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libcurl3-gnutls amd64 7.81.0-1ubuntu1.29 [286 kB]
+Get:18 https://archive.ubuntu.com/ubuntu jammy/main amd64 liberror-perl all 0.17029-1 [26.5 kB]
+Get:19 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 git-man all 1:2.34.1-1ubuntu1.17 [954 kB]
+Get:20 https://archive.ubuntu.com/ubuntu jammy-updates/main amd64 git amd64 1:2.34.1-1ubuntu1.17 [3174 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 15.4 MB in 1s (16.4 MB/s)
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6651 files and directories currently installed.)
+Preparing to unpack .../perl-base_5.34.0-3ubuntu1.9_amd64.deb ...
+Unpacking perl-base (5.34.0-3ubuntu1.9) over (5.34.0-3ubuntu1.4) ...
+Setting up perl-base (5.34.0-3ubuntu1.9) ...
+Selecting previously unselected package perl-modules-5.34.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6651 files and directories currently installed.)
+Preparing to unpack .../00-perl-modules-5.34_5.34.0-3ubuntu1.9_all.deb ...
+Unpacking perl-modules-5.34 (5.34.0-3ubuntu1.9) ...
+Selecting previously unselected package libgdbm6:amd64.
+Preparing to unpack .../01-libgdbm6_1.23-1_amd64.deb ...
+Unpacking libgdbm6:amd64 (1.23-1) ...
+Selecting previously unselected package libgdbm-compat4:amd64.
+Preparing to unpack .../02-libgdbm-compat4_1.23-1_amd64.deb ...
+Unpacking libgdbm-compat4:amd64 (1.23-1) ...
+Selecting previously unselected package libperl5.34:amd64.
+Preparing to unpack .../03-libperl5.34_5.34.0-3ubuntu1.9_amd64.deb ...
+Unpacking libperl5.34:amd64 (5.34.0-3ubuntu1.9) ...
+Selecting previously unselected package perl.
+Preparing to unpack .../04-perl_5.34.0-3ubuntu1.9_amd64.deb ...
+Unpacking perl (5.34.0-3ubuntu1.9) ...
+Preparing to unpack .../05-ca-certificates_20260601~22.04.1_all.deb ...
+Unpacking ca-certificates (20260601~22.04.1) over (20240203~22.04.1) ...
+Selecting previously unselected package libexpat1:amd64.
+Preparing to unpack .../06-libexpat1_2.4.7-1ubuntu0.9_amd64.deb ...
+Unpacking libexpat1:amd64 (2.4.7-1ubuntu0.9) ...
+Selecting previously unselected package libnghttp2-14:amd64.
+Preparing to unpack .../07-libnghttp2-14_1.43.0-1ubuntu0.4_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.43.0-1ubuntu0.4) ...
+Selecting previously unselected package libpsl5:amd64.
+Preparing to unpack .../08-libpsl5_0.21.0-1.2build2_amd64.deb ...
+Unpacking libpsl5:amd64 (0.21.0-1.2build2) ...
+Selecting previously unselected package libbrotli1:amd64.
+Preparing to unpack .../09-libbrotli1_1.0.9-2build6_amd64.deb ...
+Unpacking libbrotli1:amd64 (1.0.9-2build6) ...
+Selecting previously unselected package libsasl2-modules-db:amd64.
+Preparing to unpack .../10-libsasl2-modules-db_2.1.27+dfsg2-3ubuntu1.2_amd64.deb ...
+Unpacking libsasl2-modules-db:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
+Selecting previously unselected package libsasl2-2:amd64.
+Preparing to unpack .../11-libsasl2-2_2.1.27+dfsg2-3ubuntu1.2_amd64.deb ...
+Unpacking libsasl2-2:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
+Selecting previously unselected package libldap-2.5-0:amd64.
+Preparing to unpack .../12-libldap-2.5-0_2.5.20+dfsg-0ubuntu0.22.04.1_amd64.deb ...
+Unpacking libldap-2.5-0:amd64 (2.5.20+dfsg-0ubuntu0.22.04.1) ...
+Selecting previously unselected package librtmp1:amd64.
+Preparing to unpack .../13-librtmp1_2.4+20151223.gitfa8646d.1-2build4_amd64.deb ...
+Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build4) ...
+Selecting previously unselected package libssh-4:amd64.
+Preparing to unpack .../14-libssh-4_0.9.6-2ubuntu0.22.04.8_amd64.deb ...
+Unpacking libssh-4:amd64 (0.9.6-2ubuntu0.22.04.8) ...
+Selecting previously unselected package libcurl3-gnutls:amd64.
+Preparing to unpack .../15-libcurl3-gnutls_7.81.0-1ubuntu1.29_amd64.deb ...
+Unpacking libcurl3-gnutls:amd64 (7.81.0-1ubuntu1.29) ...
+Selecting previously unselected package liberror-perl.
+Preparing to unpack .../16-liberror-perl_0.17029-1_all.deb ...
+Unpacking liberror-perl (0.17029-1) ...
+Selecting previously unselected package git-man.
+Preparing to unpack .../17-git-man_1%3a2.34.1-1ubuntu1.17_all.deb ...
+Unpacking git-man (1:2.34.1-1ubuntu1.17) ...
+Selecting previously unselected package git.
+Preparing to unpack .../18-git_1%3a2.34.1-1ubuntu1.17_amd64.deb ...
+Unpacking git (1:2.34.1-1ubuntu1.17) ...
+Setting up libexpat1:amd64 (2.4.7-1ubuntu0.9) ...
+Setting up libpsl5:amd64 (0.21.0-1.2build2) ...
+Setting up libbrotli1:amd64 (1.0.9-2build6) ...
+Setting up libnghttp2-14:amd64 (1.43.0-1ubuntu0.4) ...
+Setting up perl-modules-5.34 (5.34.0-3ubuntu1.9) ...
+Setting up libsasl2-modules-db:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
+Setting up ca-certificates (20260601~22.04.1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+Updating certificates in /etc/ssl/certs...
+rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+14 added, 39 removed; done.
+Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build4) ...
+Setting up libsasl2-2:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
+Setting up libssh-4:amd64 (0.9.6-2ubuntu0.22.04.8) ...
+Setting up git-man (1:2.34.1-1ubuntu1.17) ...
+Setting up libgdbm6:amd64 (1.23-1) ...
+Setting up libldap-2.5-0:amd64 (2.5.20+dfsg-0ubuntu0.22.04.1) ...
+Setting up libgdbm-compat4:amd64 (1.23-1) ...
+Setting up libperl5.34:amd64 (5.34.0-3ubuntu1.9) ...
+Setting up libcurl3-gnutls:amd64 (7.81.0-1ubuntu1.29) ...
+Setting up perl (5.34.0-3ubuntu1.9) ...
+Setting up liberror-perl (0.17029-1) ...
+Setting up git (1:2.34.1-1ubuntu1.17) ...
+Processing triggers for libc-bin (2.35-0ubuntu3.10) ...
+Processing triggers for ca-certificates (20260601~22.04.1) ...
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+Cloning into '/workspace/train-regression-v11-a30-checkout-2'...
+done.
+Note: switching to '9ca784efa16faab5cc1c9b261c7c509be6509d11'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Updating files:   1% (8/602)
+Updating files:   2% (13/602)
+Updating files:   3% (19/602)
+Updating files:   4% (25/602)
+Updating files:   4% (30/602)
+Updating files:   5% (31/602)
+Updating files:   6% (37/602)
+Updating files:   7% (43/602)
+Updating files:   8% (49/602)
+Updating files:   9% (55/602)
+Updating files:   9% (57/602)
+Updating files:  10% (61/602)
+Updating files:  11% (67/602)
+Updating files:  12% (73/602)
+Updating files:  13% (79/602)
+Updating files:  14% (85/602)
+Updating files:  15% (91/602)
+Updating files:  15% (93/602)
+Updating files:  16% (97/602)
+Updating files:  17% (103/602)
+Updating files:  18% (109/602)
+Updating files:  19% (115/602)
+Updating files:  19% (119/602)
+Updating files:  20% (121/602)
+Updating files:  20% (122/602)
+Updating files:  21% (127/602)
+Updating files:  22% (133/602)
+Updating files:  22% (136/602)
+Updating files:  23% (139/602)
+Updating files:  24% (145/602)
+Updating files:  25% (151/602)
+Updating files:  26% (157/602)
+Updating files:  27% (163/602)
+Updating files:  28% (169/602)
+Updating files:  29% (175/602)
+Updating files:  30% (181/602)
+Updating files:  31% (187/602)
+Updating files:  32% (193/602)
+Updating files:  33% (199/602)
+Updating files:  34% (205/602)
+Updating files:  35% (211/602)
+Updating files:  36% (217/602)
+Updating files:  37% (223/602)
+Updating files:  37% (225/602)
+Updating files:  38% (229/602)
+Updating files:  39% (235/602)
+Updating files:  39% (239/602)
+Updating files:  40% (241/602)
+Updating files:  41% (247/602)
+Updating files:  42% (253/602)
+Updating files:  42% (257/602)
+Updating files:  43% (259/602)
+Updating files:  44% (265/602)
+Updating files:  45% (271/602)
+Updating files:  45% (274/602)
+Updating files:  46% (277/602)
+Updating files:  47% (283/602)
+Updating files:  47% (286/602)
+Updating files:  48% (289/602)
+Updating files:  48% (292/602)
+Updating files:  49% (295/602)
+Updating files:  50% (301/602)
+Updating files:  50% (303/602)
+Updating files:  51% (308/602)
+Updating files:  52% (314/602)
+Updating files:  52% (317/602)
+Updating files:  53% (320/602)
+Updating files:  54% (326/602)
+Updating files:  54% (331/602)
+Updating files:  55% (332/602)
+Updating files:  56% (338/602)
+Updating files:  57% (344/602)
+Updating files:  58% (350/602)
+Updating files:  59% (356/602)
+Updating files:  60% (362/602)
+Updating files:  61% (368/602)
+Updating files:  62% (374/602)
+Updating files:  63% (380/602)
+Updating files:  63% (384/602)
+Updating files:  64% (386/602)
+Updating files:  64% (390/602)
+Updating files:  65% (392/602)
+Updating files:  66% (398/602)
+Updating files:  67% (404/602)
+Updating files:  68% (410/602)
+Updating files:  69% (416/602)
+Updating files:  70% (422/602)
+Updating files:  71% (428/602)
+Updating files:  71% (431/602)
+Updating files:  72% (434/602)
+Updating files:  73% (440/602)
+Updating files:  74% (446/602)
+Updating files:  75% (452/602)
+Updating files:  76% (458/602)
+Updating files:  77% (464/602)
+Updating files:  78% (470/602)
+Updating files:  79% (476/602)
+Updating files:  80% (482/602)
+Updating files:  81% (488/602)
+Updating files:  82% (494/602)
+Updating files:  83% (500/602)
+Updating files:  84% (506/602)
+Updating files:  85% (512/602)
+Updating files:  86% (518/602)
+Updating files:  87% (524/602)
+Updating files:  88% (530/602)
+Updating files:  89% (536/602)
+Updating files:  90% (542/602)
+Updating files:  91% (548/602)
+Updating files:  92% (554/602)
+Updating files:  93% (560/602)
+Updating files:  94% (566/602)
+Updating files:  95% (572/602)
+Updating files:  96% (578/602)
+Updating files:  97% (584/602)
+Updating files:  98% (590/602)
+Updating files:  99% (596/602)
+Updating files: 100% (602/602)
+Updating files: 100% (602/602), done.
+HEAD is now at 9ca784e Fix observed-obstacle navigation and systematic train-mission discovery
+Cloning into '/workspace/train-regression-v11-a30-checkout-2/external/MultiUAV-Plat'...
+done.
+Updating files:   0% (3/302)
+Updating files:   1% (4/302)
+Updating files:   1% (6/302)
+Updating files:   2% (7/302)
+Updating files:   3% (10/302)
+Updating files:   4% (13/302)
+Updating files:   5% (16/302)
+Updating files:   6% (19/302)
+Updating files:   7% (22/302)
+Updating files:   8% (25/302)
+Updating files:   9% (28/302)
+Updating files:  10% (31/302)
+Updating files:  11% (34/302)
+Updating files:  12% (37/302)
+Updating files:  12% (39/302)
+Updating files:  13% (40/302)
+Updating files:  13% (41/302)
+Updating files:  14% (43/302)
+Updating files:  15% (46/302)
+Updating files:  16% (49/302)
+Updating files:  17% (52/302)
+Updating files:  18% (55/302)
+Updating files:  19% (58/302)
+Updating files:  20% (61/302)
+Updating files:  21% (64/302)
+Updating files:  22% (67/302)
+Updating files:  23% (70/302)
+Updating files:  24% (73/302)
+Updating files:  25% (76/302)
+Updating files:  26% (79/302)
+Updating files:  27% (82/302)
+Updating files:  28% (85/302)
+Updating files:  29% (88/302)
+Updating files:  30% (91/302)
+Updating files:  31% (94/302)
+Updating files:  32% (97/302)
+Updating files:  33% (100/302)
+Updating files:  34% (103/302)
+Updating files:  35% (106/302)
+Updating files:  36% (109/302)
+Updating files:  37% (112/302)
+Updating files:  38% (115/302)
+Updating files:  39% (118/302)
+Updating files:  40% (121/302)
+Updating files:  41% (124/302)
+Updating files:  42% (127/302)
+Updating files:  43% (130/302)
+Updating files:  44% (133/302)
+Updating files:  45% (136/302)
+Updating files:  46% (139/302)
+Updating files:  47% (142/302)
+Updating files:  48% (145/302)
+Updating files:  49% (148/302)
+Updating files:  50% (151/302)
+Updating files:  51% (155/302)
+Updating files:  52% (158/302)
+Updating files:  53% (161/302)
+Updating files:  53% (163/302)
+Updating files:  54% (164/302)
+Updating files:  55% (167/302)
+Updating files:  56% (170/302)
+Updating files:  57% (173/302)
+Updating files:  58% (176/302)
+Updating files:  59% (179/302)
+Updating files:  60% (182/302)
+Updating files:  61% (185/302)
+Updating files:  62% (188/302)
+Updating files:  63% (191/302)
+Updating files:  64% (194/302)
+Updating files:  65% (197/302)
+Updating files:  66% (200/302)
+Updating files:  67% (203/302)
+Updating files:  68% (206/302)
+Updating files:  69% (209/302)
+Updating files:  70% (212/302)
+Updating files:  71% (215/302)
+Updating files:  72% (218/302)
+Updating files:  73% (221/302)
+Updating files:  74% (224/302)
+Updating files:  75% (227/302)
+Updating files:  76% (230/302)
+Updating files:  77% (233/302)
+Updating files:  78% (236/302)
+Updating files:  79% (239/302)
+Updating files:  80% (242/302)
+Updating files:  81% (245/302)
+Updating files:  82% (248/302)
+Updating files:  83% (251/302)
+Updating files:  84% (254/302)
+Updating files:  85% (257/302)
+Updating files:  86% (260/302)
+Updating files:  87% (263/302)
+Updating files:  88% (266/302)
+Updating files:  89% (269/302)
+Updating files:  90% (272/302)
+Updating files:  91% (275/302)
+Updating files:  92% (278/302)
+Updating files:  93% (281/302)
+Updating files:  94% (284/302)
+Updating files:  95% (287/302)
+Updating files:  96% (290/302)
+Updating files:  97% (293/302)
+Updating files:  98% (296/302)
+Updating files:  99% (299/302)
+Updating files: 100% (302/302)
+Updating files: 100% (302/302), done.
+HEAD is now at 1794e45 update 0.41 readme
+Obtaining file:///workspace/train-regression-v11-a30-checkout-2
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Collecting matplotlib<4,>=3.8 (from validation-placement-multiuav==1.0.0)
+  Downloading matplotlib-3.11.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (80 kB)
+Requirement already satisfied: numpy<3,>=1.24 in /opt/conda/lib/python3.11/site-packages (from validation-placement-multiuav==1.0.0) (2.2.6)
+Collecting accelerate<2,>=0.33 (from validation-placement-multiuav==1.0.0)
+  Downloading accelerate-1.15.0-py3-none-any.whl.metadata (19 kB)
+Collecting huggingface-hub<1,>=0.26 (from validation-placement-multiuav==1.0.0)
+  Downloading huggingface_hub-0.36.2-py3-none-any.whl.metadata (15 kB)
+Collecting nvidia-ml-py<14,>=13.595 (from validation-placement-multiuav==1.0.0)
+  Downloading nvidia_ml_py-13.615.71-py3-none-any.whl.metadata (9.7 kB)
+Requirement already satisfied: psutil<8,>=5.9 in /opt/conda/lib/python3.11/site-packages (from validation-placement-multiuav==1.0.0) (7.0.0)
+Collecting safetensors<1,>=0.4 (from validation-placement-multiuav==1.0.0)
+  Downloading safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.2 kB)
+Requirement already satisfied: torch<3,>=2.2 in /opt/conda/lib/python3.11/site-packages (from validation-placement-multiuav==1.0.0) (2.7.1+cu118)
+Collecting transformers<5,>=4.45 (from validation-placement-multiuav==1.0.0)
+  Downloading transformers-4.57.6-py3-none-any.whl.metadata (43 kB)
+Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.11/site-packages (from accelerate<2,>=0.33->validation-placement-multiuav==1.0.0) (25.0)
+Requirement already satisfied: pyyaml in /opt/conda/lib/python3.11/site-packages (from accelerate<2,>=0.33->validation-placement-multiuav==1.0.0) (6.0.2)
+Requirement already satisfied: filelock in /opt/conda/lib/python3.11/site-packages (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (3.18.0)
+Requirement already satisfied: fsspec>=2023.5.0 in /opt/conda/lib/python3.11/site-packages (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (2025.5.1)
+Collecting hf-xet<2.0.0,>=1.1.3 (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0)
+  Downloading hf_xet-1.6.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+Requirement already satisfied: requests in /opt/conda/lib/python3.11/site-packages (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (2.32.3)
+Requirement already satisfied: tqdm>=4.42.1 in /opt/conda/lib/python3.11/site-packages (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /opt/conda/lib/python3.11/site-packages (from huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (4.14.0)
+Collecting contourpy>=1.0.1 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting cycler>=0.10 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.28.2 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading fonttools-4.66.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (130 kB)
+Collecting kiwisolver>=1.3.1 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading kiwisolver-1.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+Requirement already satisfied: pillow>=9 in /opt/conda/lib/python3.11/site-packages (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0) (11.0.0)
+Collecting pyparsing>=3 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+Collecting python-dateutil>=2.7 (from matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0)
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Requirement already satisfied: sympy>=1.13.3 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (1.14.0)
+Requirement already satisfied: networkx in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (3.5)
+Requirement already satisfied: jinja2 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (3.1.6)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu11==11.8.89 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.8.89)
+Requirement already satisfied: nvidia-cuda-runtime-cu11==11.8.89 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.8.89)
+Requirement already satisfied: nvidia-cuda-cupti-cu11==11.8.87 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.8.87)
+Requirement already satisfied: nvidia-cudnn-cu11==9.1.0.70 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (9.1.0.70)
+Requirement already satisfied: nvidia-cublas-cu11==11.11.3.6 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.11.3.6)
+Requirement already satisfied: nvidia-cufft-cu11==10.9.0.58 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (10.9.0.58)
+Requirement already satisfied: nvidia-curand-cu11==10.3.0.86 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (10.3.0.86)
+Requirement already satisfied: nvidia-cusolver-cu11==11.4.1.48 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.4.1.48)
+Requirement already satisfied: nvidia-cusparse-cu11==11.7.5.86 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.7.5.86)
+Requirement already satisfied: nvidia-nccl-cu11==2.21.5 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (2.21.5)
+Requirement already satisfied: nvidia-nvtx-cu11==11.8.86 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (11.8.86)
+Requirement already satisfied: triton==3.3.1 in /opt/conda/lib/python3.11/site-packages (from torch<3,>=2.2->validation-placement-multiuav==1.0.0) (3.3.1)
+Requirement already satisfied: setuptools>=40.8.0 in /opt/conda/lib/python3.11/site-packages (from triton==3.3.1->torch<3,>=2.2->validation-placement-multiuav==1.0.0) (75.8.2)
+Collecting regex!=2019.12.17 (from transformers<5,>=4.45->validation-placement-multiuav==1.0.0)
+  Downloading regex-2026.9.29-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+Collecting tokenizers<=0.23.0,>=0.22.0 (from transformers<5,>=4.45->validation-placement-multiuav==1.0.0)
+  Downloading tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.11/site-packages (from python-dateutil>=2.7->matplotlib<4,>=3.8->validation-placement-multiuav==1.0.0) (1.17.0)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /opt/conda/lib/python3.11/site-packages (from sympy>=1.13.3->torch<3,>=2.2->validation-placement-multiuav==1.0.0) (1.3.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /opt/conda/lib/python3.11/site-packages (from jinja2->torch<3,>=2.2->validation-placement-multiuav==1.0.0) (3.0.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /opt/conda/lib/python3.11/site-packages (from requests->huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.11/site-packages (from requests->huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/conda/lib/python3.11/site-packages (from requests->huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.11/site-packages (from requests->huggingface-hub<1,>=0.26->validation-placement-multiuav==1.0.0) (2025.4.26)
+Downloading accelerate-1.15.0-py3-none-any.whl (394 kB)
+Downloading huggingface_hub-0.36.2-py3-none-any.whl (566 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.4/566.4 kB 107.9 MB/s eta 0:00:00
+Downloading hf_xet-1.6.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 146.1 MB/s eta 0:00:00
+Downloading matplotlib-3.11.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.9/9.9 MB 296.8 MB/s eta 0:00:00
+Downloading nvidia_ml_py-13.615.71-py3-none-any.whl (58 kB)
+Downloading safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (516 kB)
+Downloading transformers-4.57.6-py3-none-any.whl (12.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 334.9 MB/s eta 0:00:00
+Downloading tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 15.2 MB/s eta 0:00:00
+Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
+Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Downloading fonttools-4.66.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 320.5 MB/s eta 0:00:00
+Downloading kiwisolver-1.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 338.1 MB/s eta 0:00:00
+Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading regex-2026.9.29-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (804 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 805.0/805.0 kB 365.1 MB/s eta 0:00:00
+Building wheels for collected packages: validation-placement-multiuav
+  Building editable for validation-placement-multiuav (pyproject.toml): started
+  Building editable for validation-placement-multiuav (pyproject.toml): finished with status 'done'
+  Created wheel for validation-placement-multiuav: filename=validation_placement_multiuav-1.0.0-0.editable-py3-none-any.whl size=3955 sha256=2e058dd11e3a2f986f5487c2f5b901eec364cdfaebd3ef3447329a3252c1d6bf
+  Stored in directory: /tmp/pip-ephem-wheel-cache-zxbbupet/wheels/5f/17/d3/1536704fee9b7dd5d8f40ee1d87092bb026df2ef220d35ec5c
+Successfully built validation-placement-multiuav
+Installing collected packages: nvidia-ml-py, safetensors, regex, python-dateutil, pyparsing, kiwisolver, hf-xet, fonttools, cycler, contourpy, matplotlib, huggingface-hub, validation-placement-multiuav, tokenizers, accelerate, transformers
+
+Successfully installed accelerate-1.15.0 contourpy-1.3.3 cycler-0.12.1 fonttools-4.66.1 hf-xet-1.6.0 huggingface-hub-0.36.2 kiwisolver-1.5.1 matplotlib-3.11.2 nvidia-ml-py-13.615.71 pyparsing-3.3.3 python-dateutil-2.9.0.post0 regex-2026.9.29 safetensors-0.8.0 tokenizers-0.22.2 transformers-4.57.6 validation-placement-multiuav-1.0.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+Collecting fastapi==0.104.1
+  Downloading fastapi-0.104.1-py3-none-any.whl.metadata (24 kB)
+Collecting httpx==0.27.2
+  Downloading httpx-0.27.2-py3-none-any.whl.metadata (7.1 kB)
+Collecting pygame==2.5.2
+  Downloading pygame-2.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (13 kB)
+Collecting shapely==2.1.2
+  Downloading shapely-2.1.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.8 kB)
+Collecting geopy==2.4.0
+  Downloading geopy-2.4.0-py3-none-any.whl.metadata (6.8 kB)
+Collecting Pillow==10.4.0
+  Downloading pillow-10.4.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (9.2 kB)
+Collecting python-dotenv==1.0.0
+  Downloading python_dotenv-1.0.0-py3-none-any.whl.metadata (21 kB)
+Collecting anyio<4.0.0,>=3.7.1 (from fastapi==0.104.1)
+  Downloading anyio-3.7.1-py3-none-any.whl.metadata (4.7 kB)
+Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.104.1)
+  Downloading pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+Collecting starlette<0.28.0,>=0.27.0 (from fastapi==0.104.1)
+  Downloading starlette-0.27.0-py3-none-any.whl.metadata (5.8 kB)
+Requirement already satisfied: typing-extensions>=4.8.0 in /opt/conda/lib/python3.11/site-packages (from fastapi==0.104.1) (4.14.0)
+Requirement already satisfied: certifi in /opt/conda/lib/python3.11/site-packages (from httpx==0.27.2) (2025.4.26)
+Collecting httpcore==1.* (from httpx==0.27.2)
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Requirement already satisfied: idna in /opt/conda/lib/python3.11/site-packages (from httpx==0.27.2) (3.10)
+Collecting sniffio (from httpx==0.27.2)
+  Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: numpy>=1.21 in /opt/conda/lib/python3.11/site-packages (from shapely==2.1.2) (2.2.6)
+Collecting geographiclib<3,>=1.52 (from geopy==2.4.0)
+  Downloading geographiclib-2.1-py3-none-any.whl.metadata (1.6 kB)
+Collecting h11>=0.16 (from httpcore==1.*->httpx==0.27.2)
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.104.1)
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.46.5 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.104.1)
+  Downloading pydantic_core-2.46.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi==0.104.1)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting typing-inspection>=0.4.2 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.104.1)
+  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Downloading fastapi-0.104.1-py3-none-any.whl (92 kB)
+Downloading httpx-0.27.2-py3-none-any.whl (76 kB)
+Downloading pygame-2.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (14.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.0/14.0 MB 170.3 MB/s eta 0:00:00
+Downloading shapely-2.1.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 293.7 MB/s eta 0:00:00
+Downloading geopy-2.4.0-py3-none-any.whl (125 kB)
+Downloading pillow-10.4.0-cp311-cp311-manylinux_2_28_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 261.7 MB/s eta 0:00:00
+Downloading python_dotenv-1.0.0-py3-none-any.whl (19 kB)
+Downloading anyio-3.7.1-py3-none-any.whl (80 kB)
+Downloading geographiclib-2.1-py3-none-any.whl (40 kB)
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading pydantic-2.13.5-py3-none-any.whl (472 kB)
+Downloading pydantic_core-2.46.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 355.7 MB/s eta 0:00:00
+Downloading starlette-0.27.0-py3-none-any.whl (66 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Installing collected packages: typing-extensions, sniffio, shapely, python-dotenv, pygame, Pillow, h11, geographiclib, annotated-types, typing-inspection, pydantic-core, httpcore, geopy, anyio, starlette, pydantic, httpx, fastapi
+  Attempting uninstall: typing-extensions
+    Found existing installation: typing_extensions 4.14.0
+    Uninstalling typing_extensions-4.14.0:
+      Successfully uninstalled typing_extensions-4.14.0
+  Attempting uninstall: Pillow
+    Found existing installation: pillow 11.0.0
+    Uninstalling pillow-11.0.0:
+      Successfully uninstalled pillow-11.0.0
+
+Successfully installed Pillow-10.4.0 annotated-types-0.8.0 anyio-3.7.1 fastapi-0.104.1 geographiclib-2.1 geopy-2.4.0 h11-0.16.0 httpcore-1.0.9 httpx-0.27.2 pydantic-2.13.5 pydantic-core-2.46.5 pygame-2.5.2 python-dotenv-1.0.0 shapely-2.1.2 sniffio-1.3.1 starlette-0.27.0 typing-extensions-4.16.0 typing-inspection-0.4.4
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.80it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.45it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.32it/s]
+GET /sessions/current/data 403 - 1.20ms
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+pygame 2.5.2 (SDL 2.28.2, Python 3.11.13)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+{"attempted_commands": 55, "model_call_count": 55, "status": "complete_train_only_unscored", "task_check_result": true}
+worker_finished index=2 runner_exit_code=0

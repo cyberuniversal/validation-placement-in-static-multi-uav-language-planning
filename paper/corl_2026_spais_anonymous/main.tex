@@ -6,7 +6,7 @@
 \usepackage{microtype}
 \usepackage{xspace}
 
-\title{Containment Without Competence: Evaluating Validation Pipelines for Language-Based Multi-UAV Planning}
+\title{Failure Containment and Executable Actions in Language-Based Multi-UAV Planning}
 
 \author{Anonymous Authors}
 
@@ -31,9 +31,13 @@ also found that the frozen validator rejected 43 of 249 fully instantiated
 upstream reference plans. A paired replay that held prompts, generations,
 validators, and call count fixed found no placement-only change in containment,
 false non-execution, or static plan fidelity. The study is therefore a negative
-result: the tested system contains failures but does not demonstrate executable
-planning, and changing enforcement order alone did not reproduce the original
-configuration difference in the retained traces.
+result for the frozen pipelines: changing enforcement order alone did not
+recover executable planning. A separate repaired, observation-grounded
+closed-loop controller completed six of 15 training-split development missions
+under the upstream official task checker. Three missions ended with false
+checks, five exhausted GPU memory, and one was interrupted. These inspected
+development cases show that bounded model-selected actions can execute, not
+that validation placement improves held-out competence or physical safety.
 \end{abstract}
 
 \keywords{physical AI safety, robot planning, failure containment, evaluation}
@@ -57,7 +61,10 @@ paired five-variant benchmark for evidence availability and resource conflict;
 (2) a comparison of four complete validation pipelines with frozen model and
 prompt versions; and (3) a refusal-aware analysis that separates containment
 from executable competence, audits the validator against upstream plans, and
-replays identical traces under early versus deferred enforcement.
+replays identical traces under early versus deferred enforcement. We additionally
+report a separate development repair using bounded action options and observed
+geometry, retaining every mission and infrastructure failure. This repair is
+not a fifth configuration in the frozen comparison.
 
 \section{Experimental Design}
 
@@ -190,22 +197,99 @@ generated 446.82 fewer output tokens and used 5,669--6,279~J less board energy.
 These differences are confounded by termination behavior and generated length;
 they are not evidence that stage-wise validation is intrinsically cheaper.
 
+\section{Observation-Grounded Development Repair}
+
+\paragraph{Action abstraction and execution boundary.}
+The frozen experiment tests complete static plans. To investigate whether a
+revised interface can actually execute useful commands, we separately developed
+a closed-loop controller. Qwen2.5-3B selects one identifier from a deterministic
+menu of takeoff, observed-target movement, area-sweep, or canvas-discovery
+actions. The model cannot emit executable code or invent API coordinates.
+The menu uses AGENT-local observations, remembered observed targets and
+obstacles, public canvas dimensions, and prior actions. Collision-aware
+visibility-graph routing uses buffered observed obstacle geometry; each
+movement step is capped at $0.8$ times the drone's perception radius. The
+controller refreshes observations and checks the upstream official task
+predicate after accepted commands, stopping immediately on a true result.
+The checker supplies a completion signal, not hidden coordinates or reference
+plans. These engineered bounds do not certify physical collision avoidance.
+
+\paragraph{Development protocol.}
+The cohort contains 15 canonical training tasks, one per scenario/difficulty
+stratum, from the existing reviewed construction pilot. Two previously inspected
+missions were used during repair and retained in reporting; the other 13 were
+registered before their sweep. All runs use the same fixed controller commit,
+pinned 3B checkpoint, float16, greedy decoding, seed 17, 256 generated tokens
+per call, and a 512-command ceiling. No weights were trained. Unlike M1--M4,
+this controller can make hundreds of calls and receive execution feedback;
+therefore its outcomes are not a matched comparison. Formation and photography
+missions remain in the cohort although the menu does not implement those
+actions. Infrastructure corrections changed scheduling, not the controller.
+Completed model attempts were not retried to improve the reported count.
+
+\begin{table}[t]
+  \centering
+  \caption{All 15 development missions, including two repair cases. Official
+  checker completion is distinct from static fidelity; incomplete and memory-
+  failed runs have no verified final mission outcome.}
+  \label{tab:development}
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    Outcome & Missions \\
+    \midrule
+    Official task check true & 6 \\
+    Terminal official task check false & 3 \\
+    CUDA out-of-memory failure & 5 \\
+    Deadline interruption; incomplete & 1 \\
+    \midrule
+    Total registered cohort & 15 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Results and remaining failures.}
+Six missions completed with 47, 55, 193, 216, 241, and 258 accepted commands;
+each accepted command was selected through a model call. The three terminal
+false outcomes exhausted available bounded actions after 460, 487, and 389
+accepted commands; the 487-command run also made one model STOP call. One of
+these tasks requires formation, which the menu cannot express. The other two
+show that extensive accepted movement does not establish sufficient task
+coverage. Five runs failed with CUDA out-of-memory, including two on GPUs with
+about 24 GB; their raw traces are retained. A sixth-hour job deadline interrupted
+another mission after 411 journaled commands. The recorded memory errors
+establish a resource limit, not its cause; memory leakage or prompt growth has
+not been isolated. Multi-hour runs also remain a practical limitation.
+
+All terminal traces and command/event journals were copied and verified against
+their recorded SHA-256 values. Appendix~\ref{app:development} lists every case
+and the immutable execution bindings. Hardware was heterogeneous and resource
+costs were not controlled in this development sweep. No energy advantage,
+held-out success rate, or improvement of M1--M4 is inferred. The six completions
+are evidence of a working execution path, not a resolution of the main study's
+generalization or validation-placement question.
+
 \section{Discussion and Limitations}
 
 The central result is containment without competence. \Mthree suppresses
 unsupported continuation, but an indiscriminate block policy is stronger on
-the aggregate success metric and no tested method produces a valid executable
+the aggregate success metric and no frozen configuration produces a valid executable
 plan. The upstream-reference-plan audit additionally shows that the evaluation
 mechanism itself rejects a nontrivial fraction of upstream plans. The controlled
 replay further shows that changing deterministic enforcement order alone did
-not alter unsupported continuation or executable fidelity. A stronger follow-up
-must first reconcile and re-audit validator rules, prospectively test matched
-pipelines beyond one retained transcript family, and evaluate execution in an
-official environment.
+not alter unsupported continuation or executable fidelity. The separate repair
+shows that an observation-grounded action interface can complete some official
+development missions, while exposing coverage, capability, and memory limits.
+It changes the representation, feedback, and call budget together, so it cannot
+identify which change caused execution success. A stronger claim requires
+re-audited validators and prospective matched evaluation on independent missions.
 
 The study uses controlled derivatives rather than live operator missions, two
 sizes from one model family, a 30-cluster human pilot, and one GPU for resource
-measurement. It performs no official simulator or physical execution. The
+measurement. M1--M4 perform no official simulator or physical execution; the
+separate development controller executes against the upstream software
+environment and task checker, not physical UAVs. Its training-split missions
+were inspected, two guided repair, and no new independent mission data were
+available. The
 source-task bootstrap is registered; the session bootstrap is post-hoc and has
 only 15 units. The resource campaign has three repetitions, and board energy is
 not whole-system or UAV energy. These limits prevent claims of general robot
@@ -222,10 +306,69 @@ every executable case, underperforming always-\textsc{Block} on aggregate strict
 success, and interacting with a validator that rejected 17.3\% of auditable
 upstream plans. In replay of identical retained traces, enforcement timing
 changed neither unsupported continuation nor executable fidelity. The
-defensible contribution is a refusal-aware evaluation protocol and a negative
-empirical result that identifies what must be fixed before stronger physical-AI
-safety claims are possible.
+defensible contribution is a refusal-aware evaluation protocol, a negative
+frozen-study result, and a separately documented development repair that
+achieves six official mission completions while retaining nine unsuccessful
+or unresolved outcomes. Bounded executable actions address the absence of
+any execution demonstration, but do not establish held-out reliability or
+the superiority of a validation placement.
 
 \bibliography{references}
+
+\appendix
+\section{Development Outcomes and Reproduction Bindings}
+\label{app:development}
+
+Table~\ref{tab:development-cases} retains all cases. ``Memory'' means a preserved
+CUDA out-of-memory exception, not an official false result. ``Interrupted''
+means the job deadline terminated an incomplete run. Counts for these outcomes
+must not be omitted when discussing the six completions. The two repair cases
+preceded the registered remaining-case sweep. No inferential confidence interval
+or population success rate is reported for this inspected cohort.
+
+\begin{table}[h]
+  \centering
+  \caption{Full development cohort. Calls are completed model generations;
+  the interrupted run has only a partial 411-row command journal.}
+  \label{tab:development-cases}
+  \small
+  \begin{tabular}{@{}llllr@{}}
+    \toprule
+    Task ID & Session ID & Attempt & Outcome & Calls \\
+    \midrule
+    \texttt{4cea97cd} & \texttt{bad1e9e5} & a25 (repair) & True & 193 \\
+    \texttt{519784ca} & \texttt{0f23ff1e} & a26 (repair) & True & 241 \\
+    \texttt{4c8040f9} & \texttt{04cd6269} & a27 & True & 47 \\
+    \texttt{1036bedf} & \texttt{3ec31656} & a28 & Interrupted & -- \\
+    \texttt{a45a0c87} & \texttt{cc05a425} & a29 & Memory & 5 \\
+    \texttt{ac5f85f8} & \texttt{72ccacd0} & a29 & Memory & 118 \\
+    \texttt{6c4a6010} & \texttt{0567e470} & a29 & Memory & 123 \\
+    \texttt{cf6f176c} & \texttt{793e7745} & a30 & False & 460 \\
+    \texttt{9b355a03} & \texttt{139a4109} & a30 & False & 488 \\
+    \texttt{91130026} & \texttt{13b94391} & a30 & True & 55 \\
+    \texttt{14fd1139} & \texttt{3973d0d6} & a30 & True & 216 \\
+    \texttt{c96a0146} & \texttt{550aa487} & a30 & False & 389 \\
+    \texttt{67cbff58} & \texttt{b3c8ded2} & a30 & True & 258 \\
+    \texttt{05e12d8e} & \texttt{e76728cc} & a30 & Memory & 231 \\
+    \texttt{1905e0ad} & \texttt{35ce64d8} & a30 & Memory & 202 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The controller execution commit is
+\url{9ca784efa16faab5cc1c9b261c7c509be6509d11}; the
+\texttt{Qwen/Qwen2.5-3B-Instruct} revision is
+\url{aa8e72537993ba99e69dfaafa59ed015b17504d1}; the upstream commit is
+\url{1794e45e421fb5de03094f0b63f9ca95f86ab42f}. The benchmark SHA-256 is
+\url{b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3}.
+The runner is \texttt{scripts/run\_multiuav\_train\_model\_loop\_v2.py};
+the a25--a30 Kubernetes manifests under \texttt{infra/nautilus/} bind its exact
+arguments. Per-attempt summaries under
+\texttt{outputs/evaluations/multiuav\_train\_model\_loop\_v2/} bind raw,
+command-journal, and event-journal hashes; raw artifacts remain separately under
+\texttt{outputs/multiuav/}. The incomplete a28 case has no final raw-trace hash.
+Available job/pod metadata and console logs preserve scheduler, deadline, and
+memory failures. These bindings make the new development evidence separable
+from the frozen accuracy matrices and resource campaign.
 
 \end{document}

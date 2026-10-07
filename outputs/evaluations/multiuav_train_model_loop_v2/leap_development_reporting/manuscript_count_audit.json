@@ -1,0 +1,164 @@
+{
+  "generated_at_utc": "2026-10-07T12:48:40.6784093Z",
+  "cohort_size": 15,
+  "counts": {
+    "official_false": 3,
+    "interrupted_incomplete": 1,
+    "memory_failure": 5,
+    "official_true": 6
+  },
+  "claim_scope": "inspected_training_development_not_held_out",
+  "frozen_M1_M4_unchanged": true,
+  "cases": [
+    {
+      "task_id": "4cea97cd",
+      "session_id": "bad1e9e5",
+      "outcome": "official_true",
+      "model_calls": 193,
+      "commands": 193,
+      "stop_reason": "official_task_completed",
+      "source_path": "outputs/evaluations/multiuav_train_model_loop_v2/attempt25_complete/run_summary.json",
+      "source_sha256": "2edb7b3cb733b81a030c55737acf97e4b8db93253969fae7a69bb7135ddd3c20"
+    },
+    {
+      "task_id": "519784ca",
+      "session_id": "0f23ff1e",
+      "outcome": "official_true",
+      "model_calls": 241,
+      "commands": 241,
+      "stop_reason": "official_task_completed",
+      "source_path": "outputs/evaluations/multiuav_train_model_loop_v2/attempt26_complete/run_summary.json",
+      "source_sha256": "6fc98d0b4bd956cf12ddabe096fff8400b12d0dbbfee57456dd503d8b6b86141"
+    },
+    {
+      "task_id": "4c8040f9",
+      "session_id": "04cd6269",
+      "outcome": "official_true",
+      "model_calls": 47,
+      "commands": 47,
+      "stop_reason": "official_task_completed",
+      "source_path": "outputs/evaluations/multiuav_train_model_loop_v2/regression_a29/a27_run_summary.json",
+      "source_sha256": "dceb59d35364c5de0de0b3a9cd15e316db29d9cb821894274866b16e8f6d668e"
+    },
+    {
+      "task_id": "6c4a6010",
+      "session_id": "0567e470",
+      "outcome": "memory_failure",
+      "model_calls": 123,
+      "commands": null,
+      "stop_reason": null,
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a29\\6c4a6010_run_summary.json",
+      "source_sha256": "d402f1ab4db5380bf910faf0e20682667b718ddddde2cf942bd679fd3dd98ce4"
+    },
+    {
+      "task_id": "a45a0c87",
+      "session_id": "cc05a425",
+      "outcome": "memory_failure",
+      "model_calls": 5,
+      "commands": null,
+      "stop_reason": null,
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a29\\a45a0c87_run_summary.json",
+      "source_sha256": "91a5853590cba3d5631c79ad7afd1fa45d4f0e9e6bccb03bae13ddcdf671558b"
+    },
+    {
+      "task_id": "ac5f85f8",
+      "session_id": "72ccacd0",
+      "outcome": "memory_failure",
+      "model_calls": 118,
+      "commands": null,
+      "stop_reason": null,
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a29\\ac5f85f8_run_summary.json",
+      "source_sha256": "0c03bc9b9b449b5f5165547079b2827f209483a6b37180cb2f0d04710dc3bb7a"
+    },
+    {
+      "task_id": "05e12d8e",
+      "session_id": "e76728cc",
+      "outcome": "memory_failure",
+      "model_calls": 231,
+      "commands": null,
+      "stop_reason": null,
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\05e12d8e_summary.json",
+      "source_sha256": "0e177984e003e0ebc9aa507d8024a05d7395701787bd4735815afe39c2ce12c7"
+    },
+    {
+      "task_id": "14fd1139",
+      "session_id": "3973d0d6",
+      "outcome": "official_true",
+      "model_calls": 216,
+      "commands": 216,
+      "stop_reason": "official_task_completed",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\14fd1139_summary.json",
+      "source_sha256": "7a5ed32ac0ed503e58c5483261072cfc46c20b0256776c3ce0a69a2359a111e8"
+    },
+    {
+      "task_id": "1905e0ad",
+      "session_id": "35ce64d8",
+      "outcome": "memory_failure",
+      "model_calls": 202,
+      "commands": null,
+      "stop_reason": null,
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\1905e0ad_summary.json",
+      "source_sha256": "ec216c22598783c3e9b8ac66e114bda5686bbf7e3194385d644f31b99373e91d"
+    },
+    {
+      "task_id": "67cbff58",
+      "session_id": "b3c8ded2",
+      "outcome": "official_true",
+      "model_calls": 258,
+      "commands": 258,
+      "stop_reason": "official_task_completed",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\67cbff58_summary.json",
+      "source_sha256": "a3a768e6790335ec9057ad6f829fab7c2420905619fd90482d4d5781b9915438"
+    },
+    {
+      "task_id": "91130026",
+      "session_id": "13b94391",
+      "outcome": "official_true",
+      "model_calls": 55,
+      "commands": 55,
+      "stop_reason": "official_task_completed",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\91130026_summary.json",
+      "source_sha256": "e5e365eed911e6eb119a195b39896f7693f0152ed5d8812ef6f31971437641fc"
+    },
+    {
+      "task_id": "9b355a03",
+      "session_id": "139a4109",
+      "outcome": "official_false",
+      "model_calls": 488,
+      "commands": 487,
+      "stop_reason": "no_bounded_action",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\9b355a03_summary.json",
+      "source_sha256": "dfe360aa4b0d4fea7f546916858c38d2b27fc480e2bd9d6a38a991d44d93f83e"
+    },
+    {
+      "task_id": "c96a0146",
+      "session_id": "550aa487",
+      "outcome": "official_false",
+      "model_calls": 389,
+      "commands": 389,
+      "stop_reason": "no_bounded_action",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\c96a0146_summary.json",
+      "source_sha256": "760c1dd47db067de7d360762865282bdfb6b4eaf748fda80be44cc776c6a7320"
+    },
+    {
+      "task_id": "cf6f176c",
+      "session_id": "793e7745",
+      "outcome": "official_false",
+      "model_calls": 460,
+      "commands": 460,
+      "stop_reason": "no_bounded_action",
+      "source_path": "D:\\Users\\momoa\\Desktop\\validation-placement-executable-fidelity-v2\\outputs\\evaluations\\multiuav_train_model_loop_v2\\regression_a30\\complete\\cf6f176c_summary.json",
+      "source_sha256": "77af7a85eed5a2fa4429adab4faa1bdacd368a384f56a35c156f05bef25eacdf"
+    },
+    {
+      "task_id": "1036bedf",
+      "session_id": "3ec31656",
+      "outcome": "interrupted_incomplete",
+      "model_calls": null,
+      "commands": 411,
+      "stop_reason": "Kubernetes_DeadlineExceeded",
+      "source_path": "outputs/evaluations/multiuav_train_model_loop_v2/regression_a29/a28_interrupted_run_summary.json",
+      "source_sha256": "ed792be687898943a57e7880acbcd5068267b62e5cc9b30c6036525f1159746d"
+    }
+  ]
+}

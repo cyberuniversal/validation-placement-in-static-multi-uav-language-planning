@@ -1,0 +1,9 @@
+index=0 case=05e12d8e pod=validation-placement-train-regression-v12-a31-0-wwxzc node=cph-dgx-node9.humboldt.edu
+Tesla V100-SXM2-32GB, GPU-ff645125-8c7c-f653-5148-f1b438acbc21, 32768 MiB, 580.178.04
+Get:1 https://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Get:2 https://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:3 https://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:4 https://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [7907 kB]
+Get:5 https://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:6 https://archive.ubuntu.com/ubuntu jammy/multiverse amd64 Packages [266 kB]
+Get:7 https://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [17.5 MB]

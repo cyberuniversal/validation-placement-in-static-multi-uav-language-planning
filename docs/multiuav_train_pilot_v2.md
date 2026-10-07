@@ -875,3 +875,13 @@ This is a targeted resource regression, not an independent success estimate.
 Preserve the old a30 failure and the new logs, journals, raw trace, summary,
 job/pod metadata and hashes regardless of outcome. Do not amend the manuscript
 or count this as an improvement in results before a verified GPU execution.
+
+a31 execution binding: `f549a53` (full immutable commit in
+`infra/nautilus/train-model-loop-3b-v2-a31-memory-regression-job.yaml`). Job:
+`validation-placement-train-regression-v12-a31`; one indexed worker, no retries,
+24-hour deadline. Outputs:
+`/workspace/results/train-model-loop-regression-v12-a31/05e12d8e/`.
+There is no active v11 worker at registration. The manifest must pass server-side
+dry-run before submission. Passing requires a terminal raw trace and summary,
+verified local artifact hashes, no CUDA OOM and no token-budget rejection.
+Official task outcome is reported separately and is not assumed by admission.

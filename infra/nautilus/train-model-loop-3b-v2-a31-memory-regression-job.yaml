@@ -1,0 +1,137 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: validation-placement-train-regression-v12-a31
+  namespace: aiea-interns
+  labels:
+    app.kubernetes.io/name: validation-placement
+    validation-placement/stage: train-regression-v12-a31
+spec:
+  completionMode: Indexed
+  completions: 1
+  parallelism: 1
+  activeDeadlineSeconds: 86400
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: validation-placement
+        validation-placement/stage: train-regression-v12-a31
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 120
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: nvidia.com/gpu.memory
+                    operator: Gt
+                    values: ["23000"]
+                  - key: nvidia.com/gpu.compute.major
+                    operator: Gt
+                    values: ["6"]
+                  - key: nvidia.com/gpu.compute.major
+                    operator: Lt
+                    values: ["11"]
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values: ["hcc-nrp-shor-c5817.unl.edu"]
+      containers:
+        - name: regression
+          image: pytorch/pytorch:2.7.1-cuda11.8-cudnn9-runtime
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -euo pipefail
+              cases=(05e12d8e)
+              case_id="${cases[${JOB_COMPLETION_INDEX}]}"
+              output="/workspace/results/train-model-loop-regression-v12-a31/${case_id}"
+              mkdir -p "${output}"
+              if [[ -e "${output}/pod.log" ]]; then
+                echo "Existing attempt; refusing to overwrite evidence." >&2
+                exit 1
+              fi
+              exec > >(tee "${output}/pod.log") 2>&1
+              printf 'index=%s case=%s pod=%s node=%s\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${RUN_POD_NAME}" "${RUN_NODE_NAME}"
+              nvidia-smi --query-gpu=name,uuid,memory.total,driver_version --format=csv,noheader
+              sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g; s|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
+              apt-get update
+              apt-get install -y --no-install-recommends git ca-certificates
+              rm -rf /var/lib/apt/lists/*
+              seed=/workspace/repo-validation-placement-model-loop-0b6c762
+              repo="/workspace/train-regression-v12-a31-checkout-${JOB_COMPLETION_INDEX}"
+              git clone --shared "${seed}" "${repo}"
+              git -C "${repo}" fetch https://github.com/cyberuniversal/validation-placement-in-static-multi-uav-language-planning.git f549a53cfd4f6a5f77cdee2bf96ebf966b3c4b1f
+              git -C "${repo}" checkout --detach f549a53cfd4f6a5f77cdee2bf96ebf966b3c4b1f
+              mkdir -p "${repo}/external"
+              git clone --shared "${seed}/external/MultiUAV-Plat" "${repo}/external/MultiUAV-Plat"
+              git -C "${repo}/external/MultiUAV-Plat" checkout --detach 1794e45e421fb5de03094f0b63f9ca95f86ab42f
+              if [[ ! -f "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip" ]]; then
+                mkdir -p "${repo}/external/MultiUAV-Plat/benchmark"
+                cp "${seed}/external/MultiUAV-Plat/benchmark/benchmark.zip" "${repo}/external/MultiUAV-Plat/benchmark/benchmark.zip"
+              fi
+              python -m pip install --no-cache-dir -e "${repo}[inference]"
+              python -m pip install --no-cache-dir fastapi==0.104.1 httpx==0.27.2 pygame==2.5.2 shapely==2.1.2 geopy==2.4.0 Pillow==10.4.0 python-dotenv==1.0.0
+              set +e
+              python "${repo}/scripts/run_multiuav_train_model_loop_v2.py" \
+                --case-id "${case_id}:canonical_execute" \
+                --max-commands 512 \
+                --cache-audit /workspace/artifacts/qwen25_3b_cache_audit_nautilus_v1.json \
+                --cache-dir /workspace/hf-cache \
+                --raw-output "${output}/raw.json" \
+                --summary-output "${output}/run_summary.json"
+              result=$?
+              set -e
+              printf '{"index":%s,"case_id":"%s:canonical_execute","runner_exit_code":%s}\n' "${JOB_COMPLETION_INDEX}" "${case_id}" "${result}" > "${output}/execution_exit.json"
+              echo "worker_finished index=${JOB_COMPLETION_INDEX} runner_exit_code=${result}"
+              exit 0
+          env:
+            - name: JOB_COMPLETION_INDEX
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+            - name: RUN_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: RUN_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HF_HOME
+              value: /workspace/hf-cache
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: TRANSFORMERS_OFFLINE
+              value: "1"
+            - name: SDL_VIDEODRIVER
+              value: dummy
+          resources:
+            requests:
+              cpu: "2"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "2"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: workspace
+              mountPath: /workspace/hf-cache
+              subPath: hf-cache
+              readOnly: true
+            - name: workspace
+              mountPath: /workspace/artifacts
+              subPath: artifacts
+              readOnly: true
+            - name: workspace
+              mountPath: /workspace/repo-validation-placement-model-loop-0b6c762
+              subPath: repo-validation-placement-model-loop-0b6c762
+              readOnly: true
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: shepherd-ai-539948

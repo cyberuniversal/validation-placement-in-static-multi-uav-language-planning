@@ -35,7 +35,10 @@ result for the frozen pipelines: changing enforcement order alone did not
 recover executable planning. A separate repaired, observation-grounded
 closed-loop controller completed six of 15 training-split development missions
 under the upstream official task checker. Three missions ended with false
-checks, five exhausted GPU memory, and one was interrupted. These inspected
+checks, five exhausted GPU memory, and one was interrupted.
+An additional compact-context rerun recovered one of the memory-failed missions
+with 283 accepted commands and an official true check on a different GPU.
+The original failures remain reported. These inspected
 development cases show that bounded model-selected actions can execute, not
 that validation placement improves held-out competence or physical safety.
 \end{abstract}
@@ -257,8 +260,9 @@ show that extensive accepted movement does not establish sufficient task
 coverage. Five runs failed with CUDA out-of-memory, including two on GPUs with
 about 24 GB; their raw traces are retained. A sixth-hour job deadline interrupted
 another mission after 411 journaled commands. The recorded memory errors
-establish a resource limit, not its cause; memory leakage or prompt growth has
-not been isolated. Multi-hour runs also remain a practical limitation.
+establish a resource limit, not its sole cause. Retained prompts grow with
+serialized visit history and geometry; a memory leak has not been demonstrated.
+Multi-hour runs also remain a practical limitation.
 
 All terminal traces and command/event journals were copied and verified against
 their recorded SHA-256 values. Appendix~\ref{app:development} lists every case
@@ -267,6 +271,19 @@ costs were not controlled in this development sweep. No energy advantage,
 held-out success rate, or improvement of M1--M4 is inferred. The six completions
 are evidence of a working execution path, not a resolution of the main study's
 generalization or validation-placement question.
+
+\paragraph{Single-case memory repair.}
+In a separately registered v12 follow-up, the controller retained full observed
+geometry and visit history for deterministic routing but sent the model a
+compact action-selection view, with a 4,096-token admission limit and no silent
+truncation. Previously memory-failed task \texttt{05e12d8e} completed with
+283 model calls, 283 accepted commands and an official true task check.
+Input length peaked at 1,333 tokens, compared with 10,762 completed input
+tokens before its v11 failure. Raw and journal hashes were verified.
+The new run used a 32 GB V100 rather than the prior approximately 24 GB GPU;
+hardware and prompt contract changed together. This single inspected-training
+recovery therefore does not isolate a causal memory effect, establish a
+held-out success rate, or replace the original 15-case outcomes.
 
 \section{Discussion and Limitations}
 
@@ -312,6 +329,9 @@ achieves six official mission completions while retaining nine unsuccessful
 or unresolved outcomes. Bounded executable actions address the absence of
 any execution demonstration, but do not establish held-out reliability or
 the superiority of a validation placement.
+One additional compact-context rerun recovered a previously memory-failed
+development mission, without establishing generalization or a matched
+hardware advantage.
 
 \bibliography{references}
 
@@ -370,5 +390,11 @@ command-journal, and event-journal hashes; raw artifacts remain separately under
 Available job/pod metadata and console logs preserve scheduler, deadline, and
 memory failures. These bindings make the new development evidence separable
 from the frozen accuracy matrices and resource campaign.
+
+Attempt a31 reruns \texttt{05e12d8e} in session \texttt{e76728cc} under v12
+commit \url{f549a53cfd4f6a5f77cdee2bf96ebf966b3c4b1f}; model, source, seed
+and command ceiling are unchanged. Its summary and verification record retain
+all three artifact hashes. The a30 failure remains in
+Table~\ref{tab:development-cases}; this is not an independent mission.
 
 \end{document}

@@ -885,3 +885,15 @@ There is no active v11 worker at registration. The manifest must pass server-sid
 dry-run before submission. Passing requires a terminal raw trace and summary,
 verified local artifact hashes, no CUDA OOM and no token-budget rejection.
 Official task outcome is reported separately and is not assumed by admission.
+
+Verified a31 outcome: `complete_train_only_unscored`, official task check true,
+283 model calls, 283 successful commands, no generation exception. Input
+tokens were 1,193 initially, 1,166 finally and at most 1,333. The worker
+reported Tesla V100-SXM2-32GB (32,768 MiB), zero restarts. Runner timestamps
+were 2026-10-07 18:13:58--18:25:54 UTC, including model loading. Local SHA-256
+checks match the raw trace, command journal and event journal bindings.
+Records are under `outputs/evaluations/multiuav_train_model_loop_v2/memory_regression_a31/`;
+raw evidence is separate under `outputs/multiuav/train-model-loop-regression-v12-a31/05e12d8e/`.
+The new GPU differs from a30, so the recovery cannot be attributed solely to
+prompt compaction. This is one repeated inspected case; retain the original
+six-success/five-memory-failure v11 cohort rather than replacing its outcome.

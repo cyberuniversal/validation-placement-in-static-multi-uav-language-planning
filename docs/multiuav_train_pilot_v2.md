@@ -913,3 +913,16 @@ Preserve logs, metadata, summaries, raw and journals even on failure. Verify
 artifact hashes before reporting; distinguish successful commands from the
 official task check. Do not replace the old failure or change manuscript
 claims while this run is pending. GPU changes preclude a matched hardware claim.
+
+Verified a32 outcome: official task check true, 278 model calls and 278
+successful commands, no generation exception; input length peaked at 2,094
+tokens. The worker reported an NVIDIA A10 with zero restarts. Runner timestamps
+are 2026-10-12 12:00:19--12:17:10 UTC, excluding earlier cache verification.
+Raw official-check evidence and every command response agree with the summary;
+local SHA-256 checks match the raw trace and both journals. Terminal metadata,
+console log, summary and verification record are preserved under
+`outputs/evaluations/multiuav_train_model_loop_v2/memory_regression_a32/`;
+raw evidence remains separate under `outputs/multiuav/train-model-loop-regression-v12-a32/1905e0ad/`.
+The original a30 memory failure is not overwritten. There are now two verified
+recoveries under unchanged v12, both on previously inspected training cases,
+not an independent success estimate. No manuscript change is made by monitoring.

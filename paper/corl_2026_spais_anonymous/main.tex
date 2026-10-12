@@ -221,18 +221,18 @@ plans. These engineered bounds do not certify physical collision avoidance.
 The cohort contains 15 canonical training tasks, one per scenario/difficulty
 stratum, from the existing reviewed construction pilot. Two previously inspected
 missions were used during repair and retained in reporting; the other 13 were
-registered before their sweep. All runs use the same fixed controller commit,
+registered before their sweep. The original v11 sweep uses one fixed controller commit,
 pinned 3B checkpoint, float16, greedy decoding, seed 17, 256 generated tokens
 per call, and a 512-command ceiling. No weights were trained. Unlike M1--M4,
 this controller can make hundreds of calls and receive execution feedback;
 therefore its outcomes are not a matched comparison. Formation and photography
 missions remain in the cohort although the menu does not implement those
 actions. Infrastructure corrections changed scheduling, not the controller.
-Completed model attempts were not retried to improve the reported count.
+Its outcome counts remain fixed; the later v12 rerun is reported separately.
 
 \begin{table}[t]
   \centering
-  \caption{All 15 development missions, including two repair cases. Official
+  \caption{Original v11 outcomes for all 15 development missions, including two repair cases. Official
   checker completion is distinct from static fidelity; incomplete and memory-
   failed runs have no verified final mission outcome.}
   \label{tab:development}
@@ -250,7 +250,7 @@ Completed model attempts were not retried to improve the reported count.
   \end{tabular}
 \end{table}
 
-\paragraph{Results and remaining failures.}
+\paragraph{Original v11 results and remaining failures.}
 Six missions completed with 47, 55, 193, 216, 241, and 258 accepted commands;
 each accepted command was selected through a model call. The three terminal
 false outcomes exhausted available bounded actions after 460, 487, and 389
@@ -339,7 +339,7 @@ hardware advantage.
 \section{Development Outcomes and Reproduction Bindings}
 \label{app:development}
 
-Table~\ref{tab:development-cases} retains all cases. ``Memory'' means a preserved
+Table~\ref{tab:development-cases} retains all original v11 outcomes. ``Memory'' means a preserved
 CUDA out-of-memory exception, not an official false result. ``Interrupted''
 means the job deadline terminated an incomplete run. Counts for these outcomes
 must not be omitted when discussing the six completions. The two repair cases
@@ -348,7 +348,7 @@ or population success rate is reported for this inspected cohort.
 
 \begin{table}[h]
   \centering
-  \caption{Full development cohort. Calls are completed model generations;
+  \caption{Original v11 development cohort. Calls are completed model generations;
   the interrupted run has only a partial 411-row command journal.}
   \label{tab:development-cases}
   \small

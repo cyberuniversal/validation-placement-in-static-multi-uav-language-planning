@@ -1,0 +1,9 @@
+{
+  "check_requested_at_utc": "2026-10-12T17:39:13.171Z",
+  "job": "validation-placement-train-regression-v13-a33",
+  "oidc_discovery_host": "authentik.nrp-nautilus.io",
+  "ipv4_https_discovery_probe_status": 503,
+  "monitor_status": "authentication_service_unavailable",
+  "job_current_state": "not_observed",
+  "experiment_changed": false
+}

@@ -1,0 +1,267 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "annotations": {
+            "cni.projectcalico.org/containerID": "08cf50e929b51dfa2561dbe0109355aec1b11cf8fb68b2fbd341958531646f37",
+            "cni.projectcalico.org/podIP": "10.244.63.181/32",
+            "cni.projectcalico.org/podIPs": "10.244.63.181/32,fdf0:17b3:c3ec:1f79:10:0:f:4904/128",
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"validation-placement\",\"validation-placement/stage\":\"train-model-loop-artifact-reader\"},\"name\":\"validation-placement-a33-reader\",\"namespace\":\"aiea-interns\"},\"spec\":{\"containers\":[{\"command\":[\"sh\",\"-c\",\"sleep 3600\"],\"image\":\"busybox:1.36\",\"name\":\"reader\",\"resources\":{\"limits\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"},\"requests\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"}},\"volumeMounts\":[{\"mountPath\":\"/workspace\",\"name\":\"workspace\",\"readOnly\":true}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"hcc-nrp-shor-c6017.unl.edu\"},\"restartPolicy\":\"Never\",\"volumes\":[{\"name\":\"workspace\",\"persistentVolumeClaim\":{\"claimName\":\"shepherd-ai-539948\",\"readOnly\":true}}]}}\n",
+            "kubernetes.io/limit-ranger": "LimitRanger plugin set: ephemeral-storage request for container reader; ephemeral-storage limit for container reader",
+            "nrp.ai/username": "http://cilogon.org/serverE/users/539948"
+        },
+        "creationTimestamp": "2026-10-12T17:55:09Z",
+        "generation": 1,
+        "labels": {
+            "app.kubernetes.io/name": "validation-placement",
+            "validation-placement/stage": "train-model-loop-artifact-reader"
+        },
+        "name": "validation-placement-a33-reader",
+        "namespace": "aiea-interns",
+        "resourceVersion": "15131758886",
+        "uid": "efe3114f-3d39-43c3-a1b6-3418df6399e8"
+    },
+    "spec": {
+        "activeDeadlineSeconds": 21600,
+        "containers": [
+            {
+                "command": [
+                    "sh",
+                    "-c",
+                    "sleep 3600"
+                ],
+                "env": [
+                    {
+                        "name": "NVIDIA_VISIBLE_DEVICES",
+                        "value": "void"
+                    }
+                ],
+                "image": "busybox:1.36",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "reader",
+                "resources": {
+                    "limits": {
+                        "cpu": "100m",
+                        "ephemeral-storage": "50Gi",
+                        "memory": "128Mi"
+                    },
+                    "requests": {
+                        "cpu": "100m",
+                        "ephemeral-storage": "0",
+                        "memory": "128Mi"
+                    }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/workspace",
+                        "name": "workspace",
+                        "readOnly": true
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-fp7zs",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "hcc-nrp-shor-c6017.unl.edu",
+        "nodeSelector": {
+            "kubernetes.io/hostname": "hcc-nrp-shor-c6017.unl.edu"
+        },
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "PreferNoSchedule",
+                "key": "nvidia.com/gpu",
+                "operator": "Exists"
+            }
+        ],
+        "volumes": [
+            {
+                "name": "workspace",
+                "persistentVolumeClaim": {
+                    "claimName": "shepherd-ai-539948",
+                    "readOnly": true
+                }
+            },
+            {
+                "name": "kube-api-access-fp7zs",
+                "projected": {
+                    "defaultMode": 420,
+                    "sources": [
+                        {
+                            "serviceAccountToken": {
+                                "expirationSeconds": 3607,
+                                "path": "token"
+                            }
+                        },
+                        {
+                            "configMap": {
+                                "items": [
+                                    {
+                                        "key": "ca.crt",
+                                        "path": "ca.crt"
+                                    }
+                                ],
+                                "name": "kube-root-ca.crt"
+                            }
+                        },
+                        {
+                            "downwardAPI": {
+                                "items": [
+                                    {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        },
+                                        "path": "namespace"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-12T17:56:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-12T17:55:09Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-12T17:56:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-12T17:56:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-12T17:55:09Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "allocatedResources": {
+                    "cpu": "100m",
+                    "ephemeral-storage": "0",
+                    "memory": "128Mi"
+                },
+                "containerID": "containerd://a20eeb61a73a00c590fcdfacca99face99f6ae874aa7da7d944cc219e1b802d1",
+                "image": "docker.io/library/busybox:1.36",
+                "imageID": "docker.io/library/busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+                "lastState": {},
+                "name": "reader",
+                "ready": true,
+                "resources": {
+                    "limits": {
+                        "cpu": "100m",
+                        "ephemeral-storage": "50Gi",
+                        "memory": "128Mi"
+                    },
+                    "requests": {
+                        "cpu": "100m",
+                        "ephemeral-storage": "0",
+                        "memory": "128Mi"
+                    }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2026-10-12T17:56:55Z"
+                    }
+                },
+                "user": {
+                    "linux": {
+                        "gid": 0,
+                        "supplementalGroups": [
+                            0,
+                            10
+                        ],
+                        "uid": 0
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "mountPath": "/workspace",
+                        "name": "workspace",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-fp7zs",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    }
+                ]
+            }
+        ],
+        "hostIP": "129.93.153.132",
+        "hostIPs": [
+            {
+                "ip": "129.93.153.132"
+            }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.244.63.181",
+        "podIPs": [
+            {
+                "ip": "10.244.63.181"
+            },
+            {
+                "ip": "fdf0:17b3:c3ec:1f79:10:0:f:4904"
+            }
+        ],
+        "qosClass": "Guaranteed",
+        "startTime": "2026-10-12T17:55:09Z"
+    }
+}

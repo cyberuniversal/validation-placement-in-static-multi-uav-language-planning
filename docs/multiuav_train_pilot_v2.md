@@ -966,3 +966,29 @@ implementation commit and exact commands. Outputs stay under
 Record dependency versions and GPU identity from startup logs. Preserve raw,
 journals, summaries, metadata and failures; verify hashes before analysis.
 No manuscript result is changed until completed evidence is admitted.
+
+a33 terminated with Kubernetes `UnexpectedAdmissionError` after the node
+reported no healthy GPU devices. The container status is unknown with exit 137;
+this does not establish CUDA OOM. Job failure is `BackoffLimitExceeded` under
+the registered zero-retry policy. Authentication access was also unavailable
+during two monitor checks; outage records are preserved separately.
+
+Seven cases completed: for `05e12d8e`, canonical, alias and restored evidence
+each achieved an official true check with 283 accepted commands and model calls;
+both source tasks' missing-evidence and fleet-conflict variants returned
+CLARIFY and BLOCK respectively with zero commands/model calls. Their terminal
+raw and journal hashes match. `1905e0ad` canonical is infrastructure-interrupted
+with 205 accepted journaled commands and no final task check or raw model-call
+trace. Its stale summary says running and must not be interpreted as active or
+mission false. Its alias and restored variants were not started. Preserve all
+ten cases in reporting, not only the seven completed cases.
+
+A read-only CPU recovery pod retrieved the files after the original node's
+reader stalled. All 31 durable files, including partial journals and console
+log, match remote SHA-256. Derived verification, copied summaries and terminal
+metadata are under `outputs/evaluations/multiuav_train_model_loop_v2/paired_v13_a33/`;
+raw files remain separate under `outputs/multiuav/train-paired-v13-a33/`.
+There were no model STOP outcomes among completed cases; interrupted model-call
+and STOP counts are unknown. No retry, hardware change to inference, or
+manuscript update is performed by the monitor. These constructed inspected
+cases demonstrate limited paired operation, not independent reliability.

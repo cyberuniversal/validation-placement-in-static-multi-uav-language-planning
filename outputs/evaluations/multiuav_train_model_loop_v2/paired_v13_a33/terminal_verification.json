@@ -1,0 +1,160 @@
+{
+  "job": "validation-placement-train-regression-v13-a33",
+  "execution_commit": "dae9d0eddba9d548b23e16ecbf2e188eda77cc42",
+  "scope": "inspected_training_diagnostic_not_heldout",
+  "terminal_failure": "UnexpectedAdmissionError: no healthy GPU devices",
+  "rows": [
+    {
+      "case_id": "05e12d8e:missing_information_clarify",
+      "outcome": "completed",
+      "initial_screen": "CLARIFY",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "05e12d8e:resource_conflict_block",
+      "outcome": "completed",
+      "initial_screen": "BLOCK",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "05e12d8e:canonical_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "05e12d8e:official_alias_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "05e12d8e:restored_information_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "1905e0ad:missing_information_clarify",
+      "outcome": "completed",
+      "initial_screen": "CLARIFY",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "1905e0ad:resource_conflict_block",
+      "outcome": "completed",
+      "initial_screen": "BLOCK",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0
+    },
+    {
+      "case_id": "1905e0ad:canonical_execute",
+      "outcome": "infrastructure_interrupted",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 205,
+      "accepted_commands": 205,
+      "model_calls": null,
+      "official_task_check": null,
+      "model_stop_count": null,
+      "durable_summary_status": "running"
+    },
+    {
+      "case_id": "1905e0ad:official_alias_execute",
+      "outcome": "not_started",
+      "initial_screen": null,
+      "issued_commands": 0,
+      "accepted_commands": null,
+      "model_calls": null,
+      "official_task_check": null,
+      "model_stop_count": null
+    },
+    {
+      "case_id": "1905e0ad:restored_information_execute",
+      "outcome": "not_started",
+      "initial_screen": null,
+      "issued_commands": 0,
+      "accepted_commands": null,
+      "model_calls": null,
+      "official_task_check": null,
+      "model_stop_count": null
+    }
+  ],
+  "completed_artifact_verification": [
+    {
+      "case_id": "05e12d8e:missing_information_clarify",
+      "hash_checks": {
+        "raw.json": true
+      }
+    },
+    {
+      "case_id": "05e12d8e:resource_conflict_block",
+      "hash_checks": {
+        "raw.json": true
+      }
+    },
+    {
+      "case_id": "05e12d8e:canonical_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    },
+    {
+      "case_id": "05e12d8e:official_alias_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    },
+    {
+      "case_id": "05e12d8e:restored_information_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    },
+    {
+      "case_id": "1905e0ad:missing_information_clarify",
+      "hash_checks": {
+        "raw.json": true
+      }
+    },
+    {
+      "case_id": "1905e0ad:resource_conflict_block",
+      "hash_checks": {
+        "raw.json": true
+      }
+    }
+  ],
+  "terminal_raw_model_outputs_not_printed": true
+}

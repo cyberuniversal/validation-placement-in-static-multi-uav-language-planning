@@ -1,0 +1,15 @@
+{
+  "check_requested_at_utc": "2026-10-12T17:24:12.934Z",
+  "job": "validation-placement-train-regression-v13-a33",
+  "namespace": "aiea-interns",
+  "monitor_status": "authentication_service_connection_failed",
+  "oidc_discovery_host": "authentik.nrp-nautilus.io",
+  "kubectl_ipv6_connection": "refused",
+  "independent_ipv4_https_probe": "connection_failed",
+  "job_current_state": "not_observed",
+  "last_verified_completed_cases": 7,
+  "last_observed_current_case": "1905e0ad:canonical_execute",
+  "last_observed_command_journal_rows": 205,
+  "experiment_changed": false,
+  "retry_or_hardware_change_performed": false
+}

@@ -26,6 +26,9 @@ from shepherd_ai.multiuav_qwen_backend import LocalQwenBackend, QwenBackendConfi
 from shepherd_ai.multiuav_runner import ModelBackend  # noqa: E402
 from shepherd_ai.multiuav_runner import GenerationResult  # noqa: E402
 from shepherd_ai.multiuav_offline_runtime import offline_inference_guard  # noqa: E402
+from shepherd_ai.multiuav_candidate_v2 import screen_visible_request  # noqa: E402
+from shepherd_ai.multiuav_context import project_agent_visible_context  # noqa: E402
+from shepherd_ai.multiuav_interventions import materialize_case_context  # noqa: E402
 from scripts.probe_multiuav_train_closed_loop_v2 import MAX_PILOT_COMMANDS, run_case  # noqa: E402
 from scripts.probe_multiuav_train_observations_v2 import (  # noqa: E402
     EXPECTED_BENCHMARK_SHA256,
@@ -39,6 +42,7 @@ from scripts.run_multiuav_train_pilot_v2 import (  # noqa: E402
     MODEL_REVISION,
     SEED,
     select_cases,
+    DATASET,
 )
 
 ACTION_SCHEMA = {"fields": ["option_id"], "stop_option_id": "STOP"}
@@ -531,8 +535,10 @@ def resolve_model_action(
 
 
 class ModelActionSelector:
-    def __init__(self, backend: ModelBackend) -> None:
+    def __init__(self, backend: ModelBackend, *, screen_requests: bool = False) -> None:
         self.backend = backend
+        self.screen_requests = screen_requests
+        self.screen_checks: list[dict[str, str]] = []
         self.trace: list[dict[str, Any]] = []
         self.obstacles: dict[str, dict[str, Any]] = {}
         self.targets: dict[str, dict[str, dict[str, Any]]] = {}
@@ -558,6 +564,19 @@ class ModelActionSelector:
         canvas: tuple[float, float],
         previous_destinations: set[tuple[float, float]],
     ) -> dict[str, Any] | None:
+        if self.screen_requests:
+            if not drones:
+                self.screen_checks.append({"decision": "BLOCK", "reason": "visible_fleet_conflict"})
+                return None
+            context = project_agent_visible_context(
+                {"drones": drones, "canvas_width": canvas[0], "canvas_height": canvas[1],
+                 "environment": {}},
+                task_id="live_agent_request", instruction=instruction,
+            )
+            decision, reason = screen_visible_request(context)
+            self.screen_checks.append({"decision": decision, "reason": reason})
+            if decision != "EXECUTE":
+                return None
         search_counts: dict[str, int] = {}
         for item in self.trace:
             selected = item.get("selected_action")
@@ -630,6 +649,18 @@ class ModelActionSelector:
         return action
 
 
+def select_paired_cases() -> list[dict[str, Any]]:
+    """Use every approved variant of the existing selected training clusters."""
+    canonical = {row["source_task_id"]: row for row in select_cases()}
+    clusters = json.loads(DATASET.read_text(encoding="utf-8"))["clusters"]
+    return [
+        {**canonical[cluster["source_task_id"]], "case_id": case["case_id"],
+         "context": materialize_case_context(cluster, case)}
+        for cluster in clusters if cluster["source_task_id"] in canonical
+        for case in cluster["cases"]
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--case-id", required=True)
@@ -639,13 +670,22 @@ def main() -> None:
     parser.add_argument("--raw-output", required=True, type=Path)
     parser.add_argument("--summary-output", required=True, type=Path)
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--screen-visible-request", action="store_true")
     args = parser.parse_args()
     if args.max_commands < 1 or args.max_commands > MAX_PILOT_COMMANDS:
         raise ValueError(f"pilot command budget must be between 1 and {MAX_PILOT_COMMANDS}")
-    selected = {case["case_id"]: case for case in select_cases()}
+    selected = {case["case_id"]: case for case in (
+        select_paired_cases() if args.screen_visible_request else select_cases()
+    )}
     if args.case_id not in selected:
-        raise ValueError("case must be a reviewed canonical training pilot case")
+        raise ValueError("case must be an approved variant of a selected training pilot cluster")
     case = selected[args.case_id]
+    if args.screen_visible_request and any(path.exists() for path in (
+        args.raw_output, args.summary_output,
+        args.raw_output.with_suffix(".commands.jsonl"),
+        args.raw_output.with_suffix(".events.jsonl"),
+    )):
+        raise ValueError("attempt evidence already exists; use a new output directory")
     source = load_source_session(case["session_id"])
     audit = json.loads(args.cache_audit.read_text(encoding="utf-8"))
     if audit.get("model_id") != MODEL_ID or audit.get("revision") != MODEL_REVISION:
@@ -669,6 +709,8 @@ def main() -> None:
                      "max_input_tokens": 4096},
         "policy": "agent_visible_option_menu_v12_compact_context",
     }
+    if args.screen_visible_request:
+        config["policy"] = "agent_visible_option_menu_v13_screened_compact_context"
     summary = {
         "status": "preflight_only" if args.preflight_only else "running",
         "configuration": config, "model_loaded": False,
@@ -679,6 +721,26 @@ def main() -> None:
     if args.preflight_only:
         print(json.dumps({"status": "preflight_only", "case_id": case["case_id"]}))
         return
+    if args.screen_visible_request:
+        decision, reason = screen_visible_request(case["context"])
+        summary["request_screen"] = {"decision": decision, "reason": reason}
+        if decision != "EXECUTE":
+            if args.raw_output.exists():
+                raise ValueError("raw output already exists; use a new attempt directory")
+            args.raw_output.parent.mkdir(parents=True, exist_ok=True)
+            args.raw_output.write_text(json.dumps({
+                "configuration": config, "request_screen": summary["request_screen"],
+                "visible_context": case["context"], "model_calls": [], "commands": [],
+            }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            summary.update({"status": "complete_train_only_screened_no_execution",
+                            "model_call_count": 0, "attempted_commands": 0,
+                            "successful_commands": 0, "task_check_result": None,
+                            "raw_sha256": sha256(args.raw_output),
+                            "completed_at_utc": datetime.now(timezone.utc).isoformat()})
+            args.summary_output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                                           encoding="utf-8")
+            print(json.dumps({"status": summary["status"], "decision": decision}))
+            return
     selector: ModelActionSelector | None = None
     journal_path = args.raw_output.with_suffix(".commands.jsonl")
     event_path = args.raw_output.with_suffix(".events.jsonl")
@@ -690,7 +752,7 @@ def main() -> None:
             model_id=MODEL_ID, revision=MODEL_REVISION, max_new_tokens=256,
             dtype="float16", cache_dir=str(args.cache_dir),
         ))
-        selector = ModelActionSelector(backend)
+        selector = ModelActionSelector(backend, screen_requests=args.screen_visible_request)
         summary["model_loaded"] = True
         args.summary_output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         from fastapi.testclient import TestClient  # noqa: PLC0415
@@ -729,6 +791,7 @@ def main() -> None:
         raw = {
             "configuration": config, "run": run,
             "model_calls": selector.trace,
+            "request_screen_checks": selector.screen_checks,
         }
         args.raw_output.parent.mkdir(parents=True, exist_ok=True)
         args.raw_output.write_text(json.dumps(raw, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -745,6 +808,7 @@ def main() -> None:
             "task_check_result": run["task_check"].get("result"),
             "stop_reason": run["stop_reason"],
             "last_model_action_resolution": selector.trace[-1]["resolution"] if selector.trace else None,
+            "last_request_screen": selector.screen_checks[-1] if selector.screen_checks else None,
             "agent_privileged_data_http_status": run["agent_privileged_data_http_status"],
             "raw_sha256": sha256(args.raw_output),
             "completed_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -759,12 +823,13 @@ def main() -> None:
             "error_message": str(error),
             "model_call_count": len(selector.trace) if selector else 0,
         })
-        if selector and selector.trace:
+        if selector:
             args.raw_output.parent.mkdir(parents=True, exist_ok=True)
             args.raw_output.write_text(
                 json.dumps({
                     "configuration": config,
                     "model_calls": selector.trace,
+                    "request_screen_checks": selector.screen_checks,
                 }, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )

@@ -926,3 +926,43 @@ raw evidence remains separate under `outputs/multiuav/train-model-loop-regressio
 The original a30 memory failure is not overwritten. There are now two verified
 recoveries under unchanged v12, both on previously inspected training cases,
 not an independent success estimate. No manuscript change is made by monitoring.
+
+### v13 Paired Execution-And-Refusal Development Experiment (2026-10-12)
+
+The v12 loop does not integrate the existing candidate's instruction/fleet
+screen. With `--screen-visible-request`, v13 connects that screen to admission
+and rechecks the live projected fleet before each model-selected command.
+An unresolved reference returns CLARIFY; a visible fleet conflict returns BLOCK;
+both prevent model generation and commands at initial admission. The screen
+uses only public instruction/fleet fields, never expected decisions, variant
+labels, official commands or private task predicates. All five approved variants
+of existing selected training clusters become admissible to this opt-in runner.
+Canonical-only v12 invocation and frozen M1-M4 source remain unchanged.
+
+Freeze attempt a33 on both inspected recovered tasks, `05e12d8e` and
+`1905e0ad`, with every variant, in fixed order: missing information, resource
+conflict, canonical, alias and restored evidence. Total: ten cases, six
+executable and four non-executable under the pre-existing construction labels.
+Selection is explicitly conditioned on prior recovery; this is a biased
+development diagnostic, not a population success rate or untouched evaluation.
+The screen recognizes intervention templates, so label agreement alone cannot
+establish discrimination for natural operator language. Retain these limits.
+
+Use unchanged pinned Qwen2.5-3B, seed 17, float16, greedy decoding, 256 output
+tokens, 4096 input-token guard and 512-command ceiling. Execute valid requests
+against the official task checker; report each instruction variant separately.
+Missing-evidence and conflict variants do not execute and have no official task
+success claim. Count screen decisions, issued/accepted commands, model refusals,
+official true/false checks, resource failures and deadline interruptions
+separately. Restored-evidence success is required to demonstrate recovery from
+clarification within these constructed cases. False refusal, unsupported
+continuation and official task success must be reported together; never treat
+zero commands alone as useful planning or remove failed cases.
+
+a33 uses one GPU with memory label greater than 23000 MiB, ten serial cases,
+an 18-hour job deadline and no retries. The manifest binds the immutable
+implementation commit and exact commands. Outputs stay under
+`/workspace/results/train-paired-v13-a33/`, separate from a25-a32.
+Record dependency versions and GPU identity from startup logs. Preserve raw,
+journals, summaries, metadata and failures; verify hashes before analysis.
+No manuscript result is changed until completed evidence is admitted.

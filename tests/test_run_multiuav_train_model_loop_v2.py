@@ -13,6 +13,7 @@ from scripts.run_multiuav_train_model_loop_v2 import (
     resolve_model_action,
     safe_step,
     coverage_destination,
+    select_paired_cases,
 )
 from shepherd_ai.multiuav_runner import GenerationResult
 from scripts.probe_multiuav_train_closed_loop_v2 import issue_action, run_case
@@ -96,6 +97,69 @@ class FakeClient:
 
 
 class ModelLoopTests(unittest.TestCase):
+    def test_screen_does_not_refuse_locally_unobserved_target(self) -> None:
+        backend = FakeBackend(choice("O1"))
+        selector = ModelActionSelector(backend, screen_requests=True)
+        action = selector("Find Fixed Target 1", [DRONE], {"drone-1": []},
+                          (20, 20), set())
+        self.assertIsNotNone(action)
+        self.assertEqual(selector.screen_checks[-1]["decision"], "EXECUTE")
+        self.assertEqual(backend.calls, 1)
+
+    def test_screen_prevents_commands_in_observation_command_loop(self) -> None:
+        backend = FakeBackend(choice("O1"))
+        selector = ModelActionSelector(backend, screen_requests=True)
+        result = run_case(FakeClient(), {"X-API-Key": "agent"}, {
+            "source_task_id": "task-1", "context": {
+                "instruction": "Send Drone 2 north", "session": {
+                    "canvas_width": 20, "canvas_height": 20},
+            },
+        }, max_commands=3, choose_action=selector)
+        self.assertEqual(result["commands"], [])
+        self.assertEqual(backend.calls, 0)
+        self.assertEqual(selector.screen_checks[-1]["decision"], "BLOCK")
+
+    def test_paired_selection_retains_all_five_variants_without_labels(self) -> None:
+        cases = select_paired_cases()
+        self.assertEqual(len(cases), 75)
+        for source in {case["source_task_id"] for case in cases}:
+            self.assertEqual(sum(case["source_task_id"] == source for case in cases), 5)
+        self.assertTrue(all("expected_decision" not in case["context"] for case in cases))
+
+    def test_screened_selector_empty_fleet_and_threshold_recovery(self) -> None:
+        backend = FakeBackend(choice("O1"))
+        selector = ModelActionSelector(backend, screen_requests=True)
+        self.assertIsNone(selector("Search", [], {}, (20, 20), set()))
+        self.assertEqual(selector.screen_checks[-1]["decision"], "BLOCK")
+        self.assertIsNone(selector("Cover the required threshold", [DRONE],
+                                   {"drone-1": []}, (20, 20), set()))
+        self.assertEqual(selector.screen_checks[-1]["decision"], "CLARIFY")
+        self.assertEqual(backend.calls, 0)
+        self.assertIsNotNone(selector("Cover the required threshold (50%)", [DRONE],
+                                      {"drone-1": []}, (20, 20), set()))
+        self.assertEqual(backend.calls, 1)
+
+    def test_screened_selector_rejects_conflict_without_model_call(self) -> None:
+        backend = FakeBackend(choice("O1"))
+        selector = ModelActionSelector(backend, screen_requests=True)
+        self.assertIsNone(selector("Send Drone 2 north", [DRONE],
+                                   {"drone-1": []}, (20, 20), set()))
+        self.assertEqual(backend.calls, 0)
+        self.assertEqual(selector.screen_checks[-1]["decision"], "BLOCK")
+
+    def test_screened_selector_clarifies_then_accepts_restored_identity(self) -> None:
+        backend = FakeBackend(choice("O1"))
+        selector = ModelActionSelector(backend, screen_requests=True)
+        self.assertIsNone(selector("Send assigned UAV A north", [DRONE],
+                                   {"drone-1": []}, (20, 20), set()))
+        self.assertEqual(selector.screen_checks[-1]["decision"], "CLARIFY")
+        self.assertEqual(backend.calls, 0)
+        action = selector("Send assigned UAV A (Drone 1) north", [DRONE],
+                          {"drone-1": []}, (20, 20), set())
+        self.assertIsNotNone(action)
+        self.assertEqual(backend.calls, 1)
+        self.assertEqual(selector.screen_checks[-1]["decision"], "EXECUTE")
+
     def test_generation_exception_preserves_request_without_action(self) -> None:
         class FailingBackend:
             def generate(self, request: object) -> GenerationResult:

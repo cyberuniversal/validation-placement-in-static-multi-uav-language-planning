@@ -897,3 +897,19 @@ raw evidence is separate under `outputs/multiuav/train-model-loop-regression-v12
 The new GPU differs from a30, so the recovery cannot be attributed solely to
 prompt compaction. This is one repeated inspected case; retain the original
 six-success/five-memory-failure v11 cohort rather than replacing its outcome.
+
+### a32 Registered Resource Regression (2026-10-12)
+
+Run only `1905e0ad:canonical_execute`, session `35ce64d8`, which failed with
+OOM in a30. This is a previously inspected training case, not independent
+held-out evaluation: the repository has no untouched benchmark sessions.
+Keep v12 execution commit `f549a53cfd4f6a5f77cdee2bf96ebf966b3c4b1f`, model
+revision, seed, decoding, token admission and 512-command budget unchanged.
+Use one GPU with memory label greater than 23000 MiB and one worker, no retries.
+Register a six-hour job deadline; interruption remains incomplete rather than
+mission false. New outputs are `/workspace/results/train-model-loop-regression-v12-a32/1905e0ad/`.
+The a32 manifest binds the exact commands and refuses evidence overwrite.
+Preserve logs, metadata, summaries, raw and journals even on failure. Verify
+artifact hashes before reporting; distinguish successful commands from the
+official task check. Do not replace the old failure or change manuscript
+claims while this run is pending. GPU changes preclude a matched hardware claim.

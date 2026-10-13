@@ -6,6 +6,14 @@
 \usepackage{microtype}
 \usepackage{xspace}
 
+\makeatletter
+\renewcommand{\@noticestring}{Submitted to the HumanRLI Workshop at CoRL 2026. Do not distribute.}
+\makeatother
+\AtBeginDocument{\hypersetup{
+  pdftitle={Failure Containment and Executable Actions in Language-Based Multi-UAV Planning},
+  pdfsubject={Anonymous submission to the HumanRLI Workshop at CoRL 2026}
+}}
+
 \title{Failure Containment and Executable Actions in Language-Based Multi-UAV Planning}
 
 \author{Anonymous Authors}

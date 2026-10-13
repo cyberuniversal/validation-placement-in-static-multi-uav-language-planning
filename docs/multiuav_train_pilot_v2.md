@@ -992,3 +992,27 @@ There were no model STOP outcomes among completed cases; interrupted model-call
 and STOP counts are unknown. No retry, hardware change to inference, or
 manuscript update is performed by the monitor. These constructed inspected
 cases demonstrate limited paired operation, not independent reliability.
+
+### a34 Infrastructure Recovery Registration (2026-10-13)
+
+Following the user's request to continue, register only the three unfinished
+cases from a33: `1905e0ad` canonical, official alias, and restored information,
+in that order. Restart the interrupted canonical mission from its initial
+world, not from the 205-command journal; retain that journal and the failed
+attempt unchanged. Alias and restored cases have no prior a33 execution.
+This is an explicit infrastructure-recovery attempt, not automatic retry
+within the zero-retry a33 policy or a replacement for its recorded failure.
+The seven completed a33 cases are not rerun.
+
+Bind unchanged implementation `dae9d0eddba9d548b23e16ecbf2e188eda77cc42`,
+checkpoint/revision, seed, decoding, 512-command ceiling and request screen.
+The a34 manifest uses one serial worker, six-hour deadline and no automatic
+retries. It retains the original GPU-memory/compute admission, excludes the
+newly failed node `hcc-nrp-shor-c6017.unl.edu`, and writes only to new paths
+under `/workspace/results/train-paired-v13-a34/`.
+Hardware/environment must be reported, not assumed matched. No model, prompt,
+dataset or capability is added. Do not silently combine attempts: analysis
+must show the original a33 interruption and its a34 rerun separately, plus
+the two previously unstarted cases. Preserve every outcome and verify all
+recorded artifact hashes before changing paper results. Remain explicit
+that this is inspected training data and not independent evaluation.

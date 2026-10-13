@@ -36,11 +36,13 @@ recover executable planning. A separate repaired, observation-grounded
 closed-loop controller completed six of 15 training-split development missions
 under the upstream official task checker. Three missions ended with false
 checks, five exhausted GPU memory, and one was interrupted.
-An additional compact-context rerun recovered one of the memory-failed missions
-with 283 accepted commands and an official true check on a different GPU.
-The original failures remain reported. These inspected
-development cases show that bounded model-selected actions can execute, not
-that validation placement improves held-out competence or physical safety.
+A later compact-context controller with visible-request admission completed
+all six executable variants of two previously inspected training missions,
+while clarifying both missing-evidence variants and blocking both fleet-conflict
+variants without commands. An infrastructure-interrupted attempt was retained
+and restarted separately. This demonstrates paired execution and refusal in a
+small constructed diagnostic, not held-out competence, a causal placement
+advantage, or physical safety. The original failures remain reported.
 \end{abstract}
 
 \keywords{physical AI safety, robot planning, failure containment, evaluation}
@@ -65,8 +67,9 @@ paired five-variant benchmark for evidence availability and resource conflict;
 prompt versions; and (3) a refusal-aware analysis that separates containment
 from executable competence, audits the validator against upstream plans, and
 replays identical traces under early versus deferred enforcement. We additionally
-report a separate development repair using bounded action options and observed
-geometry, retaining every mission and infrastructure failure. This repair is
+report a separate development repair using bounded action options, observed
+geometry, and visible-request admission, testing execution and non-execution
+together while retaining every mission and infrastructure failure. This repair is
 not a fifth configuration in the frozen comparison.
 
 \section{Experimental Design}
@@ -228,7 +231,7 @@ this controller can make hundreds of calls and receive execution feedback;
 therefore its outcomes are not a matched comparison. Formation and photography
 missions remain in the cohort although the menu does not implement those
 actions. Infrastructure corrections changed scheduling, not the controller.
-Its outcome counts remain fixed; the later v12 rerun is reported separately.
+Its outcome counts remain fixed; later v12 and v13 attempts are reported separately.
 
 \begin{table}[t]
   \centering
@@ -272,7 +275,7 @@ held-out success rate, or improvement of M1--M4 is inferred. The six completions
 are evidence of a working execution path, not a resolution of the main study's
 generalization or validation-placement question.
 
-\paragraph{Single-case memory repair.}
+\paragraph{Compact-context memory repair.}
 In a separately registered v12 follow-up, the controller retained full observed
 geometry and visit history for deterministic routing but sent the model a
 compact action-selection view, with a 4,096-token admission limit and no silent
@@ -280,10 +283,62 @@ truncation. Previously memory-failed task \texttt{05e12d8e} completed with
 283 model calls, 283 accepted commands and an official true task check.
 Input length peaked at 1,333 tokens, compared with 10,762 completed input
 tokens before its v11 failure. Raw and journal hashes were verified.
-The new run used a 32 GB V100 rather than the prior approximately 24 GB GPU;
-hardware and prompt contract changed together. This single inspected-training
-recovery therefore does not isolate a causal memory effect, establish a
-held-out success rate, or replace the original 15-case outcomes.
+Task \texttt{1905e0ad} also recovered with 278 accepted commands and a true
+check, peaking at 2,094 input tokens. The reruns used a 32 GB V100 and an A10,
+respectively; hardware and prompt contract changed together. Neither recovery
+isolates a causal memory effect or replaces the original cohort outcomes.
+
+\paragraph{Paired execution and request admission.}
+The v13 controller connects the existing visible-instruction/fleet screen to
+the execution boundary. An unresolved assigned-UAV or coverage-threshold
+reference yields \textsc{Clarify}; an explicitly missing drone or insufficient
+fleet yields \textsc{Block}. Admission uses no expected decision or private
+task predicate, and the projected live fleet is checked before each action.
+The screen recognizes benchmark intervention phrases; its scope is not general
+semantic ambiguity detection. An unobserved target alone does not prevent
+bounded search. Admitted requests use the same compact action-selection loop.
+
+We registered all five variants of the two recovered training missions,
+deliberately selecting cases with prior successful execution. As shown in
+Table~\ref{tab:paired-development}, all six executable variants completed under
+the official checker; both missing-evidence variants yielded \textsc{Clarify}
+and both conflicts yielded \textsc{Block}, with no model calls or commands.
+Completed executable attempts made 1,552 accepted commands and model calls,
+with no model STOP outcomes. Restored-evidence variants executed successfully
+where their missing-evidence counterparts stopped. These are separate initial-world
+runs, not an interactive clarification dialogue or ten independent missions.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{v13 paired development outcomes for two inspected source missions.
+  True denotes the official task check; parentheses give accepted commands
+  (also model calls). Non-execution rows have no task-success claim.}
+  \label{tab:paired-development}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Variant & \texttt{05e12d8e} & \texttt{1905e0ad} \\
+    \midrule
+    Canonical & True (283) & True (278) \\
+    Official alias & True (283) & True (147) \\
+    Missing evidence & Clarify (0) & Clarify (0) \\
+    Restored evidence & True (283) & True (278) \\
+    Fleet conflict & Block (0) & Block (0) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The a33 job failed when its node reported no healthy GPU devices, interrupting
+\texttt{1905e0ad} canonical after 205 accepted journaled commands, without a
+terminal task check. Attempt a34 restarted that mission from its initial world
+and ran the two unstarted variants with unchanged code and checkpoint.
+Seven a33 completions and three a34 completions form the table; the interrupted
+attempt remains separately preserved, not scored false or silently replaced.
+a33 used an A10 and a34 a 32 GB V100. All 47 durable files across both attempts
+match source SHA-256 inventories. This diagnostic demonstrates that the revised
+controller does not always block these requests, but selection on prior recovery,
+template-aware screening and only two source clusters prevent a generalization
+claim or a matched comparison with M1--M4.
 
 \section{Discussion and Limitations}
 
@@ -295,7 +350,8 @@ mechanism itself rejects a nontrivial fraction of upstream plans. The controlled
 replay further shows that changing deterministic enforcement order alone did
 not alter unsupported continuation or executable fidelity. The separate repair
 shows that an observation-grounded action interface can complete some official
-development missions, while exposing coverage, capability, and memory limits.
+development missions and separate execution from non-execution in the paired
+diagnostic, while exposing coverage, capability, and memory limits.
 It changes the representation, feedback, and call budget together, so it cannot
 identify which change caused execution success. A stronger claim requires
 re-audited validators and prospective matched evaluation on independent missions.
@@ -306,7 +362,9 @@ measurement. M1--M4 perform no official simulator or physical execution; the
 separate development controller executes against the upstream software
 environment and task checker, not physical UAVs. Its training-split missions
 were inspected, two guided repair, and no new independent mission data were
-available. The
+available. The paired follow-up selects two previously recovered missions;
+its request screen exploits recognizable intervention templates. It does not
+test arbitrary ambiguity, natural operator dialogue, or independent missions. The
 source-task bootstrap is registered; the session bootstrap is post-hoc and has
 only 15 units. The resource campaign has three repetitions, and board energy is
 not whole-system or UAV energy. These limits prevent claims of general robot
@@ -329,9 +387,11 @@ achieves six official mission completions while retaining nine unsuccessful
 or unresolved outcomes. Bounded executable actions address the absence of
 any execution demonstration, but do not establish held-out reliability or
 the superiority of a validation placement.
-One additional compact-context rerun recovered a previously memory-failed
-development mission, without establishing generalization or a matched
-hardware advantage.
+In a separate two-source paired diagnostic, the revised admission-and-action
+controller completed six executable variants and stopped all four constructed
+non-executable variants. This addresses always-block behavior within those
+development cases, without establishing held-out reliability or a causal
+validation-placement advantage.
 
 \bibliography{references}
 
@@ -391,10 +451,22 @@ Available job/pod metadata and console logs preserve scheduler, deadline, and
 memory failures. These bindings make the new development evidence separable
 from the frozen accuracy matrices and resource campaign.
 
-Attempt a31 reruns \texttt{05e12d8e} in session \texttt{e76728cc} under v12
+Attempts a31 and a32 rerun \texttt{05e12d8e} (session \texttt{e76728cc})
+and \texttt{1905e0ad} (session \texttt{35ce64d8}) under v12
 commit \url{f549a53cfd4f6a5f77cdee2bf96ebf966b3c4b1f}; model, source, seed
-and command ceiling are unchanged. Its summary and verification record retain
+and command ceiling are unchanged. Their summaries and verification records retain
 all three artifact hashes. The a30 failure remains in
-Table~\ref{tab:development-cases}; this is not an independent mission.
+Table~\ref{tab:development-cases}; these are not independent evaluation missions.
+
+The v13 paired attempts a33 and a34 bind execution commit
+\url{dae9d0eddba9d548b23e16ecbf2e188eda77cc42}, with the same checkpoint,
+source, seed and command ceiling. The runner's
+\texttt{--screen-visible-request} flag enables admission and all reviewed
+variants. The a33/a34 manifests under \texttt{infra/nautilus/} bind case order,
+GPU admission and fresh output paths. Verification records under
+\texttt{paired\_v13\_a33/} and \texttt{paired\_v13\_a34/} in the evaluation
+directory retain original outcomes, the interruption and the recovery attempt;
+the latter's \texttt{combined\_verification.json} records all ten completed
+case outcomes. These records do not alter frozen M1--M4 results.
 
 \end{document}

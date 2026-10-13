@@ -1,0 +1,167 @@
+{
+  "scope": "two_inspected_training_clusters_not_heldout",
+  "execution_commit": "dae9d0eddba9d548b23e16ecbf2e188eda77cc42",
+  "a34_verification": [
+    {
+      "case_id": "1905e0ad:canonical_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    },
+    {
+      "case_id": "1905e0ad:official_alias_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    },
+    {
+      "case_id": "1905e0ad:restored_information_execute",
+      "hash_checks": {
+        "raw.json": true,
+        "raw.commands.jsonl": true,
+        "raw.events.jsonl": true
+      }
+    }
+  ],
+  "completed_case_outcomes": [
+    {
+      "case_id": "05e12d8e:missing_information_clarify",
+      "outcome": "completed",
+      "initial_screen": "CLARIFY",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "05e12d8e:resource_conflict_block",
+      "outcome": "completed",
+      "initial_screen": "BLOCK",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "05e12d8e:canonical_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "05e12d8e:official_alias_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "05e12d8e:restored_information_execute",
+      "outcome": "completed",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 283,
+      "accepted_commands": 283,
+      "model_calls": 283,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "1905e0ad:missing_information_clarify",
+      "outcome": "completed",
+      "initial_screen": "CLARIFY",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "1905e0ad:resource_conflict_block",
+      "outcome": "completed",
+      "initial_screen": "BLOCK",
+      "issued_commands": 0,
+      "accepted_commands": 0,
+      "model_calls": 0,
+      "official_task_check": null,
+      "model_stop_count": 0,
+      "attempt": "a33"
+    },
+    {
+      "case_id": "1905e0ad:canonical_execute",
+      "attempt": "a34",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 278,
+      "accepted_commands": 278,
+      "model_calls": 278,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "max_input_tokens_observed": 2094
+    },
+    {
+      "case_id": "1905e0ad:official_alias_execute",
+      "attempt": "a34",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 147,
+      "accepted_commands": 147,
+      "model_calls": 147,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "max_input_tokens_observed": 2076
+    },
+    {
+      "case_id": "1905e0ad:restored_information_execute",
+      "attempt": "a34",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 278,
+      "accepted_commands": 278,
+      "model_calls": 278,
+      "official_task_check": true,
+      "model_stop_count": 0,
+      "max_input_tokens_observed": 2097
+    }
+  ],
+  "prior_interrupted_attempts": [
+    {
+      "case_id": "1905e0ad:canonical_execute",
+      "outcome": "infrastructure_interrupted",
+      "initial_screen": "EXECUTE",
+      "issued_commands": 205,
+      "accepted_commands": 205,
+      "model_calls": null,
+      "official_task_check": null,
+      "model_stop_count": null,
+      "durable_summary_status": "running"
+    }
+  ],
+  "official_true_executable_variants": 6,
+  "screened_nonexecution_variants": 4,
+  "completed_model_stop_count": 0,
+  "accepted_commands_completed_attempts": 1552,
+  "limits": [
+    "selection_conditioned_on_prior_recovery",
+    "screen_recognizes_generator_templates",
+    "not_a_frozen_M1_M4_result",
+    "no_independent_session_evaluation",
+    "a33_infrastructure_failure_retained",
+    "heterogeneous_hardware_not_matched"
+  ]
+}

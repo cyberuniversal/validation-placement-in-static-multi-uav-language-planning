@@ -1016,3 +1016,23 @@ must show the original a33 interruption and its a34 rerun separately, plus
 the two previously unstarted cases. Preserve every outcome and verify all
 recorded artifact hashes before changing paper results. Remain explicit
 that this is inspected training data and not independent evaluation.
+
+a34 completed with zero restarts on a 32 GB V100. Canonical and restored
+variants each achieved an official true check with 278 accepted commands/model
+calls; the alias variant achieved true with 147. There were no model STOP
+outcomes or resource failures in these three completed attempts. Their maximum
+input lengths were 2,094, 2,076 and 2,097 tokens (canonical, alias, restored).
+All recorded raw/journal hashes match, and the full transfer inventory agrees
+with remote SHA-256. Terminal metadata, logs, summaries and combined verification
+are under `outputs/evaluations/multiuav_train_model_loop_v2/paired_v13_a34/`;
+raw data remain separate under `outputs/multiuav/train-paired-v13-a34/`.
+
+Across a33's seven completed cases and a34's three recovery cases, all six
+executable variants have official true checks and all four constructed
+non-executable variants stop before commands (two CLARIFY, two BLOCK).
+Completed attempts contain 1,552 accepted commands/model calls. Retain the
+additional a33 infrastructure interruption with 205 journaled commands as a
+separate attempt, not a completed false result or a resumed mission. This is
+ten linked variants of two deliberately selected inspected training clusters,
+not ten independent missions, an independent accuracy estimate, or a repair
+of frozen M1-M4 scores. No paper change is made by monitoring.

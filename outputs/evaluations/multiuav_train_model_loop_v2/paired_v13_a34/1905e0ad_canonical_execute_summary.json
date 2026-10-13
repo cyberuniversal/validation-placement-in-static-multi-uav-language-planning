@@ -1,0 +1,46 @@
+{
+  "agent_privileged_data_http_status": 403,
+  "attempted_commands": 278,
+  "command_journal_sha256": "09cb52dc8a5ef139ee2d207713b7a2c0ca08b4a6bccfde7926450917bafafc27",
+  "completed_at_utc": "2026-10-13T08:42:07.547560+00:00",
+  "configuration": {
+    "benchmark_sha256": "b5040097d2bfdd44600f3bf486fdb43ee3eb1247fec9c67900b5fcda6feb94a3",
+    "cache_audit_sha256": "10d37e85af2df8a0fcaf6bb5bf4cbd08864afe25bfcb2f75a135b7061e3f5dbf",
+    "case_id": "1905e0ad:canonical_execute",
+    "code_commit": "dae9d0eddba9d548b23e16ecbf2e188eda77cc42",
+    "decoding": {
+      "do_sample": false,
+      "max_input_tokens": 4096,
+      "max_new_tokens": 256,
+      "num_beams": 1
+    },
+    "max_commands": 512,
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "model_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "policy": "agent_visible_option_menu_v13_screened_compact_context",
+    "seed": 17,
+    "session_id": "35ce64d8",
+    "source_task_id": "1905e0ad",
+    "study": "train_only_closed_loop_model_pilot_v2_not_frozen_M1_to_M4",
+    "upstream_commit": "1794e45e421fb5de03094f0b63f9ca95f86ab42f"
+  },
+  "deterministic_prelude_action_count": 0,
+  "event_journal_sha256": "fdd6615615e3a0c043660a4a7bbdaf5d11a3c37bab0958023a3e446ab217c3a6",
+  "last_model_action_resolution": "resolved",
+  "last_request_screen": {
+    "decision": "EXECUTE",
+    "reason": "visible_request_ready"
+  },
+  "model_call_count": 278,
+  "model_loaded": true,
+  "raw_sha256": "72d8d3a0df94daaf98a2944a53a7b6c029a8c3981c5298e7204fec6825eca869",
+  "request_screen": {
+    "decision": "EXECUTE",
+    "reason": "visible_request_ready"
+  },
+  "started_at_utc": "2026-10-13T08:22:49.332449+00:00",
+  "status": "complete_train_only_unscored",
+  "stop_reason": "official_task_completed",
+  "successful_commands": 278,
+  "task_check_result": true
+}
